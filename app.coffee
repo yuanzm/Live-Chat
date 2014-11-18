@@ -4,6 +4,9 @@ favicon = require 'static-favicon'
 logger = require 'morgan'
 cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
+session    = require('express-session')
+MongoStore = require('connect-mongo')(session)
+config = require './config'
 
 # db = require './db/db.coffee'
 routes = require './routes/index'
@@ -19,6 +22,16 @@ app.use bodyParser.json()
 app.use bodyParser.urlencoded()
 app.use cookieParser()
 app.use express.static(path.join(__dirname, 'public'))
+app.use session({
+	secret: config.cookieSecret
+	store: new MongoStore({
+		db: config.db
+	})
+	resave: true
+	saveUninitialized: true
+})
+
+
 
 app.use '/', routes
 
