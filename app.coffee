@@ -7,6 +7,7 @@ bodyParser = require 'body-parser'
 session    = require('express-session')
 MongoStore = require('connect-mongo')(session)
 config = require './config'
+flash = require 'connect-flash'
 
 # db = require './db/db.coffee'
 routes = require './routes/index'
@@ -16,6 +17,7 @@ app = express()
 app.set 'views', path.join(__dirname, 'views')
 app.set 'view engine', 'jade'
 
+app.use flash()
 app.use favicon()
 app.use logger('dev')
 app.use bodyParser.json()
@@ -31,6 +33,16 @@ app.use session({
 	saveUninitialized: true
 })
 
+app.use (req, res, next)->
+	console.log "app.usr local"
+	res.locals.user = req.session.user
+	res.locals.port = req.session.port
+	error = req.flash 'error'
+	res.locals.error = if error.length then error else null
+
+	success = req.flash 'success'
+	res.locals.success = if success.length then success	else null
+	next()
 
 
 app.use '/', routes
