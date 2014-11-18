@@ -2,9 +2,13 @@ header
 	nav(class="navbar navbar-default navbar-static-top", role="navigation")
 		div(class="container", id="header")
 			ul(class="nav nav-tabs navbar-nav", role="tablist")
-				li(role="presentation", class="active")
-					a(href="/") Live-Chat
-				li(role="presentation")
-					a(href="/login") Login
-				li(role="presentation")
-					a(href="/regist") Regist
+				if !user
+					li(role="presentation", class="active")
+						a(href="/") Live-Chat
+					li(role="presentation")
+						a(href="/login") Login
+					li(role="presentation")
+						a(href="/regist") Regist
+				else
+					li(role="presentation")
+						a(href="/logout") Logout

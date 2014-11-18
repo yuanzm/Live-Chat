@@ -34,7 +34,7 @@ app.use session({
 })
 
 app.use (req, res, next)->
-	console.log "app.usr local"
+	console.log "A new requset"
 	res.locals.user = req.session.user
 	res.locals.port = req.session.port
 	error = req.flash 'error'

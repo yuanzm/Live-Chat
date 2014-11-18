@@ -8,6 +8,7 @@ User = require '../models/user.coffee'
 router.get '/', (req, res)->
 	res.render 'chat', {
 		title: "Live-Chat"
+		user: req.session.user
 	}
 
 router.get '/regist', (req, res)->
@@ -32,9 +33,9 @@ router.post '/regist', (req, res)->
 		newUser.save (err)->
 			if err
 				req.flash 'error', err
-			res.redirect '/'
 			req.session.user = newUser
 			req.flash 'success', 'regist success'
+			res.redirect '/'
 
 router.get '/login', (req, res)->
 	res.render 'login', {
@@ -59,5 +60,11 @@ router.post '/login', (req, res)->
 		req.session.user = user
 		req.flash 'success', '登录成功'
 		res.redirect '/'
+
+
+router.get '/logout', (req, res)->
+	req.session.user = null
+	req.flash('success', '登出成功')
+	res.redirect '/'
 
 module.exports = router;
