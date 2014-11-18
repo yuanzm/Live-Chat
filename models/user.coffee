@@ -18,7 +18,7 @@ User.prototype.save = (callback)->
 			if err
 				mongodb.close()
 				callback err
-			collection.ensureIndex 'name', {unique: true}
+			collection.createIndex 'name', {unique: true}
 			collection.insert user, {safe: true}, (err, user) ->
 				mongodb.close()
 				callback(err, user)

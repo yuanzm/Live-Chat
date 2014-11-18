@@ -1,4 +1,4 @@
-config = require './config'
+config = require '../config'
     
 Db = require('mongodb').Db
 Connection = require('mongodb').Connection
