@@ -4,7 +4,6 @@ router = express.Router()
 crypto = require 'crypto'
 User = require '../models/user.coffee'
 
-
  # GET home page.
 router.get '/', (req, res)->
 	res.render 'index', {
@@ -13,13 +12,12 @@ router.get '/', (req, res)->
 
 router.get '/regist', (req, res)->
 	res.render 'regist',{
-
+		title: "Regist"
 	}
 
 router.post '/regist', (req, res)->
 	md5 = crypto.createHash 'md5'
 	password = md5.update(req.body.passWord).digest('base64')
-	# password = req.body.passWord
 
 	newUser = new User({
 		name: req.body.nickName
@@ -37,5 +35,29 @@ router.post '/regist', (req, res)->
 			res.redirect '/'
 			req.session.user = newUser
 			req.flash 'success', 'regist success'
+
+router.get '/login', (req, res)->
+	res.render 'login', {
+		title: "Login"
+	}
+
+router.post '/login', (req, res)->
+	md5 = crypto.createHash 'md5'
+	password = md5.update(req.body.passWord).digest('base64')
+	nickName = req.body.nickName
+
+	User.get nickName, (err, user)->
+		if err
+			req.flash 'error', err
+			return res.redirect '/login'
+		if not user
+			req.flash 'error', '用户不存在'
+			return redirect '/login'
+		if user.password is not password
+			req.flash 'error', '用户密码错误'			
+			return res.redirect '/login'
+		req.session.user = user
+		req.flash 'success', '登录成功'
+		res.redirect '/'
 
 module.exports = router;
