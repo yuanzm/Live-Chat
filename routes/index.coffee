@@ -6,7 +6,7 @@ User = require '../models/user.coffee'
 
  # GET home page.
 router.get '/', (req, res)->
-	res.render 'index', {
+	res.render 'chat', {
 		title: "Live-Chat"
 	}
 
@@ -52,7 +52,7 @@ router.post '/login', (req, res)->
 			return res.redirect '/login'
 		if not user
 			req.flash 'error', '用户不存在'
-			return redirect '/login'
+			return res.redirect '/login'
 		if user.password is not password
 			req.flash 'error', '用户密码错误'			
 			return res.redirect '/login'

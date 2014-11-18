@@ -6,7 +6,7 @@ module.exports = (grunt) ->
 		# Start a connect web server.
 		connect:
 			options:
-				port: 3000
+				port: 8000
 				hostname: '127.0.0.1'
 				livereload: 35729
 		
@@ -82,7 +82,7 @@ module.exports = (grunt) ->
 					"test/**/*.html"
 
 				]
-				tasks: ["browserify", "sass", "mocha"]
+				tasks: ["browserify", "sass"]
 
 		# Compile Sass to CSS
 		sass:
@@ -113,7 +113,7 @@ module.exports = (grunt) ->
 			"clean:bin"
 			"browserify"
 			"sass"
-			"mocha"
+			# "mocha"
 			"watch"
 		]
 
@@ -123,7 +123,7 @@ module.exports = (grunt) ->
 			"clean:dist"
 			"browserify"
 			"sass"
-			"mocha"
+			# "mocha"
 			"clean:sassCache"
 			"cssmin"
 			"uglify"

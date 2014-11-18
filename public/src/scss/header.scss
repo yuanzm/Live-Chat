@@ -3,7 +3,7 @@ $header-height : 50px;
 header {
 	width: 100%;
 	height: $header-height;
-}
-h1 {
-	text-align: center;
+	#header {
+		width: 960px;
+	}
 }

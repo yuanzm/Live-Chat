@@ -1,4 +1,4 @@
-@charset "UTF-8";
+@charset "GBK";
 * {
   margin: 0;
   padding: 0; }
@@ -10,20 +10,20 @@ html, body {
   min-height: 100%;
   height: auto !important;
   height: 100%;
-  /*IE6涓嶈瘑鍒玬in-height*/
+  /*IE6不识别min-height*/
   position: relative; }
 
 #main {
   width: 960px;
   margin: 0 auto;
+  margin-top: 50px;
   padding-bottom: 50px; }
 
 header {
   width: 100%;
   height: 50px; }
-
-h1 {
-  text-align: center; }
+  header #header {
+    width: 960px; }
 
 footer {
   width: 100%;
@@ -72,5 +72,3 @@ footer {
   #sign button {
     margin-right: 20px;
     margin-top: 20px; }
-
-/*# sourceMappingURL=main.css.map */
