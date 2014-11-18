@@ -13,11 +13,11 @@ module.exports = {
 
 
 },{}],2:[function(require,module,exports){
-var anotherModule;
+var anotherModule, socket;
 
 anotherModule = require("./another-module.coffee");
 
-anotherModule.add(1, 3);
+socket = io();
 
 
 
