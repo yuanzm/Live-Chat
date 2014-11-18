@@ -3,6 +3,8 @@ extends layout
 block content
 	div#sign
 		form(rol="from",method="post")
+			if error
+				p= error
 			div.form-group
 				label(for="exampleInputEmail1") nickName
 				input(type="text", class="form-control", id="exampleInputEmail1", placeholder="nickName", name="nickName")

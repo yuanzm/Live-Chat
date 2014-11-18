@@ -15,10 +15,11 @@ User.prototype.save = (callback)->
 		if err
 			callback err
 		db.collection 'users', (err, collection)->
+			# console.log 
 			if err
 				mongodb.close()
 				callback err
-			collection.createIndex 'name', {unique: true}
+			# collection.ensureIndex({'name': 1}, {unique: true})
 			collection.insert user, {safe: true}, (err, user) ->
 				mongodb.close()
 				callback(err, user)
@@ -34,7 +35,7 @@ User.get = (username, callback)->
 			collection.findOne {name: username}, (err, doc)->
 				mongodb.close()
 				if doc
-					iser = new User(doc)
-					callback err
+					user = new User(doc)
+					callback err, user
 				else
 					callback err, null
