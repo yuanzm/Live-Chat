@@ -1,0 +1,13 @@
+extends layout
+
+block content
+	div#sign
+		form(rol="from")
+			div.form-group
+				label(for="exampleInputEmail1") nickName
+				input(type="text", class="form-control", id="exampleInputEmail1", placeholder="nickName")
+			div.form-group
+				label(for="exampleInputPassword1") passWord
+				input(type="password", class="form-control", id="exampleInputPassword1", placeholder="passWord")
+				button(type="submit", class="btn btn-primary") Login
+				button(type="submit", class="btn btn-success") Regist

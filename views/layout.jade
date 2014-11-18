@@ -1,7 +1,19 @@
 doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+	head
+		title= title
+		link(rel="stylesheet", href="./lib/bootstrap.min.css")
+		link(rel="stylesheet", href="./bin/css/main.css")
+		meta(charset="utf-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1, user-scalable=no")
+		script(src="./lib/jquery-2.1.1.min.js")
+		script(src="./lib/bootstrap.min.js")
+
+	body
+		div#wrapper
+			include ./header.jade
+			div#main
+				block content
+			include ./footer.jade
+		script(src="//localhost:35729/livereload.js")
+		script(src="./bin/js/main.js")

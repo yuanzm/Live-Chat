@@ -1,0 +1,34 @@
+$name-height: 80px;
+$chat-height: 500px;
+.panel-body {
+	height: $chat-height;
+}
+.panel-footer {
+	padding: 0;
+	border: none;
+}
+.chat-body {
+	width: 70%;
+	float: left;
+	border: solid 1px #444;
+	height: 100%;
+
+	.input-group {
+		width: 100%;
+	}
+}
+
+.chat-list {
+	width: 30%;
+	float: left;
+	height: 100%;
+	border: solid 1px #444;
+	.user-name {
+		height: $name-height;
+		margin-bottom: 10px;
+		border: solid 1px #999; 
+	}
+	.user-list {
+		height: $chat-height - $name-height;
+	}
+}

@@ -1,0 +1,22 @@
+extends layout
+
+block content
+	div(class="panel panel-success")
+		div(class="panel-heading")
+			h2(class="panel-title") Live-Chat
+			
+		div(class="panel-body")
+			div.chat-body chat-body
+			div.chat-list
+				div.user-name user-name
+				div.user-list user-list
+				
+		div(class="panel-footer")
+			div(class="input-group")
+				span(class="input-group-btn")
+					button(class="btn btn-default", type="button") Emoji
+				input(class="form-control", type="text",placeholder="请输入聊天内容") 
+				span(class="input-group-btn")
+					button(class="btn btn-default", type="button") Send
+
+		
