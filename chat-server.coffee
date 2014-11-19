@@ -2,8 +2,9 @@ app = require './app.coffee'
 server = require('http').createServer(app)
 io = require('socket.io')(server)
 
-cookieParser = require('cookie-parser')()
-session    = require('express-session')({secret: 'Live-Chat'})
+# cookieParser = require('cookie-parser')()
+# session    = require('express-session')({secret: 'Live-Chat'})
+sessionConfig = require './session-config.coffee'
 
 userNames = {}
 userNumbers = 0
@@ -11,10 +12,10 @@ userNumbers = 0
 io.use (socket, next)->
 	req = socket.handshake
 	res = {}
-	cookieParser(req, res, (err)->
+	sessionConfig.cookieParser(req, res, (err)->
 		if err
 			return next(err)
-		session(req, res, next)
+		sessionConfig.sessionStore(req, res, next)
 	)
 
 

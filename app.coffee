@@ -2,14 +2,10 @@ express = require 'express'
 path = require 'path'
 favicon = require 'static-favicon'
 logger = require 'morgan'
-cookieParser = require 'cookie-parser'
 bodyParser = require 'body-parser'
-session    = require('express-session')
-MongoStore = require('connect-mongo')(session)
-config = require './config'
 flash = require 'connect-flash'
+sessionConfig = require './session-config.coffee'
 
-# db = require './db/db.coffee'
 routes = require './routes/index'
 
 app = express()
@@ -22,16 +18,9 @@ app.use favicon()
 app.use logger('dev')
 app.use bodyParser.json()
 app.use bodyParser.urlencoded()
-app.use cookieParser()
+app.use sessionConfig.cookieParser
 app.use express.static(path.join(__dirname, 'public'))
-app.use session({
-	secret: config.cookieSecret
-	store: new MongoStore({
-		db: config.db
-	})
-	resave: true
-	saveUninitialized: true
-})
+app.use sessionConfig.sessionStore
 
 app.use (req, res, next)->
 	console.log "A new requset"
@@ -66,6 +55,5 @@ app.use (err, req,res, next)->
 		message: err.message
 		error: {}
 	}
-
 
 module.exports = app
