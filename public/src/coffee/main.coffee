@@ -1,4 +1,5 @@
-anotherModule = require "./another-module.coffee"
+chat = require "./chat.coffee"
+chatCLient = require "./chat-client.coffee"
 
 socket = io()
 
@@ -17,4 +18,6 @@ socket.on 'user left', (data)->
 
 socket.on 'login', (data)->
 	userList.empty().append('<span>' + data.userNumbers + '</span>')
+	
+	
 	
