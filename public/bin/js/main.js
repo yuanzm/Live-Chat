@@ -13,17 +13,27 @@ module.exports = {
 
 
 },{}],2:[function(require,module,exports){
-var anotherModule, socket;
+var anotherModule, name, socket, userList;
 
 anotherModule = require("./another-module.coffee");
 
 socket = io();
 
-socket.emit("join", "yuanzm");
+name = $("#my-name").text();
+
+socket.emit("join");
+
+userList = $('.user-list');
 
 socket.on('new user', function(data) {
-  var userList;
-  userList = $('.user-list');
+  return userList.empty().append('<span>' + data.userNumbers + '</span>');
+});
+
+socket.on('user left', function(data) {
+  return userList.empty().append('<span>' + data.userNumbers + '</span>');
+});
+
+socket.on('login', function(data) {
   return userList.empty().append('<span>' + data.userNumbers + '</span>');
 });
 

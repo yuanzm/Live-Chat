@@ -2,9 +2,19 @@ anotherModule = require "./another-module.coffee"
 
 socket = io()
 
-socket.emit "join","yuanzm"
+
+name = $("#my-name").text()
+socket.emit "join"
+
+userList = $('.user-list')
 
 # socket.emit "new message","yuanzm"
 socket.on 'new user', (data)->
-	userList = $('.user-list')
 	userList.empty().append('<span>' + data.userNumbers + '</span>')
+
+socket.on 'user left', (data)->
+	userList.empty().append('<span>' + data.userNumbers + '</span>')
+
+socket.on 'login', (data)->
+	userList.empty().append('<span>' + data.userNumbers + '</span>')
+	
