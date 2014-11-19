@@ -1,11 +1,17 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $name, Socket, chat, socket, userList;
+var $chatInput, $chatList, $name, $userList, $window, Socket, chat, socket;
 
 chat = require('./chat.coffee');
 
+$window = $(window);
+
 $name = $("#my-name").text();
 
-userList = $('.user-list');
+$userList = $('.user-list');
+
+$chatList = $('#chat-list');
+
+$chatInput = $('#chat-input');
 
 socket = io();
 
@@ -20,9 +26,37 @@ Socket = (function() {
     socket.on('user left', function(data) {
       return console.log(data);
     });
-    return socket.on('login', function(data) {
+    socket.on('login', function(data) {
       return console.log(data);
     });
+    socket.on('message', function(data) {
+      return $chatList.append('<li>' + data.message + '</li>');
+    });
+    return this.bindEvent();
+  };
+
+  Socket.prototype.bindEvent = function() {
+    var _this;
+    _this = this;
+    return $window.keydown(function(event) {
+      var data;
+      if (!(event.ctrlKey || event.metaKey || event.altKey)) {
+        $chatInput.focus();
+      }
+      if (event.which === 13) {
+        data = {
+          time: chat.getTime(),
+          name: $name,
+          message: $chatInput.val()
+        };
+        $chatInput.val('');
+        return _this.sendMessage(data);
+      }
+    });
+  };
+
+  Socket.prototype.sendMessage = function(data) {
+    return socket.emit('new message', data);
   };
 
   return Socket;
@@ -34,7 +68,7 @@ module.exports = Socket;
 
 
 },{"./chat.coffee":2}],2:[function(require,module,exports){
-var Chat;
+var chat;
 
 Date.prototype.Format = function(fmt) {
   var flag, k, o;
@@ -58,25 +92,19 @@ Date.prototype.Format = function(fmt) {
   return fmt;
 };
 
-Chat = (function() {
-  function Chat() {}
-
-  Chat.prototype.showMessage = function(node, data) {
+chat = {
+  showMessage: function(node, data) {
     var $chatList;
     $chatList = $('<li class="a-chat">test</li>');
     return node.append($chatList);
-  };
-
-  Chat.prototype.getTime = function() {
+  },
+  getTime: function() {
     var time;
     return time = new Date().Format("yyyy-MM-dd hh:mm:ss");
-  };
+  }
+};
 
-  return Chat;
-
-})();
-
-module.exports = Chat;
+module.exports = chat;
 
 
 

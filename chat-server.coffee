@@ -44,6 +44,11 @@ io.on 'connection', (socket)->
 				userNames: userNames
 				userNumbers: userNumbers
 			}
+
+		socket.on 'new message', (data)->
+			console.log data
+			socket.broadcast.emit 'message', data
+
 	#如果用户没有登录，断开socket连接
 	else
 		socket.disconnect()
