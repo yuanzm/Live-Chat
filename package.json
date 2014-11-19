@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "body-parser": "~1.0.0",
+    "connect": "^3.3.3",
     "connect-flash": "^0.1.1",
     "connect-mongo": "*",
     "cookie-parser": "~1.0.1",
@@ -15,6 +16,7 @@
     "express-session": "^1.9.1",
     "jade": "~1.3.0",
     "morgan": "~1.0.0",
+    "session.socket.io": "^0.1.6",
     "socket.io": "^1.2.0",
     "static-favicon": "~1.0.0"
   },
