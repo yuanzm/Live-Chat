@@ -10,7 +10,7 @@ html, body {
   min-height: 100%;
   height: auto !important;
   height: 100%;
-  /*IE6涓嶈瘑鍒玬in-height*/
+  /*IE6不识别min-height*/
   position: relative; }
 
 #main {

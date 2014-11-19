@@ -34,8 +34,6 @@ io.on 'connection', (socket)->
 			else
 				userNames[socket.name] = socket.name
 				++userNumbers
-
-			console.log userNames
 			#向所有socket客户端广播这条此用户的登录信息
 			socket.broadcast.emit 'new user',{
 				userNames: userNames
