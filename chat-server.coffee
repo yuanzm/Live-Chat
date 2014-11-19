@@ -2,12 +2,7 @@ app = require './app.coffee'
 server = require('http').createServer(app)
 io = require('socket.io')(server)
 
-# cookieParser = require('cookie-parser')()
-# session    = require('express-session')({secret: 'Live-Chat'})
 sessionConfig = require './session-config.coffee'
-
-userNames = {}
-userNumbers = 0
 
 io.use (socket, next)->
 	req = socket.handshake
@@ -18,12 +13,21 @@ io.use (socket, next)->
 		sessionConfig.sessionStore(req, res, next)
 	)
 
+userNames = {}
+userNumbers = 0
 
 io.on 'connection', (socket)->
-	console.log 234234
+	user = socket.handshake.session.user
+	if user
+		socket.on 'join', (data)->
+			socket.broadcast.emit 'new user',{
+				userNames: userNames
+				userNumbers: userNumbers
+			}
+	else
+		socket.disconnect()
 	socket.on 'new message', (data)->
 		console.log data
 
 module.exports = (server)->
 	io.listen(server)
-

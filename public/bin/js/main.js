@@ -19,7 +19,13 @@ anotherModule = require("./another-module.coffee");
 
 socket = io();
 
-socket.emit("new message", "yuanzm");
+socket.emit("join", "yuanzm");
+
+socket.on('new user', function(data) {
+  var userList;
+  userList = $('.user-list');
+  return userList.empty().append('<span>' + data.userNumbers + '</span>');
+});
 
 
 

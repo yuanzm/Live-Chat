@@ -14,4 +14,3 @@ sessionInstance =
 sessionStore = session(sessionInstance)
 
 module.exports = {cookieParser, sessionInstance, sessionStore}
-
