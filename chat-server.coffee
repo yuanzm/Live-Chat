@@ -40,7 +40,7 @@ io.on 'connection', (socket)->
 				userNumbers: userNumbers
 			}
 
-			socket.emit 'login', {
+			socket.emit 'success login', {
 				userNames: userNames
 				userNumbers: userNumbers
 			}

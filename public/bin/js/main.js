@@ -21,22 +21,16 @@ Socket = (function() {
   Socket.prototype.init = function() {
     var _this;
     _this = this;
-    socket.emit("join");
-    socket.on('user left', function(data) {
-      return console.log(data);
-    });
-    socket.on('login', function(data) {
-      return console.log(data);
-    });
-    socket.on('message', function(data) {
-      return _this.showMessage(data);
-    });
-    _this.bindEvent();
+    _this.loginMessage();
+    _this.keyDownEvent();
     _this.successSendMessage();
-    return _this.detectNewUser();
+    _this.detectNewUser();
+    _this.successionLoginMessage();
+    _this.detectUserLeft();
+    return _this.detectMessage();
   };
 
-  Socket.prototype.bindEvent = function() {
+  Socket.prototype.keyDownEvent = function() {
     var _this;
     _this = this;
     return $window.keydown(function(event) {
@@ -56,6 +50,20 @@ Socket = (function() {
     });
   };
 
+  Socket.prototype.loginMessage = function() {
+    return socket.emit('join');
+  };
+
+  Socket.prototype.successionLoginMessage = function() {
+    var _this;
+    _this = this;
+    return socket.on('success login', function(data) {
+      var userNames;
+      userNames = data.userNames;
+      return _this.freshUser(userNames);
+    });
+  };
+
   Socket.prototype.sendMessage = function(data) {
     return socket.emit('new message', data);
   };
@@ -68,19 +76,43 @@ Socket = (function() {
     });
   };
 
+  Socket.prototype.detectMessage = function() {
+    var _this;
+    _this = this;
+    return socket.on('message', function(data) {
+      return _this.showMessage(data);
+    });
+  };
+
   Socket.prototype.detectNewUser = function() {
     var _this;
     _this = this;
     return socket.on('new user', function(data) {
-      var name, userNames, _results;
+      var userNames;
       userNames = data.userNames;
-      $liveUser.empty();
-      _results = [];
-      for (name in userNames) {
-        _results.push(_this.showNewUser(name));
-      }
-      return _results;
+      return _this.freshUser(userNames);
     });
+  };
+
+  Socket.prototype.detectUserLeft = function() {
+    var _this;
+    _this = this;
+    return socket.on('user left', function(data) {
+      var userNames;
+      userNames = data.userNames;
+      return _this.freshUser(userNames);
+    });
+  };
+
+  Socket.prototype.freshUser = function(userNames) {
+    var name, _results, _this;
+    _this = this;
+    $liveUser.empty();
+    _results = [];
+    for (name in userNames) {
+      _results.push(_this.showNewUser(name));
+    }
+    return _results;
   };
 
   Socket.prototype.showNewUser = function(userName) {

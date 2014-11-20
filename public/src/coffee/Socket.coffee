@@ -12,21 +12,16 @@ class Socket
 	constructor: ->
 	init: ->
 		_this = @
-		socket.emit "join"
-		
-		socket.on 'user left', (data)->
-			console.log data
-		socket.on 'login', (data)->
-			console.log data
 
-		socket.on 'message', (data)->
-			_this.showMessage data
-
-		_this.bindEvent()
+		_this.loginMessage()
+		_this.keyDownEvent()
 		_this.successSendMessage()
 		_this.detectNewUser()
+		_this.successionLoginMessage()
+		_this.detectUserLeft()
+		_this.detectMessage()
 
-	bindEvent: ->
+	keyDownEvent: ->
 		_this = @
 		$window.keydown (event)->
 			if not (event.ctrlKey or event.metaKey or event.altKey)
@@ -40,6 +35,14 @@ class Socket
 				$chatInput.val('')
 				_this.sendMessage(data)
 
+	loginMessage: ->
+		socket.emit 'join'
+
+	successionLoginMessage: ->
+		_this = @
+		socket.on 'success login', (data)->
+			userNames = data.userNames
+			_this.freshUser userNames
 	sendMessage: (data)->
 		socket.emit('new message', data)
 
@@ -48,13 +51,28 @@ class Socket
 		socket.on 'send message',(data)->
 			_this.showMessage data
 
+	detectMessage: ->
+		_this = @
+		socket.on 'message', (data)->
+			_this.showMessage data
+
 	detectNewUser: ->
 		_this = @
 		socket.on 'new user', (data)->
 			userNames = data.userNames
-			$liveUser.empty()
-			for name of userNames
-				_this.showNewUser name
+			_this.freshUser userNames
+
+	detectUserLeft: ->
+		_this = @
+		socket.on 'user left', (data)->
+			userNames = data.userNames
+			_this.freshUser userNames
+
+	freshUser: (userNames)->
+		_this = @
+		$liveUser.empty()
+		for name of userNames
+			_this.showNewUser name
 
 	showNewUser: (userName)->
 		aUser = '<li>'
