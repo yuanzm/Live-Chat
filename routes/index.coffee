@@ -54,7 +54,7 @@ router.post '/login', (req, res)->
 		if not user
 			req.flash 'error', '用户不存在'
 			return res.redirect '/login'
-		if user.password is not password
+		if user.password != password
 			req.flash 'error', '用户密码错误'			
 			return res.redirect '/login'
 		req.session.user = user
