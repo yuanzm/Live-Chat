@@ -7,10 +7,17 @@ Chat = require '../models/chat.coffee'
 
  # GET home page.
 router.get '/', (req, res)->
-	res.render 'chat', {
-		title: "Live-Chat"
-		user: req.session.user
-	}
+	allChats = null
+	if req.session.user
+		allChats = Chat.getChat null, (err, chats)->
+			console.log chats
+			if err
+				chats = []
+			res.render 'chat', {
+				title: "Live-Chat"
+				user: req.session.user
+				chats: chats
+			}
 
 router.get '/regist', (req, res)->
 	res.render 'regist',{
