@@ -17,6 +17,11 @@ router.get '/', (req, res)->
 				user: req.session.user
 				chats: chats
 			}
+	else
+		res.render 'chat', {
+			title: "Live-Chat"
+		}
+
 
 router.get '/regist', (req, res)->
 	res.render 'regist',{
@@ -76,7 +81,9 @@ router.get '/logout', (req, res)->
 
 
 router.post '/addChat', (req, res)->
+	console.log 213123
 	newChat = new Chat(req.body)
 	newChat.saveChat()
+	res.send('ok')
 
 module.exports = router;

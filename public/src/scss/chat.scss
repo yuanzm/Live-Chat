@@ -12,6 +12,7 @@ $chat-height: 500px;
 	float: left;
 	border: solid 1px #444;
 	height: 100%;
+	overflow: auto;
 
 	.input-group {
 		width: 100%;

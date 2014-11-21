@@ -1,149 +1,144 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var $chatInput, $chatList, $liveUser, $name, $window, Socket, chat, socket;
 
-chat = require('./chat.coffee');
+if (location.pathname === "/") {
+  chat = require('./chat.coffee');
+  $window = $(window);
+  $name = $("#my-name").text();
+  $liveUser = $('#live-user');
+  $chatList = $('#chat-list');
+  $chatInput = $('#chat-input');
+  socket = io();
+  Socket = (function() {
+    function Socket() {}
 
-$window = $(window);
+    Socket.prototype.init = function() {
+      var _this;
+      _this = this;
+      _this.loginMessage();
+      _this.keyDownEvent();
+      _this.successSendMessage();
+      _this.detectNewUser();
+      _this.successionLoginMessage();
+      _this.detectUserLeft();
+      return _this.detectMessage();
+    };
 
-$name = $("#my-name").text();
+    Socket.prototype.keyDownEvent = function() {
+      var _this;
+      _this = this;
+      return $window.keydown(function(event) {
+        var data;
+        if (!(event.ctrlKey || event.metaKey || event.altKey)) {
+          $chatInput.focus();
+        }
+        if (event.which === 13) {
+          data = {
+            time: chat.getTime(),
+            name: $name,
+            message: $chatInput.val()
+          };
+          $chatInput.val('');
+          _this.sendMessage(data);
+          return $.ajax({
+            type: "POST",
+            url: '/addChat',
+            data: data,
+            success: function(data) {}
+          });
+        }
+      });
+    };
 
-$liveUser = $('#live-user');
+    Socket.prototype.loginMessage = function() {
+      return socket.emit('join');
+    };
 
-$chatList = $('#chat-list');
+    Socket.prototype.successionLoginMessage = function() {
+      var _this;
+      _this = this;
+      return socket.on('success login', function(data) {
+        var userNames;
+        userNames = data.userNames;
+        return _this.freshUser(userNames);
+      });
+    };
 
-$chatInput = $('#chat-input');
+    Socket.prototype.sendMessage = function(data) {
+      return socket.emit('new message', data);
+    };
 
-socket = io();
+    Socket.prototype.successSendMessage = function(data) {
+      var _this;
+      _this = this;
+      return socket.on('send message', function(data) {
+        return _this.showMessage(data);
+      });
+    };
 
-Socket = (function() {
-  function Socket() {}
+    Socket.prototype.detectMessage = function() {
+      var _this;
+      _this = this;
+      return socket.on('message', function(data) {
+        return _this.showMessage(data);
+      });
+    };
 
-  Socket.prototype.init = function() {
-    var _this;
-    _this = this;
-    _this.loginMessage();
-    _this.keyDownEvent();
-    _this.successSendMessage();
-    _this.detectNewUser();
-    _this.successionLoginMessage();
-    _this.detectUserLeft();
-    return _this.detectMessage();
-  };
+    Socket.prototype.detectNewUser = function() {
+      var _this;
+      _this = this;
+      return socket.on('new user', function(data) {
+        var userNames;
+        userNames = data.userNames;
+        return _this.freshUser(userNames);
+      });
+    };
 
-  Socket.prototype.keyDownEvent = function() {
-    var _this;
-    _this = this;
-    return $window.keydown(function(event) {
-      var data;
-      if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-        $chatInput.focus();
+    Socket.prototype.detectUserLeft = function() {
+      var _this;
+      _this = this;
+      return socket.on('user left', function(data) {
+        var userNames;
+        userNames = data.userNames;
+        return _this.freshUser(userNames);
+      });
+    };
+
+    Socket.prototype.freshUser = function(userNames) {
+      var name, _results, _this;
+      _this = this;
+      $liveUser.empty();
+      _results = [];
+      for (name in userNames) {
+        _results.push(_this.showNewUser(name));
       }
-      if (event.which === 13) {
-        data = {
-          time: chat.getTime(),
-          name: $name,
-          message: $chatInput.val()
-        };
-        $chatInput.val('');
-        _this.sendMessage(data);
-        return $.ajax({
-          type: "POST",
-          url: '/addChat',
-          data: data
-        });
-      }
-    });
-  };
+      return _results;
+    };
 
-  Socket.prototype.loginMessage = function() {
-    return socket.emit('join');
-  };
+    Socket.prototype.showNewUser = function(userName) {
+      var aUser;
+      aUser = '<li>';
+      aUser += '<span>' + userName + '</li>';
+      aUser += '</li>';
+      return $liveUser.append($(aUser));
+    };
 
-  Socket.prototype.successionLoginMessage = function() {
-    var _this;
-    _this = this;
-    return socket.on('success login', function(data) {
-      var userNames;
-      userNames = data.userNames;
-      return _this.freshUser(userNames);
-    });
-  };
+    Socket.prototype.showMessage = function(data) {
+      var aChat;
+      aChat = '<li>';
+      aChat += '<span>' + data.name + '</span>';
+      aChat += '<span>' + data.time + '</span>';
+      aChat += '<br />';
+      aChat += '<span>' + data.message + '</span>';
+      aChat += '</li>';
+      return $chatList.append($(aChat));
+    };
 
-  Socket.prototype.sendMessage = function(data) {
-    return socket.emit('new message', data);
-  };
+    return Socket;
 
-  Socket.prototype.successSendMessage = function(data) {
-    var _this;
-    _this = this;
-    return socket.on('send message', function(data) {
-      return _this.showMessage(data);
-    });
-  };
-
-  Socket.prototype.detectMessage = function() {
-    var _this;
-    _this = this;
-    return socket.on('message', function(data) {
-      return _this.showMessage(data);
-    });
-  };
-
-  Socket.prototype.detectNewUser = function() {
-    var _this;
-    _this = this;
-    return socket.on('new user', function(data) {
-      var userNames;
-      userNames = data.userNames;
-      return _this.freshUser(userNames);
-    });
-  };
-
-  Socket.prototype.detectUserLeft = function() {
-    var _this;
-    _this = this;
-    return socket.on('user left', function(data) {
-      var userNames;
-      userNames = data.userNames;
-      return _this.freshUser(userNames);
-    });
-  };
-
-  Socket.prototype.freshUser = function(userNames) {
-    var name, _results, _this;
-    _this = this;
-    $liveUser.empty();
-    _results = [];
-    for (name in userNames) {
-      _results.push(_this.showNewUser(name));
-    }
-    return _results;
-  };
-
-  Socket.prototype.showNewUser = function(userName) {
-    var aUser;
-    aUser = '<li>';
-    aUser += '<span>' + userName + '</li>';
-    aUser += '</li>';
-    return $liveUser.append($(aUser));
-  };
-
-  Socket.prototype.showMessage = function(data) {
-    var aChat;
-    aChat = '<li>';
-    aChat += '<span>' + data.name + '</span>';
-    aChat += '<span>' + data.time + '</span>';
-    aChat += '<br />';
-    aChat += '<span>' + data.message + '</span>';
-    aChat += '</li>';
-    return $chatList.append($(aChat));
-  };
-
-  return Socket;
-
-})();
-
-module.exports = Socket;
+  })();
+  module.exports = Socket;
+}
 
 
 
