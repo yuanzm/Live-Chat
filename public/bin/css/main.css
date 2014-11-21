@@ -13,7 +13,7 @@ html, body {
   min-height: 100%;
   height: auto !important;
   height: 100%;
-  /*IE6涓嶈瘑鍒玬in-height*/
+  /*IE6不识别min-height*/
   position: relative; }
 
 #main {
@@ -37,40 +37,42 @@ footer {
   footer p {
     line-height: 50px; }
 
-.panel-body {
-  height: 500px; }
-
-.panel-footer {
-  padding: 0;
-  border: none; }
-
-.chat-body {
+#chat-left {
   width: 70%;
   float: left;
-  border: solid 1px #444;
-  height: 100%;
-  overflow: auto; }
-  .chat-body .input-group {
+  height: 400px; }
+  #chat-left .panel {
+    height: 100%; }
+  #chat-left .panel-body {
+    height: 325px;
+    overflow: auto; }
+  #chat-left #chat-panel {
+    overflow: auto; }
+  #chat-left .panel-footer {
+    padding: 0; }
+  #chat-left .input-group {
     width: 100%; }
+  #chat-left .chat-list {
+    width: 100%;
+    float: left;
+    height: 100%; }
+    #chat-left .chat-list .user-name {
+      height: 80px;
+      margin-bottom: 10px; }
+    #chat-left .chat-list .user-list {
+      height: 320px; }
 
-.chat-list {
-  width: 30%;
+#chat-right {
+  width: 28%;
   float: left;
-  height: 100%;
-  border: solid 1px #444; }
-  .chat-list .user-name {
-    height: 80px;
-    margin-bottom: 10px;
-    border: solid 1px #999; }
-  .chat-list .user-list {
-    height: 420px; }
+  margin-left: 2%; }
+  #chat-right .user-list {
+    margin-top: 20px; }
 
 #sign {
-  width: 400px;
+  width: 500px;
   height: 400px;
   margin: 0 auto;
-  margin-top: 100px;
-  border: solid 1px #345eb8;
   border-radius: 5px;
   padding: 50px; }
   #sign button {

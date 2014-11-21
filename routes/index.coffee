@@ -81,7 +81,6 @@ router.get '/logout', (req, res)->
 
 
 router.post '/addChat', (req, res)->
-	console.log 213123
 	newChat = new Chat(req.body)
 	newChat.saveChat()
 	res.send('ok')

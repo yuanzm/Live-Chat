@@ -3,7 +3,7 @@ if location.pathname == "/"
 
 	# Initialize varibles
 	$window = $(window)
-	$name = $("#my-name").text()
+	$name = $("#my-name")
 	$liveUser = $('#live-user')
 	$chatList = $('#chat-list')
 	$chatInput = $('#chat-input')
@@ -31,17 +31,15 @@ if location.pathname == "/"
 				if event.which is 13
 					data =
 						time: chat.getTime()
-						name: $name
+						userName: $name.text()
 						message: $chatInput.val()
 					$chatInput.val('')
 					_this.sendMessage(data)
-
 					$.ajax({
 						type: "POST"
 						url: '/addChat'
 						data: data
-						success: (data)->
-							
+						success: (data)->				
 					})
 		loginMessage: ->
 			socket.emit 'join'
@@ -91,7 +89,7 @@ if location.pathname == "/"
 
 		showMessage: (data) ->
 			aChat = '<li>'
-			aChat += '<span>' + data.name + '</span>'
+			aChat += '<span>' + data.userName + '</span>'
 			aChat += '<span>' + data.time + '</span>'
 			aChat += '<br />'
 			aChat += '<span>' + data.message + '</span>'

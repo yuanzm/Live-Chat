@@ -1,35 +1,48 @@
 $name-height: 80px;
-$chat-height: 500px;
-.panel-body {
-	height: $chat-height;
-}
-.panel-footer {
-	padding: 0;
-	border: none;
-}
-.chat-body {
+$chat-height: 400px;
+
+
+// chat-left style
+#chat-left {
 	width: 70%;
 	float: left;
-	border: solid 1px #444;
-	height: 100%;
-	overflow: auto;
-
+	height: $chat-height;
+	.panel {
+		height: 100%;
+	}
+	.panel-body {
+		height: 325px;
+		overflow: auto;
+	}
+	#chat-panel {
+		overflow: auto;
+	}
+	.panel-footer {
+		padding: 0;
+	}
 	.input-group {
 		width: 100%;
 	}
+	.chat-list {
+		width: 100%;
+		float: left;
+		height: 100%;
+		.user-name {
+			height: $name-height;
+			margin-bottom: 10px;
+		}
+		.user-list {
+			height: $chat-height - $name-height;
+		}
+	}
 }
 
-.chat-list {
-	width: 30%;
+//chat-right style
+#chat-right {
+	width: 28%;
 	float: left;
-	height: 100%;
-	border: solid 1px #444;
-	.user-name {
-		height: $name-height;
-		margin-bottom: 10px;
-		border: solid 1px #999; 
-	}
+	margin-left: 2%;
 	.user-list {
-		height: $chat-height - $name-height;
+		margin-top: 20px;
 	}
 }

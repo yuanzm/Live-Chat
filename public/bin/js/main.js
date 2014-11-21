@@ -4,7 +4,7 @@ var $chatInput, $chatList, $liveUser, $name, $window, Socket, chat, socket;
 if (location.pathname === "/") {
   chat = require('./chat.coffee');
   $window = $(window);
-  $name = $("#my-name").text();
+  $name = $("#my-name");
   $liveUser = $('#live-user');
   $chatList = $('#chat-list');
   $chatInput = $('#chat-input');
@@ -35,7 +35,7 @@ if (location.pathname === "/") {
         if (event.which === 13) {
           data = {
             time: chat.getTime(),
-            name: $name,
+            userName: $name.text(),
             message: $chatInput.val()
           };
           $chatInput.val('');
@@ -126,7 +126,7 @@ if (location.pathname === "/") {
     Socket.prototype.showMessage = function(data) {
       var aChat;
       aChat = '<li>';
-      aChat += '<span>' + data.name + '</span>';
+      aChat += '<span>' + data.userName + '</span>';
       aChat += '<span>' + data.time + '</span>';
       aChat += '<br />';
       aChat += '<span>' + data.message + '</span>';
