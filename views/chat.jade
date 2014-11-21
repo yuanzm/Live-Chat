@@ -8,7 +8,9 @@ block content
 		div(class="panel-body")
 			div.chat-body
 				if chats
-					span= chats
+					for chat in chats
+						span= chat.message
+						br
 				ul(id="chat-list")
 			div.chat-list
 				div.user-name

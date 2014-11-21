@@ -28,14 +28,13 @@ Chat.getChat = (userName, callback)->
 		if err
 			callback err
 		db.collection 'groupChat', (err, collection)->
-			# console.log collection.count()
 			if err
 				mongodb.close()
 				callback err
 			query = {}
 			if userName
 				query.userName = userName
-			collection.find(query).sort({time: -1}).toArray (err, docs)->
+			collection.find(query).sort({time: 1}).toArray (err, docs)->
 				mongodb.close()
 				if err
 					callback err
@@ -44,5 +43,6 @@ Chat.getChat = (userName, callback)->
 					chat = new Chat(doc)
 					chats.push chat
 				callback null, chats
+
 module.exports = Chat
 	

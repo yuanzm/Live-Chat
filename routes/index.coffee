@@ -10,7 +10,6 @@ router.get '/', (req, res)->
 	allChats = null
 	if req.session.user
 		allChats = Chat.getChat null, (err, chats)->
-			console.log chats
 			if err
 				chats = []
 			res.render 'chat', {
