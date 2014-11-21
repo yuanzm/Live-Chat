@@ -1,7 +1,10 @@
 mongodb = require './db.coffee'
 
 class Chat
-	constructor: (@userName, @time, @message)->
+	constructor: (chat)->
+		@message = chat.message
+		@time = chat.time
+		@userName = chat.userName
 
 	saveChat: (callback)->
 		chat =
@@ -17,6 +20,11 @@ class Chat
 					mongodb.close()
 					callback err
 
-				collection.insert chat, {save: true}, (err, user) ->
+				collection.insert chat, {save: true}, (err, chat) ->
 					mongodb.close()
-					callback err
+					if err
+						callback err
+					else
+						callback null chat
+
+	
