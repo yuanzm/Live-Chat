@@ -45,7 +45,12 @@ Socket = (function() {
           message: $chatInput.val()
         };
         $chatInput.val('');
-        return _this.sendMessage(data);
+        _this.sendMessage(data);
+        return $.ajax({
+          type: "POST",
+          url: '/addChat',
+          data: data
+        });
       }
     });
   };

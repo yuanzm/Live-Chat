@@ -3,6 +3,7 @@ router = express.Router()
 
 crypto = require 'crypto'
 User = require '../models/user.coffee'
+Chat = require '../models/chat.coffee'
 
  # GET home page.
 router.get '/', (req, res)->
@@ -66,5 +67,10 @@ router.get '/logout', (req, res)->
 	req.session.user = null
 	req.flash('success', '登出成功')
 	res.redirect '/'
+
+
+router.post '/addChat', (req, res)->
+	newChat = new Chat(req.body)
+	newChat.saveChat()
 
 module.exports = router;

@@ -22,9 +22,6 @@ class Chat
 
 				collection.insert chat, {save: true}, (err, chat) ->
 					mongodb.close()
-					if err
-						callback err
-					else
-						callback null chat
 
+module.exports = Chat
 	

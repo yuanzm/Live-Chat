@@ -35,6 +35,11 @@ class Socket
 				$chatInput.val('')
 				_this.sendMessage(data)
 
+				$.ajax({
+					type: "POST"
+					url: '/addChat'
+					data: data
+				})
 	loginMessage: ->
 		socket.emit 'join'
 
