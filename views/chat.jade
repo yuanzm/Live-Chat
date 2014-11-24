@@ -1,11 +1,17 @@
 extends layout
 
 block content
-	div#chat-left
+	div(id="chat-left")
+		div(id="chating-user")
+			ul
+				li
+					span yuan
+					div.close-chating
+						span(class="glyphicon glyphicon-remove-circle")
+						
 		div(class="panel panel-primary")
 			div(class="panel-heading")
 				h2(class="panel-title", id="chat-person") Live-Chat
-				
 			div(class="panel-body")
 				div(class="chat-body", id="chat-panel")
 					if chats
@@ -16,8 +22,6 @@ block content
 									span(class="time")=chat.time
 									br
 									span(class="message")=chat.message
-
-
 
 			div(class="panel-footer")
 				div(class="input-group")

@@ -5,8 +5,14 @@ $chat-height: 400px;
 // chat-left style
 #chat-left {
 	width: 70%;
-	float: left;
-	height: $chat-height;
+	#chating-user {
+		display: none;
+	}
+	.panel {
+		width: 100%;
+		float: left;
+		height: $chat-height;
+	}
 	.panel {
 		height: 100%;
 	}
@@ -35,6 +41,39 @@ $chat-height: 400px;
 			height: $chat-height - $name-height;
 		}
 	}
+}
+
+#chat-left.is-chating {
+	#chating-user {
+		width: 7%;
+		float: left;
+		display: block;
+		height: $chat-height;
+		border: solid 1px gray;
+		ul li {
+			cursor: pointer;
+			height: 30px;
+			border: solid 1px gray;
+			position: relative;
+			.close-chating {
+				display: none;
+				width: 15px;
+				height: 15px;
+				position: absolute;
+				right: -5px;
+				top: -5px;
+			}
+		}
+		ul li:hover {
+			.close-chating {
+				display: block;				
+			}
+		}
+	}
+	.panel {
+		width: 93%;
+	}
+
 }
 
 //chat-right style

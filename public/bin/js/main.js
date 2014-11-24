@@ -1,5 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatInput, $chatList, $chatPerson, $liveUser, $name, $window, Socket, chat, socket;
+var $chatInput, $chatList, $chatPerson, $liveUser, $name, $window, Socket, changeuser, chat, socket;
+
+changeuser = require('./changeuser.coffee');
 
 if (location.pathname === "/") {
   chat = require('./chat.coffee');
@@ -24,7 +26,8 @@ if (location.pathname === "/") {
       _this.detectUserLeft();
       _this.detectMessage();
       _this.detectPrivateMessage();
-      return _this.changeChatPerson();
+      changeuser.clickPerson();
+      return changeuser.clickToDeletePerson();
     };
 
     Socket.prototype.keyDownEvent = function() {
@@ -152,14 +155,6 @@ if (location.pathname === "/") {
       return $chatList.append($(aChat));
     };
 
-    Socket.prototype.changeChatPerson = function() {
-      return $liveUser.delegate('span', 'click', function() {
-        var name;
-        name = this.innerHTML;
-        return $chatPerson.text(name);
-      });
-    };
-
     return Socket;
 
   })();
@@ -168,7 +163,89 @@ if (location.pathname === "/") {
 
 
 
-},{"./chat.coffee":2}],2:[function(require,module,exports){
+},{"./changeuser.coffee":2,"./chat.coffee":3}],2:[function(require,module,exports){
+var $chatLeft, $chatPerson, $chatingUser, $liveUser, $myName, $window, Changeuser, chatingUsers;
+
+if (location.pathname === "/") {
+  $window = $(window);
+  $liveUser = $('#live-user');
+  $chatPerson = $('#chat-person');
+  $chatLeft = $('#chat-left');
+  $chatingUser = $('#chating-user');
+  $myName = $('#my-name').text();
+  chatingUsers = 0;
+  Changeuser = {
+    getSelfName: function() {
+      var selfName;
+      return selfName = $myName;
+    },
+    clickPerson: function() {
+      var _this;
+      _this = this;
+      return $liveUser.delegate('span', 'click', function() {
+        var isChating, name, selfName;
+        name = this.innerHTML;
+        selfName = _this.getSelfName();
+        isChating = _this.detectIsChatting();
+        if (name !== selfName) {
+          _this.addChatPerson(name);
+          ++chatingUsers;
+          if (!isChating) {
+            return $chatLeft.addClass('is-chating');
+          }
+        }
+      });
+    },
+    addChatPerson: function(name) {
+      var chatDiv;
+      chatDiv = '<li>';
+      chatDiv += '<span>' + name + '</span>';
+      chatDiv += '<div class="close-chating">';
+      chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>';
+      chatDiv += '</li>';
+      return $chatingUser.find('ul').append($(chatDiv));
+    },
+    removeChatPerson: function(name) {
+      var allChatingUser, user, _i, _len, _results;
+      allChatingUser = $chatingUser.find('li');
+      _results = [];
+      for (_i = 0, _len = allChatingUser.length; _i < _len; _i++) {
+        user = allChatingUser[_i];
+        if ($(user).text() === name) {
+          _results.push(alert(1231));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    },
+    clickToDeletePerson: function() {
+      var _this;
+      _this = this;
+      return $chatingUser.delegate('.close-chating', 'click', function() {
+        var name;
+        name = $(this).parent().text();
+        --chatingUsers;
+        _this.removeChatPerson(name);
+        if (chatingUsers === 0) {
+          return $chatLeft.removeClass('is-chating');
+        }
+      });
+    },
+    changeChatingPerson: function() {},
+    detectIsChatting: function() {
+      var isChating;
+      return isChating = chatingUsers === 0 ? false : true;
+    },
+    keybordchange: function() {},
+    addNotice: function() {}
+  };
+  module.exports = Changeuser;
+}
+
+
+
+},{}],3:[function(require,module,exports){
 var chat;
 
 Date.prototype.Format = function(fmt) {
@@ -209,7 +286,7 @@ module.exports = chat;
 
 
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var Socket, chat, socket;
 
 chat = require("./chat.coffee");
@@ -222,4 +299,4 @@ socket.init();
 
 
 
-},{"./Socket.coffee":1,"./chat.coffee":2}]},{},[3]);
+},{"./Socket.coffee":1,"./chat.coffee":3}]},{},[4]);

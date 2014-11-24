@@ -1,3 +1,5 @@
+changeuser = require './changeuser.coffee'
+
 if location.pathname == "/"
 	chat = require './chat.coffee'
 
@@ -24,7 +26,8 @@ if location.pathname == "/"
 			_this.detectMessage()
 			_this.detectPrivateMessage()
 
-			_this.changeChatPerson()
+			changeuser.clickPerson()
+			changeuser.clickToDeletePerson()
 
 		keyDownEvent: ->
 			_this = @
@@ -109,11 +112,5 @@ if location.pathname == "/"
 			aChat += '</li>'
 
 			$chatList.append $(aChat)
-
-		changeChatPerson: ->
-			$liveUser.delegate 'span', 'click', ->
-				name =  @innerHTML
-				# name = 'yuanzm'
-				$chatPerson.text(name)
 
 	module.exports = Socket
