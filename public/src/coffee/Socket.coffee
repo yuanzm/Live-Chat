@@ -7,6 +7,7 @@ if location.pathname == "/"
 	$liveUser = $('#live-user')
 	$chatList = $('#chat-list')
 	$chatInput = $('#chat-input')
+	$chatPerson =$('#chat-person')
 	socket = io()
 
 	class Socket
@@ -21,6 +22,9 @@ if location.pathname == "/"
 			_this.successionLoginMessage()
 			_this.detectUserLeft()
 			_this.detectMessage()
+			_this.detectPrivateMessage()
+
+			_this.changeChatPerson()
 
 		keyDownEvent: ->
 			_this = @
@@ -50,8 +54,12 @@ if location.pathname == "/"
 				userNames = data.userNames
 				_this.freshUser userNames
 		sendMessage: (data)->
-			socket.emit('new message', data)
-
+			chatPerson = $chatPerson.text()
+			data.name = chatPerson
+			if chatPerson is 'Live-Chat'
+				socket.emit('new message', data)
+			else
+				socket.emit 'private chat', data
 		successSendMessage: (data)->
 			_this = @
 			socket.on 'send message',(data)->
@@ -61,6 +69,11 @@ if location.pathname == "/"
 			_this = @
 			socket.on 'message', (data)->
 				_this.showMessage data
+
+		detectPrivateMessage: ->
+			_this =@
+			socket.on 'private message', (data)-> 
+				alert data.userName + '对你说' + data.message
 
 		detectNewUser: ->
 			_this = @
@@ -96,5 +109,11 @@ if location.pathname == "/"
 			aChat += '</li>'
 
 			$chatList.append $(aChat)
+
+		changeChatPerson: ->
+			$liveUser.delegate 'span', 'click', ->
+				name =  @innerHTML
+				# name = 'yuanzm'
+				$chatPerson.text(name)
 
 	module.exports = Socket

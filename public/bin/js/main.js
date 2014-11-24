@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatInput, $chatList, $liveUser, $name, $window, Socket, chat, socket;
+var $chatInput, $chatList, $chatPerson, $liveUser, $name, $window, Socket, chat, socket;
 
 if (location.pathname === "/") {
   chat = require('./chat.coffee');
@@ -8,6 +8,7 @@ if (location.pathname === "/") {
   $liveUser = $('#live-user');
   $chatList = $('#chat-list');
   $chatInput = $('#chat-input');
+  $chatPerson = $('#chat-person');
   socket = io();
   Socket = (function() {
     function Socket() {}
@@ -21,7 +22,9 @@ if (location.pathname === "/") {
       _this.detectNewUser();
       _this.successionLoginMessage();
       _this.detectUserLeft();
-      return _this.detectMessage();
+      _this.detectMessage();
+      _this.detectPrivateMessage();
+      return _this.changeChatPerson();
     };
 
     Socket.prototype.keyDownEvent = function() {
@@ -65,7 +68,14 @@ if (location.pathname === "/") {
     };
 
     Socket.prototype.sendMessage = function(data) {
-      return socket.emit('new message', data);
+      var chatPerson;
+      chatPerson = $chatPerson.text();
+      data.name = chatPerson;
+      if (chatPerson === 'Live-Chat') {
+        return socket.emit('new message', data);
+      } else {
+        return socket.emit('private chat', data);
+      }
     };
 
     Socket.prototype.successSendMessage = function(data) {
@@ -81,6 +91,14 @@ if (location.pathname === "/") {
       _this = this;
       return socket.on('message', function(data) {
         return _this.showMessage(data);
+      });
+    };
+
+    Socket.prototype.detectPrivateMessage = function() {
+      var _this;
+      _this = this;
+      return socket.on('private message', function(data) {
+        return alert(data.userName + '对你说' + data.message);
       });
     };
 
@@ -132,6 +150,14 @@ if (location.pathname === "/") {
       aChat += '<span>' + data.message + '</span>';
       aChat += '</li>';
       return $chatList.append($(aChat));
+    };
+
+    Socket.prototype.changeChatPerson = function() {
+      return $liveUser.delegate('span', 'click', function() {
+        var name;
+        name = this.innerHTML;
+        return $chatPerson.text(name);
+      });
     };
 
     return Socket;

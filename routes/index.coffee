@@ -38,7 +38,7 @@ router.post '/regist', (req, res)->
 	})
 	User.get newUser.name, (err, user)->
 		if user
-			err = 'Username already exists'
+			err = '用户已存在！'
 		if err
 			req.flash 'error', err
 			return res.redirect '/regist'
@@ -64,13 +64,13 @@ router.post '/login', (req, res)->
 			req.flash 'error', err
 			return res.redirect '/login'
 		if not user
-			req.flash 'error', '用户不存在'
+			req.flash 'error', '用户不存在！'
 			return res.redirect '/login'
 		if user.password != password
-			req.flash 'error', '用户密码错误'			
+			req.flash 'error', '用户密码错误！'			
 			return res.redirect '/login'
 		req.session.user = user
-		req.flash 'success', '登录成功'
+		req.flash 'success', '登录成功~'
 		res.redirect '/'
 
 

@@ -44,5 +44,8 @@ $chat-height: 400px;
 	margin-left: 2%;
 	.user-list {
 		margin-top: 20px;
+		ul li {
+			cursor: pointer;
+		}
 	}
 }
