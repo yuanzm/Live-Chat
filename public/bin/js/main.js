@@ -27,7 +27,8 @@ if (location.pathname === "/") {
       _this.detectMessage();
       _this.detectPrivateMessage();
       changeuser.clickPerson();
-      return changeuser.clickToDeletePerson();
+      changeuser.clickToDeletePerson();
+      return changeuser.changeChatingPerson();
     };
 
     Socket.prototype.keyDownEvent = function() {
@@ -212,7 +213,7 @@ if (location.pathname === "/") {
       for (_i = 0, _len = allChatingUser.length; _i < _len; _i++) {
         user = allChatingUser[_i];
         if ($(user).text() === name) {
-          _results.push(alert(1231));
+          _results.push($(user).remove());
         } else {
           _results.push(void 0);
         }
@@ -228,17 +229,30 @@ if (location.pathname === "/") {
         --chatingUsers;
         _this.removeChatPerson(name);
         if (chatingUsers === 0) {
+          _this.nameChatingPerson('Live-Chat');
           return $chatLeft.removeClass('is-chating');
         }
       });
     },
-    changeChatingPerson: function() {},
+    changeChatingPerson: function() {
+      var _this;
+      _this = this;
+      return $chatingUser.delegate('span', 'click', function() {
+        var name;
+        name = $(this).text();
+        return _this.nameChatingPerson(name);
+      });
+    },
     detectIsChatting: function() {
       var isChating;
       return isChating = chatingUsers === 0 ? false : true;
     },
     keybordchange: function() {},
-    addNotice: function() {}
+    addNotice: function() {},
+    nameChatingPerson: function(name) {
+      console.log(name);
+      return $chatPerson.text(name);
+    }
   };
   module.exports = Changeuser;
 }

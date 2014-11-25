@@ -28,6 +28,7 @@ if location.pathname == "/"
 
 			changeuser.clickPerson()
 			changeuser.clickToDeletePerson()
+			changeuser.changeChatingPerson()
 
 		keyDownEvent: ->
 			_this = @
