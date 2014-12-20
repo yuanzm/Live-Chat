@@ -34,7 +34,6 @@ Chat.getChat = (userName, callback)->
 			query = {}
 			if userName
 				query.userName = userName
-
 			collection.count query, (err)->
 				collection.find(query, {skip: 10, limit: 50}).sort({time: 1}).toArray (err, docs)->
 					mongodb.close()
@@ -45,5 +44,4 @@ Chat.getChat = (userName, callback)->
 						chat = new Chat(doc)
 						chats.push chat
 					callback null, chats
-
 module.exports = Chat

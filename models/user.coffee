@@ -1,15 +1,20 @@
 mongodb = require './db'
+crypto = require 'crypto'
 
 User = (user)->
-	@.name = user.name
-	@.password = user.password
+	@name = user.name
+	@password = user.password
+	@email = user.email
+	@head = user.head
 
 module.exports = User
 
 User.prototype.save = (callback)->
 	user =
-		name: @.name
-		password: @.password
+		name: @name
+		password: @password
+		email: @emial
+		head: @head
 
 	mongodb.open (err, db)->
 		if err

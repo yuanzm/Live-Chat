@@ -31,10 +31,16 @@ router.get '/regist', (req, res)->
 router.post '/regist', (req, res)->
 	md5 = crypto.createHash 'md5'
 	password = md5.update(req.body.passWord).digest('base64')
+	md5 = crypto.createHash 'md5'
+	email_MD5 =  md5.update(req.body.email.toLowerCase()).digest('hex')
+	console.log email_MD5
+	head = "http://secure.gravatar.com/avatar/" + email_MD5 + "?s=48"
 
 	newUser = new User({
 		name: req.body.nickName
 		password: password
+		email: req.body.email
+		head: head
 	})
 	User.get newUser.name, (err, user)->
 		if user

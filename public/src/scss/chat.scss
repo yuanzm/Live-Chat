@@ -73,9 +73,7 @@ $chat-height: 400px;
 	.panel {
 		width: 93%;
 	}
-
 }
-
 //chat-right style
 #chat-right {
 	width: 28%;
@@ -86,5 +84,11 @@ $chat-height: 400px;
 		ul li {
 			cursor: pointer;
 		}
+	}
+	#gravatar {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		margin-right: 15px;
 	}
 }

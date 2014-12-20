@@ -96,6 +96,11 @@ footer {
     margin-top: 20px; }
     #chat-right .user-list ul li {
       cursor: pointer; }
+  #chat-right #gravatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 15px; }
 
 #sign {
   width: 500px;
