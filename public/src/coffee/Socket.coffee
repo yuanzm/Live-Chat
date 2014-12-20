@@ -9,7 +9,8 @@ if location.pathname == "/"
 	$liveUser = $('#live-user')
 	$chatList = $('#chat-list')
 	$chatInput = $('#chat-input')
-	$chatPerson =$('#chat-person')
+	$chatPerson = $('#chat-person')
+	$liveNumber = $('#live-number')
 	socket = io()
 
 	class Socket
@@ -57,6 +58,7 @@ if location.pathname == "/"
 			socket.on 'success login', (data)->
 				userNames = data.userNames
 				_this.freshUser userNames
+				_this.showUserNumber data.userNumbers
 		sendMessage: (data)->
 			chatPerson = $chatPerson.text()
 			data.name = chatPerson
@@ -84,26 +86,31 @@ if location.pathname == "/"
 			socket.on 'new user', (data)->
 				userNames = data.userNames
 				_this.freshUser userNames
-
+				_this.showUserNumber data.userNumbers
+		# when an user leave chat room,delete the user in the page
 		detectUserLeft: ->
 			_this = @
 			socket.on 'user left', (data)->
 				userNames = data.userNames
 				_this.freshUser userNames
-
+				_this.showUserNumber data.userNumbers
+		#show all the users live
 		freshUser: (userNames)->
 			_this = @
 			$liveUser.empty()
 			for name of userNames
 				_this.showNewUser name
 
+		#display all the users live
 		showNewUser: (userName)->
 			aUser = '<li>'
 			aUser += '<span>' + userName + '</li>'
 			aUser += '</li>'
 
 			$liveUser.append $(aUser)
-
+		showUserNumber: (num)->
+			$liveNumber.text(num)
+		#display  new message
 		showMessage: (data) ->
 			aChat = '<li>'
 			aChat += '<span>' + data.userName + '</span>'

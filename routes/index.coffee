@@ -8,7 +8,6 @@ Chat = require '../models/chat.coffee'
  # GET home page.
 router.get '/', (req, res)->
 	allChats = null
-	console.log req.headers.cookie
 	if req.session.user
 		allChats = Chat.getChat null, (err, chats)->
 			if err
