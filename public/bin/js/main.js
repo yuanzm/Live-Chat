@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatInput, $chatList, $chatPerson, $liveNumber, $liveUser, $name, $window, Socket, changeuser, chat, socket;
+var $chatInput, $chatList, $chatPerson, $gravatar, $liveNumber, $liveUser, $name, $window, Socket, changeuser, chat, socket;
 
 changeuser = require('./changeuser.coffee');
 
@@ -12,6 +12,7 @@ if (location.pathname === "/") {
   $chatInput = $('#chat-input');
   $chatPerson = $('#chat-person');
   $liveNumber = $('#live-number');
+  $gravatar = $('#gravatar');
   socket = io();
   Socket = (function() {
     function Socket() {}
@@ -59,44 +60,47 @@ if (location.pathname === "/") {
     };
 
     Socket.prototype.loginMessage = function() {
-      return socket.emit('join');
+      return socket.emit('join', $gravatar.attr('src'));
     };
 
     Socket.prototype.successionLoginMessage = function() {
       var _this;
       _this = this;
       return socket.on('success login', function(data) {
-        var userNames;
-        userNames = data.userNames;
-        _this.freshUser(userNames);
+        var allUser;
+        allUser = data.allUser;
+        _this.freshUser(allUser);
         return _this.showUserNumber(data.userNumbers);
       });
     };
 
     Socket.prototype.sendMessage = function(data) {
-      var chatPerson;
-      chatPerson = $chatPerson.text();
-      data.name = chatPerson;
+      var userData;
+      userData = {
+        name: $chatPerson.text(),
+        gravatar: $gravatar.attr('src')
+      };
+      data.userData = userData;
       if (chatPerson === 'Live-Chat') {
-        return socket.emit('new message', data);
+        return socket.emit('new message', messageData);
       } else {
-        return socket.emit('private chat', data);
+        return socket.emit('private chat', messageData);
       }
     };
 
-    Socket.prototype.successSendMessage = function(data) {
+    Socket.prototype.successSendMessage = function() {
       var _this;
       _this = this;
-      return socket.on('send message', function(data) {
-        return _this.showMessage(data);
+      return socket.on('send message', function(messageData) {
+        return _this.showMessage(messageData);
       });
     };
 
     Socket.prototype.detectMessage = function() {
       var _this;
       _this = this;
-      return socket.on('message', function(data) {
-        return _this.showMessage(data);
+      return socket.on('message', function(messageData) {
+        return _this.showMessage(messageData);
       });
     };
 
@@ -112,9 +116,9 @@ if (location.pathname === "/") {
       var _this;
       _this = this;
       return socket.on('new user', function(data) {
-        var userNames;
-        userNames = data.userNames;
-        _this.freshUser(userNames);
+        var allUser;
+        allUser = data.allUser;
+        _this.freshUser(allUser);
         return _this.showUserNumber(data.userNumbers);
       });
     };
@@ -123,28 +127,32 @@ if (location.pathname === "/") {
       var _this;
       _this = this;
       return socket.on('user left', function(data) {
-        var userNames;
-        userNames = data.userNames;
-        _this.freshUser(userNames);
+        var allUser;
+        allUser = data.allUser;
+        _this.freshUser(allUser);
         return _this.showUserNumber(data.userNumbers);
       });
     };
 
-    Socket.prototype.freshUser = function(userNames) {
-      var name, _results, _this;
+    Socket.prototype.freshUser = function(allUser) {
+      var user, userData, _results, _this;
       _this = this;
       $liveUser.empty();
       _results = [];
-      for (name in userNames) {
-        _results.push(_this.showNewUser(name));
+      for (user in allUser) {
+        userData = allUser[user];
+        _results.push(_this.showNewUser(userData));
       }
       return _results;
     };
 
-    Socket.prototype.showNewUser = function(userName) {
+    Socket.prototype.showNewUser = function(userData) {
       var aUser;
       aUser = '<li>';
-      aUser += '<span>' + userName + '</li>';
+      aUser += '<img class="gravatar" src="';
+      aUser += userData.gravatar;
+      aUser += '">';
+      aUser += '<span>' + userData.name + '</span>';
       aUser += '</li>';
       return $liveUser.append($(aUser));
     };

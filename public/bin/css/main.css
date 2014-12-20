@@ -88,6 +88,12 @@ footer {
 #chat-left.is-chating .panel {
   width: 93%; }
 
+.gravatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 15px; }
+
 #chat-right {
   width: 28%;
   float: left;
@@ -95,12 +101,8 @@ footer {
   #chat-right .user-list {
     margin-top: 20px; }
     #chat-right .user-list ul li {
-      cursor: pointer; }
-  #chat-right #gravatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 15px; }
+      cursor: pointer;
+      margin-top: 10px; }
 
 #sign {
   width: 500px;

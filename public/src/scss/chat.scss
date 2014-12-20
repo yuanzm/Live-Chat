@@ -75,6 +75,12 @@ $chat-height: 400px;
 	}
 }
 //chat-right style
+.gravatar {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	margin-right: 15px;
+}
 #chat-right {
 	width: 28%;
 	float: left;
@@ -83,12 +89,7 @@ $chat-height: 400px;
 		margin-top: 20px;
 		ul li {
 			cursor: pointer;
+			margin-top: 10px;
 		}
-	}
-	#gravatar {
-		width: 30px;
-		height: 30px;
-		border-radius: 50%;
-		margin-right: 15px;
 	}
 }

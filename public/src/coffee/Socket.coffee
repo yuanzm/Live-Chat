@@ -11,6 +11,7 @@ if location.pathname == "/"
 	$chatInput = $('#chat-input')
 	$chatPerson = $('#chat-person')
 	$liveNumber = $('#live-number')
+	$gravatar = $('#gravatar')
 	socket = io()
 
 	class Socket
@@ -51,60 +52,66 @@ if location.pathname == "/"
 						success: (data)->				
 					})
 		loginMessage: ->
-			socket.emit 'join'
+			socket.emit 'join', $gravatar.attr('src')
 
 		successionLoginMessage: ->
 			_this = @
 			socket.on 'success login', (data)->
-				userNames = data.userNames
-				_this.freshUser userNames
+				allUser = data.allUser
+				_this.freshUser allUser
 				_this.showUserNumber data.userNumbers
+		#send message detail and sender's user data
 		sendMessage: (data)->
-			chatPerson = $chatPerson.text()
-			data.name = chatPerson
+			userData = 
+				name: $chatPerson.text()
+				gravatar: $gravatar.attr('src')
+			data.userData = userData
 			if chatPerson is 'Live-Chat'
-				socket.emit('new message', data)
+				socket.emit 'new message', messageData
 			else
-				socket.emit 'private chat', data
-		successSendMessage: (data)->
+				socket.emit 'private chat', messageData
+		successSendMessage: ->
 			_this = @
-			socket.on 'send message',(data)->
-				_this.showMessage data
+			socket.on 'send message',(messageData)->
+				_this.showMessage messageData
 
 		detectMessage: ->
 			_this = @
-			socket.on 'message', (data)->
-				_this.showMessage data
+			socket.on 'message', (messageData)->
+				_this.showMessage messageData
 
 		detectPrivateMessage: ->
-			_this =@
+			_this = @
 			socket.on 'private message', (data)-> 
 				alert data.userName + '对你说' + data.message
 
 		detectNewUser: ->
 			_this = @
 			socket.on 'new user', (data)->
-				userNames = data.userNames
-				_this.freshUser userNames
+				allUser = data.allUser
+				_this.freshUser allUser
 				_this.showUserNumber data.userNumbers
 		# when an user leave chat room,delete the user in the page
 		detectUserLeft: ->
 			_this = @
-			socket.on 'user left', (data)->
-				userNames = data.userNames
-				_this.freshUser userNames
+			socket.on 'user left', (data)-> 
+				allUser = data.allUser
+				_this.freshUser allUser
 				_this.showUserNumber data.userNumbers
 		#show all the users live
-		freshUser: (userNames)->
+		freshUser: (allUser)->
 			_this = @
 			$liveUser.empty()
-			for name of userNames
-				_this.showNewUser name
+			for user,userData of allUser
+				_this.showNewUser userData
 
 		#display all the users live
-		showNewUser: (userName)->
+		showNewUser: (userData)->
 			aUser = '<li>'
-			aUser += '<span>' + userName + '</li>'
+			aUser += '<img class="gravatar" src="'
+			aUser += userData.gravatar
+			aUser += '">' 
+			aUser += '<span>' + userData.name + '</span>'
 			aUser += '</li>'
 
 			$liveUser.append $(aUser)
