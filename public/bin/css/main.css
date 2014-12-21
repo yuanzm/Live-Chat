@@ -66,16 +66,15 @@ footer {
       height: 320px; }
 
 #chat-left.is-chating #chating-user {
-  width: 7%;
+  width: 6%;
   float: left;
   display: block;
-  height: 400px;
-  border: solid 1px gray; }
+  height: 400px; }
   #chat-left.is-chating #chating-user ul li {
     cursor: pointer;
-    height: 30px;
-    border: solid 1px gray;
-    position: relative; }
+    height: 40px;
+    position: relative;
+    margin-bottom: 2px; }
     #chat-left.is-chating #chating-user ul li .close-chating {
       display: none;
       width: 15px;
@@ -85,8 +84,13 @@ footer {
       top: -5px; }
   #chat-left.is-chating #chating-user ul li:hover .close-chating {
     display: block; }
+  #chat-left.is-chating #chating-user .gravatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 3px; }
 #chat-left.is-chating .panel {
-  width: 93%; }
+  width: 93%;
+  margin-left: 3px; }
 
 .gravatar {
   width: 30px;

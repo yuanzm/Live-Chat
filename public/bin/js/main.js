@@ -1,226 +1,37 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatInput, $chatList, $chatPerson, $gravatar, $liveNumber, $liveUser, $name, $window, Socket, changeuser, chat, socket;
-
-changeuser = require('./changeuser.coffee');
+var $chatPerson, $chatingUser, chatingUser;
 
 if (location.pathname === "/") {
-  chat = require('./chat.coffee');
-  $window = $(window);
-  $name = $("#my-name");
-  $liveUser = $('#live-user');
-  $chatList = $('#chat-list');
-  $chatInput = $('#chat-input');
-  $chatPerson = $('#chat-person');
-  $liveNumber = $('#live-number');
-  $gravatar = $('#gravatar');
-  socket = io();
-  Socket = (function() {
-    function Socket() {}
-
-    Socket.prototype.init = function() {
-      var _this;
-      _this = this;
-      _this.loginMessage();
-      _this.keyDownEvent();
-      _this.successSendMessage();
-      _this.detectNewUser();
-      _this.successionLoginMessage();
-      _this.detectUserLeft();
-      _this.detectMessage();
-      _this.detectPrivateMessage();
-      changeuser.clickPerson();
-      changeuser.clickToDeletePerson();
-      return changeuser.changeChatingPerson();
-    };
-
-    Socket.prototype.keyDownEvent = function() {
-      var _this;
-      _this = this;
-      return $window.keydown(function(event) {
-        var data;
-        if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-          $chatInput.focus();
-        }
-        if (event.which === 13) {
-          data = {
-            time: chat.getTime(),
-            userName: $name.text(),
-            message: $chatInput.val()
-          };
-          $chatInput.val('');
-          _this.sendMessage(data);
-          return $.ajax({
-            type: "POST",
-            url: '/addChat',
-            data: data,
-            success: function(data) {}
-          });
-        }
-      });
-    };
-
-    Socket.prototype.loginMessage = function() {
-      return socket.emit('join', $gravatar.attr('src'));
-    };
-
-    Socket.prototype.successionLoginMessage = function() {
-      var _this;
-      _this = this;
-      return socket.on('success login', function(data) {
-        var allUser;
-        allUser = data.allUser;
-        _this.freshUser(allUser);
-        return _this.showUserNumber(data.userNumbers);
-      });
-    };
-
-    Socket.prototype.sendMessage = function(data) {
-      var userData;
-      userData = {
-        name: $chatPerson.text(),
-        gravatar: $gravatar.attr('src')
-      };
-      data.userData = userData;
-      if (chatPerson === 'Live-Chat') {
-        return socket.emit('new message', messageData);
-      } else {
-        return socket.emit('private chat', messageData);
-      }
-    };
-
-    Socket.prototype.successSendMessage = function() {
-      var _this;
-      _this = this;
-      return socket.on('send message', function(messageData) {
-        return _this.showMessage(messageData);
-      });
-    };
-
-    Socket.prototype.detectMessage = function() {
-      var _this;
-      _this = this;
-      return socket.on('message', function(messageData) {
-        return _this.showMessage(messageData);
-      });
-    };
-
-    Socket.prototype.detectPrivateMessage = function() {
-      var _this;
-      _this = this;
-      return socket.on('private message', function(data) {
-        return alert(data.userName + '对你说' + data.message);
-      });
-    };
-
-    Socket.prototype.detectNewUser = function() {
-      var _this;
-      _this = this;
-      return socket.on('new user', function(data) {
-        var allUser;
-        allUser = data.allUser;
-        _this.freshUser(allUser);
-        return _this.showUserNumber(data.userNumbers);
-      });
-    };
-
-    Socket.prototype.detectUserLeft = function() {
-      var _this;
-      _this = this;
-      return socket.on('user left', function(data) {
-        var allUser;
-        allUser = data.allUser;
-        _this.freshUser(allUser);
-        return _this.showUserNumber(data.userNumbers);
-      });
-    };
-
-    Socket.prototype.freshUser = function(allUser) {
-      var user, userData, _results, _this;
-      _this = this;
-      $liveUser.empty();
-      _results = [];
-      for (user in allUser) {
-        userData = allUser[user];
-        _results.push(_this.showNewUser(userData));
-      }
-      return _results;
-    };
-
-    Socket.prototype.showNewUser = function(userData) {
-      var aUser;
-      aUser = '<li>';
-      aUser += '<img class="gravatar" src="';
-      aUser += userData.gravatar;
-      aUser += '">';
-      aUser += '<span>' + userData.name + '</span>';
-      aUser += '</li>';
-      return $liveUser.append($(aUser));
-    };
-
-    Socket.prototype.showUserNumber = function(num) {
-      return $liveNumber.text(num);
-    };
-
-    Socket.prototype.showMessage = function(data) {
-      var aChat;
-      aChat = '<li>';
-      aChat += '<span>' + data.userName + '</span>';
-      aChat += '<span>' + data.time + '</span>';
-      aChat += '<br />';
-      aChat += '<span>' + data.message + '</span>';
-      aChat += '</li>';
-      return $chatList.append($(aChat));
-    };
-
-    return Socket;
-
-  })();
-  module.exports = Socket;
-}
-
-
-
-},{"./changeuser.coffee":2,"./chat.coffee":3}],2:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $liveUser, $myName, $window, Changeuser, chatingUsers;
-
-if (location.pathname === "/") {
-  $window = $(window);
-  $liveUser = $('#live-user');
-  $chatPerson = $('#chat-person');
-  $chatLeft = $('#chat-left');
   $chatingUser = $('#chating-user');
-  $myName = $('#my-name').text();
-  chatingUsers = 0;
-  Changeuser = {
-    getSelfName: function() {
-      var selfName;
-      return selfName = $myName;
-    },
-    clickPerson: function() {
-      var _this;
-      _this = this;
-      return $liveUser.delegate('span', 'click', function() {
-        var isChating, name, selfName;
-        name = this.innerHTML;
-        selfName = _this.getSelfName();
-        isChating = _this.detectIsChatting();
-        if (name !== selfName) {
-          _this.addChatPerson(name);
-          ++chatingUsers;
-          if (!isChating) {
-            return $chatLeft.addClass('is-chating');
-          }
+  $chatPerson = $('#chat-person');
+
+  /*
+  	* event handlers bind to chating userx
+   */
+  chatingUser = {
+    init: function() {},
+    clickToDeletePerson: function() {
+      var self;
+      self = this;
+      return $chatingUser.delegate('.close-chating', 'click', function() {
+        var name;
+        name = $(this).parent().text();
+        --chatingUsers;
+        self.removeChatPerson(name);
+        if (chatingUsers === 0) {
+          self.nameChatingPerson('Live-Chat');
+          return $chatLeft.removeClass('is-chating');
         }
       });
     },
-    addChatPerson: function(name) {
-      var chatDiv;
-      chatDiv = '<li>';
-      chatDiv += '<span>' + name + '</span>';
-      chatDiv += '<div class="close-chating">';
-      chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>';
-      chatDiv += '</li>';
-      return $chatingUser.find('ul').append($(chatDiv));
+    changeChatingPerson: function() {
+      var self;
+      self = this;
+      return $chatingUser.delegate('span', 'click', function() {
+        var name;
+        name = $(this).text();
+        return self.nameChatingPerson(name);
+      });
     },
     removeChatPerson: function(name) {
       var allChatingUser, user, _i, _len, _results;
@@ -236,46 +47,87 @@ if (location.pathname === "/") {
       }
       return _results;
     },
-    clickToDeletePerson: function() {
-      var _this;
-      _this = this;
-      return $chatingUser.delegate('.close-chating', 'click', function() {
-        var name;
-        name = $(this).parent().text();
-        --chatingUsers;
-        _this.removeChatPerson(name);
-        if (chatingUsers === 0) {
-          _this.nameChatingPerson('Live-Chat');
-          return $chatLeft.removeClass('is-chating');
-        }
-      });
-    },
-    changeChatingPerson: function() {
-      var _this;
-      _this = this;
-      return $chatingUser.delegate('span', 'click', function() {
-        var name;
-        name = $(this).text();
-        return _this.nameChatingPerson(name);
-      });
-    },
-    detectIsChatting: function() {
-      var isChating;
-      return isChating = chatingUsers === 0 ? false : true;
-    },
     keybordchange: function() {},
-    addNotice: function() {},
-    nameChatingPerson: function(name) {
-      console.log(name);
-      return $chatPerson.text(name);
-    }
+    addNotice: function() {}
   };
-  module.exports = Changeuser;
+  module.exports = chatingUser;
 }
 
 
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
+var $gravatar, Connect, helper, socket;
+
+if (location.pathname === "/") {
+  helper = require('./helper.coffee');
+  $gravatar = $('#gravatar');
+  socket = io();
+
+  /*
+  	* A class to track the connection status
+   */
+  Connect = (function() {
+    function Connect() {}
+
+    Connect.prototype.init = function() {
+      var _this;
+      _this = this;
+      _this.loginMessage();
+      _this.detectNewUser();
+      _this.successionLoginMessage();
+      return _this.detectUserLeft();
+    };
+
+
+    /*
+    		* if user refresh page or login,send message to server
+     */
+
+    Connect.prototype.loginMessage = function() {
+      return socket.emit('join', $gravatar.attr('src'));
+    };
+
+
+    /*
+    		* if user login success or refresh page,refresh live users list and live users number
+     */
+
+    Connect.prototype.successionLoginMessage = function() {
+      var _this;
+      _this = this;
+      return socket.on('success login', function(data) {
+        var allUser;
+        return allUser = data.allUser;
+      });
+    };
+
+    Connect.prototype.detectNewUser = function() {
+      var _this;
+      _this = this;
+      return socket.on('new user', function(data) {
+        var allUser;
+        return allUser = data.allUser;
+      });
+    };
+
+    Connect.prototype.detectUserLeft = function() {
+      var _this;
+      _this = this;
+      return socket.on('user left', function(data) {
+        var allUser;
+        return allUser = data.allUser;
+      });
+    };
+
+    return Connect;
+
+  })();
+  module.exports = Connect;
+}
+
+
+
+},{"./helper.coffee":3}],3:[function(require,module,exports){
 var chat;
 
 Date.prototype.Format = function(fmt) {
@@ -317,16 +169,155 @@ module.exports = chat;
 
 
 },{}],4:[function(require,module,exports){
-var Socket, chat, socket;
+var $chatLeft, $chatPerson, $chatingUser, $liveUser, $myName, $name, $window, chatingUsers, liveUser;
 
-chat = require("./chat.coffee");
+if (location.pathname === "/") {
+  $window = $(window);
+  $liveUser = $('#live-user');
+  $chatPerson = $('#chat-person');
+  $chatLeft = $('#chat-left');
+  $chatingUser = $('#chating-user');
+  $myName = $('#my-name').text();
+  chatingUsers = 0;
+  $name = $("#my-name");
 
-Socket = require("./Socket.coffee");
+  /*
+  	* event handlers bind to live users
+   */
+  liveUser = {
 
-socket = new Socket();
+    /*
+    		* initialize instance
+     */
+    init: function() {
+      return this.bindEventHandler();
+    },
 
-socket.init();
+    /*
+    		* initialize all the event handlers
+     */
+    bindEventHandler: function() {
+      return this.clickPerson();
+    },
+
+    /*
+    		* get self name through nickname
+     */
+    getSelfName: function() {
+      var selfName;
+      return selfName = $myName;
+    },
+
+    /*
+    		* bind event handler to live user
+    		* if the user clicked is self,nothing happen
+    		* if the user clicked is already in chating list,nothing happen
+    		* if the user clicked is not self and not in chating list,add it to the chating list
+    		* if the user added to the chating list is the first one,show the chating list
+     */
+    clickPerson: function() {
+      var self;
+      self = this;
+      return $liveUser.delegate('li', 'click', function() {
+        var chatNum, chatUser, gravatar, isChating, name, selfName;
+        name = $(this).find('span').text();
+        gravatar = $(this).find('img').attr('src');
+        selfName = self.getSelfName();
+        isChating = self.detectIsChatting(gravatar);
+        chatNum = self.checkChatingNum();
+        if (name !== selfName && isChating === false) {
+          chatUser = {
+            name: name,
+            gravatar: gravatar
+          };
+          self.addChatPerson(chatUser);
+          self.nameChatingPerson(name);
+          ++chatingUsers;
+          if (!chatNum) {
+            return $chatLeft.addClass('is-chating');
+          }
+        }
+      });
+    },
+
+    /*
+    		* display the chat user in chating list
+    		* @param {Object} chatUser: the user data of chat user
+     */
+    addChatPerson: function(chatUser) {
+      var chatDiv;
+      chatDiv = '<li>';
+      chatDiv += '<span></span>';
+      chatDiv += '<img class="gravatar" src="' + chatUser.gravatar + '">';
+      chatDiv += '<div class="close-chating">';
+      chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>';
+      chatDiv += '</div></li>';
+      return $chatingUser.find('ul').append($(chatDiv));
+    },
+    detectIsChatting: function(gravatar) {
+      var $allChatingUser, isChating;
+      isChating = false;
+      $allChatingUser = $chatingUser.find('img');
+      $allChatingUser.each(function() {
+        if ($(this).attr('src') === gravatar) {
+          return isChating = true;
+        }
+      });
+      return isChating;
+    },
+    checkChatingNum: function() {
+      return $chatingUser.find('img').length;
+    },
+    nameChatingPerson: function(name) {
+      return $chatPerson.text(name);
+    },
+    freshUser: function(allUser) {
+      var user, userData, _results, _this;
+      _this = this;
+      $liveUser.empty();
+      _results = [];
+      for (user in allUser) {
+        userData = allUser[user];
+        _results.push(_this.showNewUser(userData));
+      }
+      return _results;
+    },
+    showNewUser: function(userData) {
+      var aUser;
+      aUser = '<li>';
+      aUser += '<img class="gravatar" src="';
+      aUser += userData.gravatar;
+      aUser += '">';
+      aUser += '<span>' + userData.name + '</span>';
+      aUser += '</li>';
+      return $liveUser.append($(aUser));
+    },
+    showUserNumber: function(num) {
+      return $liveNumber.text(num);
+    }
+  };
+  module.exports = liveUser;
+}
 
 
 
-},{"./Socket.coffee":1,"./chat.coffee":3}]},{},[4]);
+},{}],5:[function(require,module,exports){
+var Connect, chatingUser, liveUser;
+
+Connect = require("./connect-status.coffee");
+
+liveUser = require("./live-user.coffee");
+
+chatingUser = require("./chating-user.coffee");
+
+Connect = new Connect();
+
+Connect.init();
+
+liveUser.init();
+
+chatingUser.init();
+
+
+
+},{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4}]},{},[5]);

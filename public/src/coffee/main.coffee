@@ -1,8 +1,15 @@
-chat = require "./chat.coffee"
-Socket = require "./Socket.coffee"
+Connect = require "./connect-status.coffee"
+liveUser = require "./live-user.coffee"
+chatingUser = require "./chating-user.coffee"
 
-socket = new Socket()
-socket.init()
+
+Connect = new Connect()
+Connect.init()
+
+liveUser.init()
+
+chatingUser.init()
+
 
 
 	
