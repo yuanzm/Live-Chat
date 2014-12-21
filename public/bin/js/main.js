@@ -9,7 +9,10 @@ if (location.pathname === "/") {
   	* event handlers bind to chating userx
    */
   chatingUser = {
-    init: function() {},
+    init: function() {
+      this.clickToDeletePerson();
+      return this.changeChatingPerson();
+    },
     clickToDeletePerson: function() {
       var self;
       self = this;
@@ -27,9 +30,9 @@ if (location.pathname === "/") {
     changeChatingPerson: function() {
       var self;
       self = this;
-      return $chatingUser.delegate('span', 'click', function() {
+      return $chatingUser.delegate('li', 'click', function() {
         var name;
-        name = $(this).text();
+        name = $(this).find('.chat-user-name').text();
         return self.nameChatingPerson(name);
       });
     },
@@ -48,7 +51,14 @@ if (location.pathname === "/") {
       return _results;
     },
     keybordchange: function() {},
-    addNotice: function() {}
+    addNotice: function() {},
+
+    /*
+    		* display the chating user
+     */
+    nameChatingPerson: function(name) {
+      return $chatPerson.text(name);
+    }
   };
   module.exports = chatingUser;
 }
@@ -56,10 +66,11 @@ if (location.pathname === "/") {
 
 
 },{}],2:[function(require,module,exports){
-var $gravatar, Connect, helper, socket;
+var $gravatar, Connect, helper, liveUser, socket;
 
 if (location.pathname === "/") {
   helper = require('./helper.coffee');
+  liveUser = require('./live-user.coffee');
   $gravatar = $('#gravatar');
   socket = io();
 
@@ -70,12 +81,12 @@ if (location.pathname === "/") {
     function Connect() {}
 
     Connect.prototype.init = function() {
-      var _this;
-      _this = this;
-      _this.loginMessage();
-      _this.detectNewUser();
-      _this.successionLoginMessage();
-      return _this.detectUserLeft();
+      var self;
+      self = this;
+      self.loginMessage();
+      self.detectNewUser();
+      self.successionLoginMessage();
+      return self.detectUserLeft();
     };
 
 
@@ -93,29 +104,40 @@ if (location.pathname === "/") {
      */
 
     Connect.prototype.successionLoginMessage = function() {
-      var _this;
-      _this = this;
+      var self;
+      self = this;
       return socket.on('success login', function(data) {
         var allUser;
-        return allUser = data.allUser;
+        allUser = data.allUser;
+        liveUser.freshUser(allUser);
+        return liveUser.showUserNumber(data.userNumbers);
       });
     };
 
+
+    /*
+    		* detect whether a new user is join to chat room
+     */
+
     Connect.prototype.detectNewUser = function() {
-      var _this;
-      _this = this;
+      var self;
+      self = this;
       return socket.on('new user', function(data) {
         var allUser;
-        return allUser = data.allUser;
+        allUser = data.allUser;
+        liveUser.freshUser(allUser);
+        return liveUser.showUserNumber(data.userNumbers);
       });
     };
 
     Connect.prototype.detectUserLeft = function() {
-      var _this;
-      _this = this;
+      var self;
+      self = this;
       return socket.on('user left', function(data) {
         var allUser;
-        return allUser = data.allUser;
+        allUser = data.allUser;
+        liveUser.freshUser(allUser);
+        return liveUser.showUserNumber(data.userNumbers);
       });
     };
 
@@ -127,7 +149,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":3}],3:[function(require,module,exports){
+},{"./helper.coffee":3,"./live-user.coffee":4}],3:[function(require,module,exports){
 var chat;
 
 Date.prototype.Format = function(fmt) {
@@ -169,7 +191,7 @@ module.exports = chat;
 
 
 },{}],4:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $liveUser, $myName, $name, $window, chatingUsers, liveUser;
+var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, chatingUsers, liveUser;
 
 if (location.pathname === "/") {
   $window = $(window);
@@ -180,6 +202,7 @@ if (location.pathname === "/") {
   $myName = $('#my-name').text();
   chatingUsers = 0;
   $name = $("#my-name");
+  $liveNumber = $('#live-number');
 
   /*
   	* event handlers bind to live users
@@ -247,7 +270,7 @@ if (location.pathname === "/") {
     addChatPerson: function(chatUser) {
       var chatDiv;
       chatDiv = '<li>';
-      chatDiv += '<span></span>';
+      chatDiv += '<span class="chat-user-name">' + chatUser.name + '</span>';
       chatDiv += '<img class="gravatar" src="' + chatUser.gravatar + '">';
       chatDiv += '<div class="close-chating">';
       chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>';
@@ -268,20 +291,34 @@ if (location.pathname === "/") {
     checkChatingNum: function() {
       return $chatingUser.find('img').length;
     },
+
+    /*
+    		* display the chating user
+     */
     nameChatingPerson: function(name) {
       return $chatPerson.text(name);
     },
+
+    /*
+    		* show all the users live
+    		* @param {Object} allUser: an object contain all the live users data
+     */
     freshUser: function(allUser) {
-      var user, userData, _results, _this;
-      _this = this;
+      var self, user, userData, _results;
+      self = this;
       $liveUser.empty();
       _results = [];
       for (user in allUser) {
         userData = allUser[user];
-        _results.push(_this.showNewUser(userData));
+        _results.push(self.showNewUser(userData));
       }
       return _results;
     },
+
+    /*
+    		* display all the users live
+    		* @param {Object} userData: user detail data
+     */
     showNewUser: function(userData) {
       var aUser;
       aUser = '<li>';
@@ -292,6 +329,11 @@ if (location.pathname === "/") {
       aUser += '</li>';
       return $liveUser.append($(aUser));
     },
+
+    /*
+    		* display live users number
+    		* @param {String} num: a string of live users number
+     */
     showUserNumber: function(num) {
       return $liveNumber.text(num);
     }
@@ -302,7 +344,7 @@ if (location.pathname === "/") {
 
 
 },{}],5:[function(require,module,exports){
-var Connect, chatingUser, liveUser;
+var Connect, chatingUser, connect, liveUser, messageSend, sender;
 
 Connect = require("./connect-status.coffee");
 
@@ -310,14 +352,144 @@ liveUser = require("./live-user.coffee");
 
 chatingUser = require("./chating-user.coffee");
 
-Connect = new Connect();
+messageSend = require("./message-send.coffee");
 
-Connect.init();
+connect = new Connect;
+
+connect.init();
 
 liveUser.init();
 
 chatingUser.init();
 
+sender = new messageSend();
+
+sender.init();
 
 
-},{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4}]},{},[5]);
+
+},{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4,"./message-send.coffee":7}],6:[function(require,module,exports){
+var $chatList, MessageReceive;
+
+if (location.pathname === "/") {
+  $chatList = $('#chat-list');
+  MessageReceive = {
+    init: function() {},
+    detectMessage: function() {
+      var _this;
+      _this = this;
+      return socket.on('message', function(messageData) {
+        return _this.showMessage(messageData);
+      });
+    },
+    detectPrivateMessage: function() {
+      var _this;
+      _this = this;
+      return socket.on('private message', function(data) {
+        return alert(data.userName + '对你说' + data.message);
+      });
+    },
+    showMessage: function(data) {
+      var aChat;
+      aChat = '<li>';
+      aChat += '<span>' + data.userName + '</span>';
+      aChat += '<span>' + data.time + '</span>';
+      aChat += '<br />';
+      aChat += '<span>' + data.message + '</span>';
+      aChat += '</li>';
+      return $chatList.append($(aChat));
+    }
+  };
+  module.exports = MessageReceive;
+}
+
+
+
+},{}],7:[function(require,module,exports){
+var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, helper, socket;
+
+if (location.pathname === "/") {
+  Receiver = require("./message-receive.coffee");
+  helper = require("./helper.coffee");
+  $window = $(window);
+  $chatInput = $('#chat-input');
+  $name = $('#my-name');
+  $chatPerson = $('#chat-person');
+  $gravatar = $('#gravatar');
+  socket = io();
+  MessageSend = (function() {
+    function MessageSend() {}
+
+    MessageSend.prototype.init = function() {
+      this.keyDownEvent();
+      return this.successSendMessage();
+    };
+
+
+    /*
+    		* keyboard events
+     */
+
+    MessageSend.prototype.keyDownEvent = function() {
+      var self;
+      self = this;
+      return $window.keydown(function(event) {
+        var data;
+        if (!(event.ctrlKey || event.metaKey || event.altKey)) {
+          $chatInput.focus();
+        }
+        if (event.which === 13) {
+          data = {
+            time: helper.getTime(),
+            userName: $name.text(),
+            message: $chatInput.val()
+          };
+          $chatInput.val('');
+          self.sendMessage(data);
+          return $.ajax({
+            type: "POST",
+            url: '/addChat',
+            data: data,
+            success: function(data) {}
+          });
+        }
+      });
+    };
+
+
+    /*
+    		* send message
+    		* @param {Object} messageData: the detail of message,including receiver user data and message detail
+     */
+
+    MessageSend.prototype.sendMessage = function(messageData) {
+      var userData;
+      userData = {
+        name: $chatPerson.text(),
+        gravatar: $gravatar.attr('src')
+      };
+      messageData.userData = userData;
+      if ($chatPerson.text() === 'Live-Chat') {
+        return socket.emit('new message', messageData);
+      } else {
+        return socket.emit('private chat', messageData);
+      }
+    };
+
+    MessageSend.prototype.successSendMessage = function() {
+      var self;
+      self = this;
+      return socket.on('send message', function(messageData) {
+        return Receiver.showMessage(messageData);
+      });
+    };
+
+    return MessageSend;
+
+  })();
+  module.exports = MessageSend;
+}
+
+
+
+},{"./helper.coffee":3,"./message-receive.coffee":6}]},{},[5]);

@@ -39,6 +39,7 @@ io.on 'connection', (socket)->
 				allUser[name] = userData
 				liveUser[name] = socket
 				++userNumbers
+				console.log userNumbers
 			#向所有socket客户端广播这条此用户的登录信息
 			socket.broadcast.emit 'new user',{
 				allUser: allUser

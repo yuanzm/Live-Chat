@@ -8,6 +8,7 @@ if location.pathname == "/"
 	$myName = $('#my-name').text()
 	chatingUsers = 0;
 	$name = $("#my-name")
+	$liveNumber = $('#live-number')
 
 	###
 	* event handlers bind to live users
@@ -59,7 +60,7 @@ if location.pathname == "/"
 		###
 		addChatPerson: (chatUser)->
 			chatDiv = '<li>'
-			chatDiv += '<span></span>'
+			chatDiv += '<span class="chat-user-name">' + chatUser.name + '</span>'
 			chatDiv += '<img class="gravatar" src="' + chatUser.gravatar + '">' 
 			chatDiv += '<div class="close-chating">'
 			chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>'
@@ -76,17 +77,27 @@ if location.pathname == "/"
 			return isChating
 		checkChatingNum: ->
 			return $chatingUser.find('img').length
+
+		###
+		* display the chating user
+		###
 		nameChatingPerson: (name)->
 			$chatPerson.text(name)
 
-		#show all the users live
+		###
+		* show all the users live
+		* @param {Object} allUser: an object contain all the live users data
+		###
 		freshUser: (allUser)->
-			_this = @
+			self = @
 			$liveUser.empty()
 			for user,userData of allUser
-				_this.showNewUser userData
+				self.showNewUser userData
 
-		#display all the users live
+		###
+		* display all the users live
+		* @param {Object} userData: user detail data
+		###
 		showNewUser: (userData)->
 			aUser = '<li>'
 			aUser += '<img class="gravatar" src="'
@@ -96,6 +107,10 @@ if location.pathname == "/"
 			aUser += '</li>'
 
 			$liveUser.append $(aUser)
+		###
+		* display live users number
+		* @param {String} num: a string of live users number
+		###
 		showUserNumber: (num)->
 			$liveNumber.text(num)
 

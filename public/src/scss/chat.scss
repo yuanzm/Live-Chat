@@ -73,6 +73,12 @@ $chat-height: 400px;
 			height: 40px;
 			border-radius: 3px;
 		}
+		.chat-user-name {
+			display: block;
+			width: 0;
+			height: 0;
+			opacity: 0;
+		}
 	}
 	.panel {
 		width: 93%;

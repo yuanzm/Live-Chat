@@ -7,6 +7,8 @@ if location.pathname == "/"
 	###
 	chatingUser =
 		init: ->
+			@clickToDeletePerson()
+			@changeChatingPerson()
 		# 点击来删除聊天对象
 		clickToDeletePerson: ->
 			self = @
@@ -20,8 +22,8 @@ if location.pathname == "/"
 		# 点击正在聊天对象的某一个对象产生切换动作
 		changeChatingPerson: ->
 			self = @
-			$chatingUser.delegate 'span', 'click', ->
-				name = $(@).text()
+			$chatingUser.delegate 'li', 'click', ->
+				name = $(@).find('.chat-user-name').text()
 				self.nameChatingPerson(name)
 		# 删除正在聊天的对象
 		removeChatPerson: (name)->
@@ -34,4 +36,9 @@ if location.pathname == "/"
 		keybordchange: ->
 		# 新消息通知
 		addNotice: ->
+		###
+		* display the chating user
+		###
+		nameChatingPerson: (name)->
+			$chatPerson.text(name)
 	module.exports = chatingUser

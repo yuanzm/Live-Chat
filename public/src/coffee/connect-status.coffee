@@ -1,5 +1,6 @@
 if location.pathname == "/"
 	helper = require './helper.coffee'
+	liveUser = require './live-user.coffee'
 
 	# Initialize varibles
 	$gravatar = $('#gravatar')
@@ -10,12 +11,12 @@ if location.pathname == "/"
 	class Connect
 		constructor: ->
 		init: ->
-			_this = @
+			self = @
 
-			_this.loginMessage()
-			_this.detectNewUser()
-			_this.successionLoginMessage()
-			_this.detectUserLeft()
+			self.loginMessage()
+			self.detectNewUser()
+			self.successionLoginMessage()
+			self.detectUserLeft()
 		###
 		* if user refresh page or login,send message to server
 		###
@@ -25,24 +26,26 @@ if location.pathname == "/"
 		* if user login success or refresh page,refresh live users list and live users number
 		###
 		successionLoginMessage: ->
-			_this = @
+			self = @
 			socket.on 'success login', (data)->
 				allUser = data.allUser
-				# _this.freshUser allUser
-				# _this.showUserNumber data.userNumbers
-
+				liveUser.freshUser allUser
+				liveUser.showUserNumber data.userNumbers
+		###
+		* detect whether a new user is join to chat room
+		###
 		detectNewUser: ->
-			_this = @
+			self = @
 			socket.on 'new user', (data)->
 				allUser = data.allUser
-				# _this.freshUser allUser
-				# _this.showUserNumber data.userNumbers
+				liveUser.freshUser allUser
+				liveUser.showUserNumber data.userNumbers
 		# when an user leave chat room,delete the user in the page
 		detectUserLeft: ->
-			_this = @
+			self = @
 			socket.on 'user left', (data)-> 
 				allUser = data.allUser
-				# _this.freshUser allUser
-				# _this.showUserNumber data.userNumbers
+				liveUser.freshUser allUser
+				liveUser.showUserNumber data.userNumbers
 
 	module.exports = Connect
