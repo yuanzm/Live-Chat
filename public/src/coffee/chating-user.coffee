@@ -1,6 +1,7 @@
 if location.pathname == "/"
 	$chatingUser = $('#chating-user')
 	$chatPerson = $('#chat-person')
+	$chatLeft = $('#chat-left')
 
 	###
 	* event handlers bind to chating userx
@@ -9,33 +10,44 @@ if location.pathname == "/"
 		init: ->
 			@clickToDeletePerson()
 			@changeChatingPerson()
-		# 点击来删除聊天对象
+			@removeChatPerson()
+		###
+		* get the chating users number
+		###
+		checkChatingNum: ->
+			return $chatingUser.find('img').length
+		###
+		* click to delete a chating user
+		###
 		clickToDeletePerson: ->
 			self = @
 			$chatingUser.delegate '.close-chating', 'click', ->
 				name = $(@).parent().text()
-				--chatingUsers
 				self.removeChatPerson(name)
-				if chatingUsers == 0
+				chatingNum = self.checkChatingNum()
+				if chatingNum == 0
 					self.nameChatingPerson('Live-Chat')
 					$chatLeft.removeClass('is-chating')
-		# 点击正在聊天对象的某一个对象产生切换动作
+		###
+		* click a user in chating users list to switch chating user
+		###
 		changeChatingPerson: ->
 			self = @
 			$chatingUser.delegate 'li', 'click', ->
 				name = $(@).find('.chat-user-name').text()
 				self.nameChatingPerson(name)
-		# 删除正在聊天的对象
+		###
+		* remove a user in chating users list
+		###
 		removeChatPerson: (name)->
 			allChatingUser = $chatingUser.find('li')
 			for user in allChatingUser
 				if $(user).text() == name
 					$(user).remove()
-
-		# 通过键盘事件来进行切换聊天对象
+		###
+		* switch the chating user through keyboard
+		###
 		keybordchange: ->
-		# 新消息通知
-		addNotice: ->
 		###
 		* display the chating user
 		###

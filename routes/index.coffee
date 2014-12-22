@@ -4,6 +4,7 @@ router = express.Router()
 crypto = require 'crypto'
 User = require '../models/user.coffee'
 Chat = require '../models/chat.coffee'
+PersonalChat = require '../models/personalchat.coffee'
 
  # GET home page.
 router.get '/', (req, res)->
@@ -42,6 +43,9 @@ router.post '/regist', (req, res)->
 		email: req.body.email
 		head: head
 	})
+	newPersonalChat = new PersonalChat({
+		name: req.body.nickName
+	})
 	User.get newUser.name, (err, user)->
 		if user
 			err = '用户已存在！'
@@ -51,6 +55,9 @@ router.post '/regist', (req, res)->
 		newUser.save (err)->
 			if err
 				req.flash 'error', err
+			newPersonalChat.save (err)->
+				if err
+					req.flash 'error', err
 			req.session.user = newUser
 			req.flash 'success', 'regist success'
 			res.redirect '/'

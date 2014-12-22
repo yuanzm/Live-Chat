@@ -1,9 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatPerson, $chatingUser, chatingUser;
+var $chatLeft, $chatPerson, $chatingUser, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
   $chatPerson = $('#chat-person');
+  $chatLeft = $('#chat-left');
 
   /*
   	* event handlers bind to chating userx
@@ -11,22 +12,38 @@ if (location.pathname === "/") {
   chatingUser = {
     init: function() {
       this.clickToDeletePerson();
-      return this.changeChatingPerson();
+      this.changeChatingPerson();
+      return this.removeChatPerson();
     },
+
+    /*
+    		* get the chating users number
+     */
+    checkChatingNum: function() {
+      return $chatingUser.find('img').length;
+    },
+
+    /*
+    		* click to delete a chating user
+     */
     clickToDeletePerson: function() {
       var self;
       self = this;
       return $chatingUser.delegate('.close-chating', 'click', function() {
-        var name;
+        var chatingNum, name;
         name = $(this).parent().text();
-        --chatingUsers;
         self.removeChatPerson(name);
-        if (chatingUsers === 0) {
+        chatingNum = self.checkChatingNum();
+        if (chatingNum === 0) {
           self.nameChatingPerson('Live-Chat');
           return $chatLeft.removeClass('is-chating');
         }
       });
     },
+
+    /*
+    		* click a user in chating users list to switch chating user
+     */
     changeChatingPerson: function() {
       var self;
       self = this;
@@ -36,6 +53,10 @@ if (location.pathname === "/") {
         return self.nameChatingPerson(name);
       });
     },
+
+    /*
+    		* remove a user in chating users list
+     */
     removeChatPerson: function(name) {
       var allChatingUser, user, _i, _len, _results;
       allChatingUser = $chatingUser.find('li');
@@ -50,8 +71,11 @@ if (location.pathname === "/") {
       }
       return _results;
     },
+
+    /*
+    		* switch the chating user through keyboard
+     */
     keybordchange: function() {},
-    addNotice: function() {},
 
     /*
     		* display the chating user

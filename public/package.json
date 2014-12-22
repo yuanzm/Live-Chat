@@ -1,7 +1,7 @@
 {
-  "name": "Front-End-Boilerplate",
+  "name": "Live-Chat-Front-End",
   "version": "0.0.1",
-  "description": "front-end-boilerplate",
+  "description": "Live-Chat-Front-End",
   "main": "index.html",
   "repository": {
     "type": "git",
