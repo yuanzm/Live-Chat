@@ -2,12 +2,17 @@ mongodb = require './db.coffee'
 
 class PersonalChat
     constructor: (user)->
-        name: user.name
-        chats: []
+        @name = user.name
+        @historyChaters = []
+        @isChating = []
+        @chats = []
      
     save: (callback)->
         personalChat =
             name: @name
+            historyChaters: @historyChaters
+            isChating: @isChating
+            chats: @chats
         mongodb.open (err, db)->
             if err
                 callback err

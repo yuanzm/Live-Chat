@@ -7,6 +7,8 @@ if location.pathname == "/"
 	$chatPerson = $('#chat-person')
 	$gravatar = $('#gravatar')
 	socket = io()
+
+	Receiver.init()
 	class MessageSend
 		constructor: ->
 		init: ->
@@ -22,6 +24,9 @@ if location.pathname == "/"
 					$chatInput.focus()
 
 				if event.which is 13
+					###
+					* detail of message,including the sender's name and message content
+					###
 					data =
 						time: helper.getTime()
 						userName: $name.text()
@@ -40,14 +45,15 @@ if location.pathname == "/"
 		* @param {Object} messageData: the detail of message,including receiver user data and message detail
 		###
 		sendMessage: (messageData)->
-			userData = 
+			receiverData = 
 				name: $chatPerson.text()
-				gravatar: $gravatar.attr('src')
-			messageData.userData = userData
+				# gravatar: $gravatar.attr('src')
+			messageData.receiverData = receiverData
 			if $chatPerson.text() is 'Live-Chat'
 				socket.emit 'new message', messageData
 			else
 				socket.emit 'private chat', messageData
+
 		successSendMessage: ->
 			self = @
 			socket.on 'send message',(messageData)->

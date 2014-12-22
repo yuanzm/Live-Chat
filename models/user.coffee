@@ -20,7 +20,6 @@ User.prototype.save = (callback)->
 		if err
 			callback err
 		db.collection 'users', (err, collection)->
-			# console.log 
 			if err
 				mongodb.close()
 				callback err

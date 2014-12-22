@@ -393,12 +393,16 @@ sender.init();
 
 
 },{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4,"./message-send.coffee":7}],6:[function(require,module,exports){
-var $chatList, MessageReceive;
+var $chatList, MessageReceive, socket;
 
 if (location.pathname === "/") {
   $chatList = $('#chat-list');
+  socket = io();
   MessageReceive = {
-    init: function() {},
+    init: function() {
+      this.detectPrivateMessage();
+      return this.detectMessage();
+    },
     detectMessage: function() {
       var _this;
       _this = this;
@@ -441,6 +445,7 @@ if (location.pathname === "/") {
   $chatPerson = $('#chat-person');
   $gravatar = $('#gravatar');
   socket = io();
+  Receiver.init();
   MessageSend = (function() {
     function MessageSend() {}
 
@@ -463,6 +468,10 @@ if (location.pathname === "/") {
           $chatInput.focus();
         }
         if (event.which === 13) {
+
+          /*
+          					* detail of message,including the sender's name and message content
+           */
           data = {
             time: helper.getTime(),
             userName: $name.text(),
@@ -487,12 +496,11 @@ if (location.pathname === "/") {
      */
 
     MessageSend.prototype.sendMessage = function(messageData) {
-      var userData;
-      userData = {
-        name: $chatPerson.text(),
-        gravatar: $gravatar.attr('src')
+      var receiverData;
+      receiverData = {
+        name: $chatPerson.text()
       };
-      messageData.userData = userData;
+      messageData.receiverData = receiverData;
       if ($chatPerson.text() === 'Live-Chat') {
         return socket.emit('new message', messageData);
       } else {

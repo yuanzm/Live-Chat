@@ -1,7 +1,10 @@
 if location.pathname == "/"
 	$chatList = $('#chat-list')
+	socket = io()
 	MessageReceive =
 		init: ->
+			@detectPrivateMessage()
+			@detectMessage()
 		detectMessage: ->
 			_this = @
 			socket.on 'message', (messageData)->

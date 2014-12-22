@@ -3,6 +3,7 @@ server = require('http').createServer(app)
 io = require('socket.io')(server)
 
 sessionConfig = require './session-config.coffee'
+PrivateChat = require './models/privatechat.coffee'
 
 io.use (socket, next)->
 	req = socket.handshake
@@ -39,7 +40,6 @@ io.on 'connection', (socket)->
 				allUser[name] = userData
 				liveUser[name] = socket
 				++userNumbers
-				console.log userNumbers
 			#向所有socket客户端广播这条此用户的登录信息
 			socket.broadcast.emit 'new user',{
 				allUser: allUser
@@ -55,9 +55,11 @@ io.on 'connection', (socket)->
 			socket.emit 'send message', messageData
 
 		socket.on 'private chat', (data)->
-			console.log data
-
-			liveUser[data.name].emit 'private message', data
+			privateChat = new PrivateChat(data.userName, data)
+			liveUser[data.receiverData.name].emit 'private message', data
+			privateChat.save (err)->
+				if err
+					console.log err
 
 		socket.on 'disconnect', ->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开
