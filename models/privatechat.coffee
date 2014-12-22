@@ -10,7 +10,7 @@ class PrivateChat
         @time = chat.time #聊天信息发送时间
 
     saveChat: (callback)->
-        senderName = @senderName
+        receiverName = @receiverName
         myName = @myName
         #聊天信息的具体内容
         chat =
@@ -25,11 +25,12 @@ class PrivateChat
                     return callback err
                 collection.update(
                     {
-                        "name": senderName
+                        "name": myName
+                        "chats.$.chatName": receiverName
                     },
                     {
                         $push: {
-                            "chats.$.myName": chat
+                            "chats.chatContent": "234234"
                         }
                     },
                     {multi:true,w: 1}
@@ -43,10 +44,10 @@ class PrivateChat
     * If an user is not in the history list,insert it to database
     ###
     insertChater: (callback)->
-        senderName = @senderName
+        receiverName = @receiverName
         myName = @myName
         oneChat =
-            myName: myName
+            chatName: receiverName
             chatContent: []
         mongodb.open (err, db)->
             if err
@@ -60,7 +61,7 @@ class PrivateChat
                     },
                     {
                         $push: {
-                            "chats": oneChat 
+                            "chats": oneChat
                         }
                     },
                     {multi:true,w: 1},
@@ -72,6 +73,7 @@ class PrivateChat
 
     getEverChat: (callback)->
         receiverName = @receiverName
+        myName = @myName
         mongodb.open (err, db)->
             if err
                 return callback err
@@ -80,9 +82,11 @@ class PrivateChat
                     return callback err
                 # 查找自己本身的聊天记录
                 collection.findOne({
+                    "name": myName
                     "chats.chatName" : receiverName
                 },
                 (err, doc)->
+                    # console.log doc
                     mongodb.close()
                     if doc
                         callback null, true 

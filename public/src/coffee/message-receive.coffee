@@ -12,7 +12,7 @@ if location.pathname == "/"
 		detectPrivateMessage: ->
 			_this = @
 			socket.on 'private message', (data)-> 
-				console.log  data.userName + '对你说' + data.message
+				console.log data.userName + '对你说' + data.message
 		#display  new message
 		showMessage: (data) ->
 			aChat = '<li>'
