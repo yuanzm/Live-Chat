@@ -54,12 +54,24 @@ io.on 'connection', (socket)->
 			socket.broadcast.emit 'message', messageData
 			socket.emit 'send message', messageData
 
+		###
+		* data代表自己发送的信息
+		###
 		socket.on 'private chat', (data)->
+			###
+			* 这里的data.userName代表发送者，data代表所发送的信息详情
+			###
 			privateChat = new PrivateChat(data.userName, data)
-			liveUser[data.receiverData.name].emit 'private message', data
-			privateChat.save (err)->
+			privateChat.getEverChat (err, ever)->
 				if err
 					console.log err
+				if not ever
+					privateChat.insertChater (err)->
+						if err
+							console.log err
+			liveUser[data.receiverData.name].emit 'private message', data
+			
+
 
 		socket.on 'disconnect', ->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开

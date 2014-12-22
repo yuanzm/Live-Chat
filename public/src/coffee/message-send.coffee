@@ -33,12 +33,12 @@ if location.pathname == "/"
 						message: $chatInput.val()
 					$chatInput.val('')
 					self.sendMessage(data)
-					$.ajax({
-						type: "POST"
-						url: '/addChat'
-						data: data
-						success: (data)->				
-					})
+					# $.ajax({
+					# 	type: "POST"
+					# 	url: '/addChat'
+					# 	data: data
+					# 	success: (data)->				
+					# })
 
 		###
 		* send message

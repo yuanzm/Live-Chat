@@ -414,7 +414,7 @@ if (location.pathname === "/") {
       var _this;
       _this = this;
       return socket.on('private message', function(data) {
-        return alert(data.userName + '对你说' + data.message);
+        return console.log(data.userName + '对你说' + data.message);
       });
     },
     showMessage: function(data) {
@@ -478,13 +478,7 @@ if (location.pathname === "/") {
             message: $chatInput.val()
           };
           $chatInput.val('');
-          self.sendMessage(data);
-          return $.ajax({
-            type: "POST",
-            url: '/addChat',
-            data: data,
-            success: function(data) {}
-          });
+          return self.sendMessage(data);
         }
       });
     };
