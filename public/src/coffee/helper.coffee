@@ -23,14 +23,3 @@ chat=
 		time = new Date().Format("yyyy-MM-dd hh:mm:ss")
 
 module.exports = chat
-
-
-
-
-
-
-
-
-
-
-

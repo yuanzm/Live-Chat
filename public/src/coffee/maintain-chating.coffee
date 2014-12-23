@@ -24,5 +24,3 @@ chatingState =
     * insert him to the history chat person at the database level
     ###
     addChatPerson: ->
-
-	

@@ -12,9 +12,3 @@ chatingUser.init()
 
 sender = new messageSend()
 sender.init()
-
-
-
-	
-	
-	

@@ -1,16 +1,3 @@
-# config = require '../config'
-    
-# Db = require('mongodb').Db
-# Connection = require('mongodb').Connection
-# Server = require('mongodb').Server
-
-<<<<<<< HEAD
-module.exports = new Db(config.db, new Server(config.host, Connection.DEFAULT_PORT, {}), {safe: true})
-
-
-=======
-# module.exports = new Db(config.db, new Server(config.host, Connection.DEFAULT_PORT, {}), {safe: true})
-
 mongodb = require("mongodb")
 poolModule = require('generic-pool')
 
@@ -29,4 +16,3 @@ pool = poolModule.Pool({
 })
 
 module.exports = pool
->>>>>>> poolModule
