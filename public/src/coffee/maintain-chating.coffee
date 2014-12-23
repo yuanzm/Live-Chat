@@ -1,3 +1,4 @@
+$chatPerson = $('#chat-person')
 
 chatingState =
     ###
@@ -24,3 +25,11 @@ chatingState =
     * insert him to the history chat person at the database level
     ###
     addChatPerson: ->
+
+    isPrivateChat: ->
+        isPrivate = if $chatPerson.text() is 'Live-Chat' then false else true
+
+    loadHistory: (num)->
+                
+
+module.exports = chatingState

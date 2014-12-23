@@ -2,15 +2,15 @@ pool = require './db.coffee'
 
 #用于操作个人聊天记录
 class PrivateChat
-    constructor: (myName, chat)->
-        @receiverName = chat.receiverData.name  #聊天对象
+    constructor: (myName, chatsName, chat)->
+        @chatsName = chatsName  #聊天对象
         #聊天信息的具体内容
         @myName = myName #自己的名字  
         @message = chat.message #聊天信息具体内容
         @time = chat.time #聊天信息发送时间
 
     saveChat: (callback)->
-        receiverName = @receiverName
+        chatsName = @chatsName
         myName = @myName
         #聊天信息的具体内容
         chat =
@@ -26,7 +26,7 @@ class PrivateChat
                 collection.update(
                     {
                         "name": myName
-                        "chats.chatName": receiverName
+                        "chats.chatName": chatsName
                     },
                     {
                         $push: {
@@ -35,7 +35,6 @@ class PrivateChat
                     },
                     {multi:true,w: 1}
                     (err)->
-                        console.log 'heihei'
                         pool.release(db)
                         if (err)
                             return callback err
@@ -45,10 +44,10 @@ class PrivateChat
     * If an user is not in the history list,insert it to database
     ###
     insertChater: (callback)->
-        receiverName = @receiverName
+        chatsName = @chatsName
         myName = @myName
         oneChat =
-            chatName: receiverName
+            chatName: chatsName
             chatContent: []
         pool.acquire (err, db)->
             if err
@@ -73,7 +72,7 @@ class PrivateChat
                 )
 
     getEverChat: (callback)->
-        receiverName = @receiverName
+        chatsName = @chatsName
         myName = @myName
         pool.acquire (err, db)->
             if err
@@ -84,7 +83,7 @@ class PrivateChat
                 # 查找自己本身的聊天记录
                 collection.findOne({
                     "name": myName
-                    "chats.chatName" : receiverName
+                    "chats.chatName" : chatsName
                 },
                 (err, doc)->
                     pool.release(db)

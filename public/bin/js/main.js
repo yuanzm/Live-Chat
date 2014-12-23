@@ -392,7 +392,53 @@ sender.init();
 
 
 
-},{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4,"./message-send.coffee":7}],6:[function(require,module,exports){
+},{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4,"./message-send.coffee":8}],6:[function(require,module,exports){
+var $chatPerson, chatingState;
+
+$chatPerson = $('#chat-person');
+
+chatingState = {
+
+  /*
+  * When a user login successful or refresh page, 
+  * query the user chat with now
+   */
+  getChatPersons: function() {},
+
+  /*
+  * query all the users have been chatted with
+   */
+  getHistoryChatPerson: function() {},
+
+  /*
+  * When a user login successful or refresh page,
+  * query users in the chating users list
+   */
+  getIsChatingPerson: function() {},
+
+  /*
+  * when click ‘click button’ in the upper right corner of a chating user
+  * remove him from the chating users at the database level
+   */
+  removeAIsChatingPerson: function() {},
+
+  /*
+  * If an user click a live user to chat with,
+  * insert him to the history chat person at the database level
+   */
+  addChatPerson: function() {},
+  isPrivateChat: function() {
+    var isPrivate;
+    return isPrivate = $chatPerson.text() === 'Live-Chat' ? false : true;
+  },
+  loadHistory: function(num) {}
+};
+
+module.exports = chatingState;
+
+
+
+},{}],7:[function(require,module,exports){
 var $chatList, MessageReceive, socket;
 
 if (location.pathname === "/") {
@@ -433,12 +479,13 @@ if (location.pathname === "/") {
 
 
 
-},{}],7:[function(require,module,exports){
-var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, helper, socket;
+},{}],8:[function(require,module,exports){
+var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, Status, helper, socket;
 
 if (location.pathname === "/") {
   Receiver = require("./message-receive.coffee");
   helper = require("./helper.coffee");
+  Status = require("./maintain-chating.coffee");
   $window = $(window);
   $chatInput = $('#chat-input');
   $name = $('#my-name');
@@ -490,15 +537,23 @@ if (location.pathname === "/") {
      */
 
     MessageSend.prototype.sendMessage = function(messageData) {
-      var receiverData;
+      var isPrivate, receiverData;
+      isPrivate = Status.isPrivateChat();
+      console.log("isPrivate=" + isPrivate);
       receiverData = {
         name: $chatPerson.text()
       };
       messageData.receiverData = receiverData;
-      if ($chatPerson.text() === 'Live-Chat') {
-        return socket.emit('new message', messageData);
-      } else {
+      if (isPrivate) {
         return socket.emit('private chat', messageData);
+      } else {
+        socket.emit('new message', messageData);
+        return $.ajax({
+          type: "POST",
+          url: '/addChat',
+          data: messageData,
+          success: function(data) {}
+        });
       }
     };
 
@@ -518,4 +573,4 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":3,"./message-receive.coffee":6}]},{},[5]);
+},{"./helper.coffee":3,"./maintain-chating.coffee":6,"./message-receive.coffee":7}]},{},[5]);

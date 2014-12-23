@@ -5,10 +5,7 @@ class PersonalChat
         @name = user.name
         @historyChaters = []
         @isChating = []
-        @chats = [{
-            chatName: '',
-            chatContent: []
-        }]
+        @chats = []
      
     save: (callback)->
         personalChat =

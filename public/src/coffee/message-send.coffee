@@ -1,6 +1,8 @@
 if location.pathname == "/"
 	Receiver = require "./message-receive.coffee"
 	helper = require "./helper.coffee"
+	Status = require "./maintain-chating.coffee"
+
 	$window = $(window)
 	$chatInput = $('#chat-input')
 	$name = $('#my-name')
@@ -33,27 +35,29 @@ if location.pathname == "/"
 						message: $chatInput.val()
 					$chatInput.val('')
 					self.sendMessage(data)
-					# $.ajax({
-					# 	type: "POST"
-					# 	url: '/addChat'
-					# 	data: data
-					# 	success: (data)->				
-					# })
 
 		###
 		* send message
 		* @param {Object} messageData: the detail of message,including receiver user data and message detail
 		###
 		sendMessage: (messageData)->
+			isPrivate = Status.isPrivateChat()
+			console.log "isPrivate=" + isPrivate
+
 			receiverData = 
 				name: $chatPerson.text()
 				# gravatar: $gravatar.attr('src')
 			messageData.receiverData = receiverData
-			if $chatPerson.text() is 'Live-Chat'
-				socket.emit 'new message', messageData
-			else
+			if isPrivate
 				socket.emit 'private chat', messageData
-
+			else
+				socket.emit 'new message', messageData
+				$.ajax({
+					type: "POST"
+					url: '/addChat'
+					data: messageData
+					success: (data)->				
+				})
 		successSendMessage: ->
 			self = @
 			socket.on 'send message',(messageData)->

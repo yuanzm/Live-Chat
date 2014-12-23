@@ -1,5 +1,4 @@
 if location.pathname == "/"
-
 	$window = $(window)
 	$liveUser = $('#live-user')
 	$chatPerson = $('#chat-person')
