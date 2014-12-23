@@ -72,6 +72,10 @@ io.on 'connection', (socket)->
 					privateChat.insertChater (err)->
 						if err
 							console.log err
+					console.log 'ciao'
+					privateChat.saveChat (err)->
+						if err
+							console.log err
 				else
 					privateChat.saveChat (err)->
 						if err

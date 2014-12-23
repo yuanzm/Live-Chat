@@ -1,4 +1,4 @@
-mongodb = require './db.coffee'
+pool = require './db.coffee'
 
 class PersonalChat
     constructor: (user)->
@@ -16,20 +16,20 @@ class PersonalChat
             historyChaters: @historyChaters
             isChating: @isChating
             chats: @chats
-        mongodb.open (err, db)->
+        pool.acquire (err, db)->
             if err
                 callback err
             db.collection 'allPersonChat', (err, collection)->
                 if err
-                    mongodb.close()
+                    pool.release(db)
                     callback err
                 collection.insert personalChat, {
                     save: true
                 }, (err, chat)->
-                    mongodb.close()
+                    pool.release(db)
 
 PersonalChat.getChat = (userName, callback)->
-    mongodb.open (err, db)->
+    pool.acquire (err, db)->
         if (err)
             callback err
         db.collection 'allPersonChat', (err, collection)->
@@ -39,7 +39,7 @@ PersonalChat.getChat = (userName, callback)->
             if chatUser
                 query.userName = userName
             collection.find(query).sort({name: -1}).toArray (err, docs)->
-                mongodb.close()
+                pool.release(db)
                 if (err)
                     return callback err
                 callback null, docs
