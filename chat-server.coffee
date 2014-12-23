@@ -71,8 +71,13 @@ io.on 'connection', (socket)->
 					privateChat.insertChater (err)->
 						if err
 							console.log err
+<<<<<<< HEAD
 					privateChat.saveChat (err)->
 						console.log 23435345
+=======
+					console.log 'ciao'
+					privateChat.saveChat (err)->
+>>>>>>> poolModule
 						if err
 							console.log err
 				else

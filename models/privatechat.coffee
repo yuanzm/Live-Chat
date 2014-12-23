@@ -1,4 +1,4 @@
-mongodb = require './db.coffee'
+pool = require './db.coffee'
 
 #用于操作个人聊天记录
 class PrivateChat
@@ -16,12 +16,12 @@ class PrivateChat
         chat =
             "message": @message
             "time": @time
-        mongodb.open (err, db)->
+        pool.acquire (err, db)->
             if err
                 return callback err
             db.collection 'allPersonChat', (err, collection)->
                 if err
-                    # mongodb.close()
+                    pool.release(db)
                     return callback err
                 collection.update(
                     {
@@ -35,7 +35,8 @@ class PrivateChat
                     },
                     {multi:true,w: 1}
                     (err)->
-                        # mongodb.close()
+                        console.log 'heihei'
+                        pool.release(db)
                         if (err)
                             return callback err
                         callback null
@@ -49,7 +50,7 @@ class PrivateChat
         oneChat =
             chatName: receiverName
             chatContent: []
-        mongodb.open (err, db)->
+        pool.acquire (err, db)->
             if err
                 return callback err
             db.collection 'allPersonChat', (err, collection)->
@@ -66,7 +67,7 @@ class PrivateChat
                     },
                     {multi:true,w: 1},
                     (err)->
-                        #mongodb.close()
+                        pool.release(db)
                         if err
                             return callback err
                 )
@@ -74,7 +75,7 @@ class PrivateChat
     getEverChat: (callback)->
         receiverName = @receiverName
         myName = @myName
-        mongodb.open (err, db)->
+        pool.acquire (err, db)->
             if err
                 return callback err
             db.collection 'allPersonChat', (err, collection)->
@@ -86,8 +87,7 @@ class PrivateChat
                     "chats.chatName" : receiverName
                 },
                 (err, doc)->
-                    # console.log doc
-                    #mongodb.close()
+                    pool.release(db)
                     if doc
                         callback null, true 
                     else

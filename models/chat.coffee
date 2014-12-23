@@ -1,4 +1,4 @@
-mongodb = require './db.coffee'
+pool = require './db.coffee'
 
 class Chat
 	constructor: (chat)->
@@ -12,31 +12,31 @@ class Chat
 			time: @time
 			message: @message
 
-		mongodb.open (err, db)->
+		pool.acquire (err, db)->
 			if err
 				callback err
 			db.collection 'groupChat', (err, collection)->
 				if err
-					mongodb.close()
+					pool.release(db)
 					callback err
 
 				collection.insert chat, {save: true}, (err, chat) ->
-					mongodb.close()
+					pool.release(db)
 
 Chat.getChat = (userName, callback)->
-	mongodb.open (err, db)->
+	pool.acquire (err, db)->
 		if err
 			callback err
 		db.collection 'groupChat', (err, collection)->
 			if err
-				mongodb.close()
+				pool.release(db)
 				callback err
 			query = {}
 			if userName
 				query.userName = userName
 			collection.count query, (err)->
 				collection.find(query, {skip: 10, limit: 50}).sort({time: 1}).toArray (err, docs)->
-					mongodb.close()
+					pool.release(db)
 					if err
 						callback err
 					chats = []

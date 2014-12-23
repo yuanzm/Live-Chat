@@ -1,4 +1,4 @@
-mongodb = require './db'
+pool = require './db.coffee'
 crypto = require 'crypto'
 
 User = (user)->
@@ -16,28 +16,28 @@ User.prototype.save = (callback)->
 		email: @emial
 		head: @head
 
-	mongodb.open (err, db)->
+	pool.acquire (err, db)->
 		if err
 			callback err
 		db.collection 'users', (err, collection)->
 			if err
-				mongodb.close()
+				pool.release(db)
 				callback err
 			# collection.ensureIndex({'name': 1}, {unique: true})
 			collection.insert user, {safe: true}, (err, user) ->
-				mongodb.close()
+				pool.release(db)
 				callback(err, user)
 
 User.get = (username, callback)->
-	mongodb.open (err, db)->
+	pool.acquire (err, db)->
 		if err
 			callback err
 		db.collection 'users', (err, collection)->
 			if err
-				mongodb.close()
+				pool.release(db)
 				callback err
 			collection.findOne {name: username}, (err, doc)->
-				mongodb.close()
+				pool.release(db)
 				if doc
 					user = new User(doc)
 					callback err, user
