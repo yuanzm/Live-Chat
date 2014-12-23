@@ -14,28 +14,28 @@ class PrivateChat
         myName = @myName
         #聊天信息的具体内容
         chat =
-            message: @message
-            time: @time
+            "message": @message
+            "time": @time
         mongodb.open (err, db)->
             if err
                 return callback err
             db.collection 'allPersonChat', (err, collection)->
                 if err
-                    mongodb.close()
+                    # mongodb.close()
                     return callback err
                 collection.update(
                     {
                         "name": myName
-                        "chats.$.chatName": receiverName
+                        "chats.chatName": receiverName
                     },
                     {
                         $push: {
-                            "chats.chatContent": "234234"
+                            "chats.$.chatContent": chat
                         }
                     },
                     {multi:true,w: 1}
                     (err)->
-                        mongodb.close()
+                        # mongodb.close()
                         if (err)
                             return callback err
                         callback null
@@ -66,7 +66,7 @@ class PrivateChat
                     },
                     {multi:true,w: 1},
                     (err)->
-                        mongodb.close()
+                        #mongodb.close()
                         if err
                             return callback err
                 )
@@ -87,7 +87,7 @@ class PrivateChat
                 },
                 (err, doc)->
                     # console.log doc
-                    mongodb.close()
+                    #mongodb.close()
                     if doc
                         callback null, true 
                     else

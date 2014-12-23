@@ -58,7 +58,6 @@ io.on 'connection', (socket)->
 		* data代表自己发送的信息
 		###
 		socket.on 'private chat', (data)->
-			console.log data.receiverData.name
 			liveUser[data.receiverData.name].emit 'private message', data
 			###
 			* 这里的data.userName代表发送者，data代表所发送的信息详情
@@ -70,6 +69,10 @@ io.on 'connection', (socket)->
 					console.log err
 				if not ever
 					privateChat.insertChater (err)->
+						if err
+							console.log err
+					privateChat.saveChat (err)->
+						console.log 23435345
 						if err
 							console.log err
 				else
