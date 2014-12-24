@@ -4,6 +4,7 @@ io = require('socket.io')(server)
 
 sessionConfig = require './session-config.coffee'
 PrivateChat = require './models/privatechat.coffee'
+PersonalChat = require './models/personalchat.coffee'
 
 io.use (socket, next)->
 	req = socket.handshake
@@ -67,7 +68,6 @@ io.on 'connection', (socket)->
 			* Check whether the two users had chatted before
 			###
 			privateChat.getEverChat (err, ever)->
-				console.log ever
 				if err
 					console.log err
 				###
@@ -84,11 +84,9 @@ io.on 'connection', (socket)->
 				else
 					privateChat.saveChat (err)->
 						if err
-							console.log err
-
+							console.log err 
 			anotherChat = new PrivateChat(data.receiverData.name, data.userName,data)
 			anotherChat.getEverChat (err, ever)->
-				console.log ever
 				if err
 					console.log err
 				if not err
@@ -101,6 +99,16 @@ io.on 'connection', (socket)->
 				else
 					anotherChat.saveChat (err)->
 						console.log err
+
+			myName = data.userName
+			userName = data.receiverData.name
+			PersonalChat.isChating myName, userName, (err, ever)->
+				if err
+					console.log err
+				if not ever
+					PersonalChat.insertChating myName, userName, (err)->
+						if err
+							console.log err
 		socket.on 'disconnect', ->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开
 			offlinelist[name] = name

@@ -1,9 +1,15 @@
 extends layout
 
 block content
-	div(id="chat-left")
+	div(id="chat-left", class=className)
 		div(id="chating-user")
 			ul
+				each user in chatingUser
+					li
+						span(class="chat-user-name")= user
+						img(class="gravatar", src="http://secure.gravatar.com/avatar/45c48cce2e2d7fbdea1afc51c7c6ad26?s=48")
+						div(class="close-chating")
+							span(class="glyphicon glyphicon-remove-circle")
 		div(class="panel panel-primary")
 			div(class="panel-heading")
 				h2(class="panel-title", id="chat-person") Live-Chat
@@ -13,8 +19,9 @@ block content
 						ul(id="chat-list")
 							each chat in chats					
 								li
+									img(class="gravatar", src= chat.receiverData.gravatar)
 									span(class="userName")=chat.userName    
-									span(class="time")=chat.time
+									//- span(class="time")=chat.time
 									br
 									span(class="message")=chat.message
 

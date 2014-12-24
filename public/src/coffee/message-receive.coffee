@@ -16,8 +16,9 @@ if location.pathname == "/"
 		#display  new message
 		showMessage: (data) ->
 			aChat = '<li>'
+			aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">'
 			aChat += '<span>' + data.userName + '</span>'
-			aChat += '<span>' + data.time + '</span>'
+			# aChat += '<span>' + data.time + '</span>'
 			aChat += '<br />'
 			aChat += '<span>' + data.message + '</span>'
 			aChat += '</li>'

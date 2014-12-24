@@ -6,7 +6,7 @@ bodyParser = require 'body-parser'
 flash = require 'connect-flash'
 sessionConfig = require './session-config.coffee'
 
-routes = require './routes/index'
+routes = require './routes/index.coffee'
 
 app = express()
 
@@ -18,8 +18,8 @@ app.use favicon()
 app.use logger('dev')
 app.use bodyParser.json()
 app.use bodyParser.urlencoded()
-app.use sessionConfig.cookieParser
 app.use express.static(path.join(__dirname, 'public'))
+app.use sessionConfig.cookieParser
 app.use sessionConfig.sessionStore
 
 app.use (req, res, next)->

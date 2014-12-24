@@ -466,8 +466,8 @@ if (location.pathname === "/") {
     showMessage: function(data) {
       var aChat;
       aChat = '<li>';
+      aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">';
       aChat += '<span>' + data.userName + '</span>';
-      aChat += '<span>' + data.time + '</span>';
       aChat += '<br />';
       aChat += '<span>' + data.message + '</span>';
       aChat += '</li>';
@@ -510,7 +510,7 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return $window.keydown(function(event) {
-        var data;
+        var data, receiverData;
         if (!(event.ctrlKey || event.metaKey || event.altKey)) {
           $chatInput.focus();
         }
@@ -524,6 +524,11 @@ if (location.pathname === "/") {
             userName: $name.text(),
             message: $chatInput.val()
           };
+          receiverData = {
+            name: $chatPerson.text(),
+            gravatar: $gravatar.attr('src')
+          };
+          data.receiverData = receiverData;
           $chatInput.val('');
           return self.sendMessage(data);
         }
@@ -537,13 +542,8 @@ if (location.pathname === "/") {
      */
 
     MessageSend.prototype.sendMessage = function(messageData) {
-      var isPrivate, receiverData;
+      var isPrivate;
       isPrivate = Status.isPrivateChat();
-      console.log("isPrivate=" + isPrivate);
-      receiverData = {
-        name: $chatPerson.text()
-      };
-      messageData.receiverData = receiverData;
       if (isPrivate) {
         return socket.emit('private chat', messageData);
       } else {

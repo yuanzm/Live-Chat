@@ -2,6 +2,7 @@ pool = require './db.coffee'
 
 class Chat
 	constructor: (chat)->
+		@receiverData = chat.receiverData
 		@message = chat.message
 		@time = chat.time
 		@userName = chat.userName
@@ -11,6 +12,7 @@ class Chat
 			userName: @userName
 			time: @time
 			message: @message
+			receiverData: @receiverData
 
 		pool.acquire (err, db)->
 			if err

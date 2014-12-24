@@ -33,6 +33,10 @@ if location.pathname == "/"
 						time: helper.getTime()
 						userName: $name.text()
 						message: $chatInput.val()
+					receiverData = 
+						name: $chatPerson.text()
+						gravatar: $gravatar.attr('src')
+					data.receiverData = receiverData
 					$chatInput.val('')
 					self.sendMessage(data)
 
@@ -42,12 +46,7 @@ if location.pathname == "/"
 		###
 		sendMessage: (messageData)->
 			isPrivate = Status.isPrivateChat()
-			console.log "isPrivate=" + isPrivate
-
-			receiverData = 
-				name: $chatPerson.text()
-				# gravatar: $gravatar.attr('src')
-			messageData.receiverData = receiverData
+			# console.log "isPrivate=" + isPrivate
 			if isPrivate
 				socket.emit 'private chat', messageData
 			else
