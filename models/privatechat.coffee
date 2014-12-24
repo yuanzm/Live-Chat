@@ -1,14 +1,25 @@
 pool = require './db.coffee'
 
-#用于操作个人聊天记录
+###
+* an eitity of an Embedded sud-document of collection 'allPersonChat'
+###
 class PrivateChat
+    ###
+    * construct function
+    * @param {String} myName: name attribute of an entity of 'allPersonChat'
+    * @param {String} chatName: chatName attribute of the Embedded sud-document
+    * @param {Object} chat: an object contain the detail message
+    ###
     constructor: (myName, chatsName, chat)->
         @chatsName = chatsName  #聊天对象
         #聊天信息的具体内容
         @myName = myName #自己的名字  
         @message = chat.message #聊天信息具体内容
         @time = chat.time #聊天信息发送时间
-
+    ###
+    * Insert an data to a specific  Embedded sud-document
+    * @param {Function} callback: a function will fire after the insertion
+    ###
     saveChat: (callback)->
         chatsName = @chatsName
         myName = @myName
@@ -41,7 +52,8 @@ class PrivateChat
                         callback null
                 )
     ###
-    * If an user is not in the history list,insert it to database
+    * insert an entity of the Embedded sud-document into the collection 'allPersonChat'
+    * @param {Function} callback: a function will fire after the insertion
     ###
     insertChater: (callback)->
         chatsName = @chatsName
@@ -70,7 +82,10 @@ class PrivateChat
                         if err
                             return callback err
                 )
-
+    ###
+    * check whether an user is in the 'isChating' list
+    * @param {Function} callback: a function will fire after the query
+    ###
     getEverChat: (callback)->
         chatsName = @chatsName
         myName = @myName

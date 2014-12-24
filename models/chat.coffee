@@ -1,12 +1,22 @@
 pool = require './db.coffee'
 
+###
+* an entity of 'groupChat'
+###
 class Chat
+	###
+	* construct function
+	* @param {Object} chat: an object contain the detail of one entity
+	###
 	constructor: (chat)->
 		@receiverData = chat.receiverData
 		@message = chat.message
 		@time = chat.time
 		@userName = chat.userName
-
+	###
+	* insert the entity into database
+	* @param {Function} callback: a function will fire after the insertion
+	###
 	saveChat: (callback)->
 		chat =
 			userName: @userName
@@ -24,7 +34,7 @@ class Chat
 
 				collection.insert chat, {save: true}, (err, chat) ->
 					pool.release(db)
-
+					
 Chat.getChat = (userName, callback)->
 	pool.acquire (err, db)->
 		if err

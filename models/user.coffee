@@ -1,14 +1,20 @@
 pool = require './db.coffee'
 crypto = require 'crypto'
 
+###
+* An entity of an user
+* @param {Object} user: an object contain the detail message of the user
+###
 User = (user)->
 	@name = user.name
 	@password = user.password
 	@email = user.email
 	@head = user.head
 
-module.exports = User
-
+###
+* insert an entity to collection `users`
+* @param {Function} callback: a function will fire after the insertion
+###
 User.prototype.save = (callback)->
 	user =
 		name: @name
@@ -28,6 +34,11 @@ User.prototype.save = (callback)->
 				pool.release(db)
 				callback(err, user)
 
+###
+* Check whether an user is in the collection `users`
+* @param {String} userName: the name need to be checked
+* @param {Function} callback: a function will fire after the query
+###
 User.get = (username, callback)->
 	pool.acquire (err, db)->
 		if err
@@ -43,3 +54,4 @@ User.get = (username, callback)->
 					callback err, user
 				else
 					callback err, null
+module.exports = User

@@ -1,6 +1,9 @@
 mongodb = require("mongodb")
 poolModule = require('generic-pool')
 
+###
+* MongoDB configuration
+###
 pool = poolModule.Pool({
     name: 'mongodb'
     create: (callback)->
