@@ -2,7 +2,10 @@ if location.pathname == "/"
 	$chatingUser = $('#chating-user')
 	$chatPerson = $('#chat-person')
 	$chatLeft = $('#chat-left')
+	$name = $("#my-name")
 
+	Status = require './maintain-chating.coffee'
+	LiveUser = require './live-user.coffee'
 	###
 	* event handlers bind to chating userx
 	###
@@ -11,6 +14,28 @@ if location.pathname == "/"
 			@clickToDeletePerson()
 			@changeChatingPerson()
 			@removeChatPerson()
+			@getChatList()
+			@getChatingNowUser()
+		###
+		* when login successful or refresh page, load the chat list and display on the page
+		###
+		getChatList: ->
+			name = $name.text()
+			Status.getChatPersonsData name, (data)->
+				# console.log typeof data
+				if data.length
+					$chatLeft.addClass('is-chating')
+					for user in data
+						LiveUser.addChatPerson user
+
+		###
+		* when login successful or refresh page, mark the chating now user
+		###
+		getChatingNowUser: ->
+			name = $name.text()
+			Status.getChatingNowPerso name, (data)->
+				if data.length
+					alert(data)
 		###
 		* get the chating users number
 		###

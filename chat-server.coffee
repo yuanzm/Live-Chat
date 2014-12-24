@@ -101,12 +101,12 @@ io.on 'connection', (socket)->
 						console.log err
 
 			myName = data.userName
-			userName = data.receiverData.name
-			PersonalChat.isChating myName, userName, (err, ever)->
+			userData = data.receiverData
+			PersonalChat.isChating myName, userData.name, (err, ever)->
 				if err
 					console.log err
 				if not ever
-					PersonalChat.insertChating myName, userName, (err)->
+					PersonalChat.insertChating myName, userData, (err)->
 						if err
 							console.log err
 		socket.on 'disconnect', ->

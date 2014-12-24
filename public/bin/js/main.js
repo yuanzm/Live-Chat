@@ -1,10 +1,13 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, chatingUser;
+var $chatLeft, $chatPerson, $chatingUser, $name, LiveUser, Status, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
   $chatPerson = $('#chat-person');
   $chatLeft = $('#chat-left');
+  $name = $("#my-name");
+  Status = require('./maintain-chating.coffee');
+  LiveUser = require('./live-user.coffee');
 
   /*
   	* event handlers bind to chating userx
@@ -13,7 +16,42 @@ if (location.pathname === "/") {
     init: function() {
       this.clickToDeletePerson();
       this.changeChatingPerson();
-      return this.removeChatPerson();
+      this.removeChatPerson();
+      this.getChatList();
+      return this.getChatingNowUser();
+    },
+
+    /*
+    		* when login successful or refresh page, load the chat list and display on the page
+     */
+    getChatList: function() {
+      var name;
+      name = $name.text();
+      return Status.getChatPersonsData(name, function(data) {
+        var user, _i, _len, _results;
+        if (data.length) {
+          $chatLeft.addClass('is-chating');
+          _results = [];
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            user = data[_i];
+            _results.push(LiveUser.addChatPerson(user));
+          }
+          return _results;
+        }
+      });
+    },
+
+    /*
+    		* when login successful or refresh page, mark the chating now user
+     */
+    getChatingNowUser: function() {
+      var name;
+      name = $name.text();
+      return Status.getChatingNowPerso(name, function(data) {
+        if (data.length) {
+          return alert(data);
+        }
+      });
     },
 
     /*
@@ -89,7 +127,7 @@ if (location.pathname === "/") {
 
 
 
-},{}],2:[function(require,module,exports){
+},{"./live-user.coffee":4,"./maintain-chating.coffee":6}],2:[function(require,module,exports){
 var $gravatar, Connect, helper, liveUser, socket;
 
 if (location.pathname === "/") {
@@ -401,32 +439,64 @@ chatingState = {
 
   /*
   * When a user login successful or refresh page, 
-  * query the user chat with now
+  * query the users in the chat list
+  * @param {String} name: the name we need to query
+  * @param {Function} callback: a function will fire when load the data successfully
    */
-  getChatPersons: function() {},
-
-  /*
-  * query all the users have been chatted with
-   */
-  getHistoryChatPerson: function() {},
+  getChatPersonsData: function(name, callback) {
+    var url;
+    url = "/chat/" + name + '/chat-person';
+    return $.ajax({
+      type: "GET",
+      url: url,
+      success: function(data) {
+        return callback(data);
+      }
+    });
+  },
 
   /*
   * When a user login successful or refresh page,
-  * query users in the chating users list
+  * query the user chating now
    */
-  getIsChatingPerson: function() {},
+  getChatingNowPerson: function(name, callback) {
+    var url;
+    url = '/chat/chating-person/' + name;
+    return $.ajax({
+      type: "GET",
+      url: url,
+      success: function(data) {
+        return callback(data);
+      }
+    });
+  },
 
   /*
   * when click ‘click button’ in the upper right corner of a chating user
   * remove him from the chating users at the database level
    */
-  removeAIsChatingPerson: function() {},
+  removeUserFromChatList: function(name, callback) {
+    var url;
+    url = '/chat/remove-user' + name;
+    return $.ajax({
+      type: "DELETE",
+      url: url
+    });
+  },
 
   /*
   * If an user click a live user to chat with,
   * insert him to the history chat person at the database level
    */
-  addChatPerson: function() {},
+  addChatPerson: function(name) {
+    var url;
+    url = '/chat/add-chat-person' + name;
+    return $.ajax({
+      type: 'POST',
+      url: url,
+      data: name
+    });
+  },
   isPrivateChat: function() {
     var isPrivate;
     return isPrivate = $chatPerson.text() === 'Live-Chat' ? false : true;

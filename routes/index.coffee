@@ -15,19 +15,11 @@ router.get '/', (req, res)->
 		allChats = Chat.getChat null, (err, chats)->
 			if err
 				chats = []
-			PersonalChat.getChat myName, (err, userData)->
-				if err
-					console.log err
-				chatingUser = if userData then userData.isChating else []
-				className = if chatingUser and chatingUser.length then 'is-chating' else ' '
-				console.log chatingUser	
-				res.render 'chat', {
-					title: "Live-Chat"
-					user: req.session.user
-					chats: chats
-					chatingUser: chatingUser
-					className: className
-				}
+			res.render 'chat', {
+				title: "Live-Chat"
+				user: req.session.user
+				chats: chats
+			}
 	else
 		res.render 'chat', {
 			className: ''

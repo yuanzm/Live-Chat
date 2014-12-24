@@ -7,6 +7,7 @@ flash = require 'connect-flash'
 sessionConfig = require './session-config.coffee'
 
 routes = require './routes/index.coffee'
+chat = require './routes/privatechat.coffee'
 
 app = express()
 
@@ -35,6 +36,7 @@ app.use (req, res, next)->
 
 
 app.use '/', routes
+app.use '/chat', chat
 
 app.use (req, res, next)->
 	err = new Error("Not Found")
