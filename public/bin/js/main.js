@@ -24,24 +24,42 @@ if (location.pathname === "/") {
     		* when login successful or refresh page, load the chat list and display on the page
      */
     getChatList: function() {
-      var name;
+      var name, self;
       name = $name.text();
+      self = this;
       return Status.getChatPersonsData(name, function(data) {
-        var chatNow, isChating, user, _i, _len, _results;
+        var chatNow, index, isChating, user, _i, _len;
         isChating = data.isChating;
         chatNow = data.chatNow;
         if (isChating.length) {
           $chatLeft.addClass('is-chating');
-          _results = [];
           for (_i = 0, _len = isChating.length; _i < _len; _i++) {
             user = isChating[_i];
-            _results.push(LiveUser.addChatPerson(user));
+            LiveUser.addChatPerson(user);
           }
-          return _results;
+        }
+        if (chatNow.length) {
+          index = self.getUserIndex(chatNow);
+          return self.markChatingNowUser(index);
         }
       });
     },
-    markChatingNowUser: function(name) {},
+    getUserIndex: function(name) {
+      var currentIndex;
+      currentIndex = 0;
+      $chatingUser.find('span.chat-user-name').each(function(index) {
+        var userName;
+        console.log($(this).text(), index);
+        userName = $(this).text();
+        if (userName === name) {
+          currentIndex = index;
+        }
+      });
+      return currentIndex;
+    },
+    markChatingNowUser: function(index) {
+      return $chatingUser.find('img').eq(index).addClass('chat-now');
+    },
 
     /*
     		* get the chating users number
@@ -244,7 +262,7 @@ module.exports = chat;
 
 
 },{}],4:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, chatingUsers, liveUser;
+var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, Status, chatingUsers, liveUser;
 
 if (location.pathname === "/") {
   $window = $(window);
@@ -256,6 +274,7 @@ if (location.pathname === "/") {
   chatingUsers = 0;
   $name = $("#my-name");
   $liveNumber = $('#live-number');
+  Status = require('./maintain-chating.coffee');
 
   /*
   	* event handlers bind to live users
@@ -299,8 +318,9 @@ if (location.pathname === "/") {
         name = $(this).find('span').text();
         gravatar = $(this).find('img').attr('src');
         selfName = self.getSelfName();
-        isChating = self.detectIsChatting(gravatar);
+        isChating = self.detectIsChatting(name);
         chatNum = self.checkChatingNum();
+        alert(isChating);
         if (name !== selfName && isChating === false) {
           chatUser = {
             name: name,
@@ -310,8 +330,9 @@ if (location.pathname === "/") {
           self.nameChatingPerson(name);
           ++chatingUsers;
           if (!chatNum) {
-            return $chatLeft.addClass('is-chating');
+            $chatLeft.addClass('is-chating');
           }
+          return Status.updateChatingNowPerson(selfName, name, function(data) {});
         }
       });
     },
@@ -330,12 +351,12 @@ if (location.pathname === "/") {
       chatDiv += '</div></li>';
       return $chatingUser.find('ul').append($(chatDiv));
     },
-    detectIsChatting: function(gravatar) {
+    detectIsChatting: function(name) {
       var $allChatingUser, isChating;
       isChating = false;
-      $allChatingUser = $chatingUser.find('img');
+      $allChatingUser = $chatingUser.find('span.chat-user-name');
       $allChatingUser.each(function() {
-        if ($(this).attr('src') === gravatar) {
+        if ($(this).text() === name) {
           return isChating = true;
         }
       });
@@ -396,7 +417,7 @@ if (location.pathname === "/") {
 
 
 
-},{}],5:[function(require,module,exports){
+},{"./maintain-chating.coffee":6}],5:[function(require,module,exports){
 var Connect, chatingUser, connect, liveUser, messageSend, sender;
 
 Connect = require("./connect-status.coffee");
@@ -445,6 +466,13 @@ chatingState = {
       }
     });
   },
+
+  /*
+  * Change the chating now user
+  * @param {String} myname: the name of an entity of collection 'allPersonChat'
+  * @param {String} name: the name we update with
+  * @param {Function} callback: a function will fire after the update
+   */
   updateChatingNowPerson: function(myname, name, callback) {
     var data, url;
     url = '/chat/' + myname + '/update-chating-person/' + name;
@@ -486,9 +514,13 @@ chatingState = {
     return $.ajax({
       type: 'POST',
       url: url,
-      data: name
+      data: namew
     });
   },
+
+  /*
+  * Check the name of user we chating with,then we can now whether we are at `private chat` mode
+   */
   isPrivateChat: function() {
     var isPrivate;
     return isPrivate = $chatPerson.text() === 'Live-Chat' ? false : true;

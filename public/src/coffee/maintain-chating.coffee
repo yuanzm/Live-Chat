@@ -14,7 +14,13 @@ chatingState =
             url: url
             success: (data)->
                 callback data
-        }) 
+        })
+    ###
+    * Change the chating now user
+    * @param {String} myname: the name of an entity of collection 'allPersonChat'
+    * @param {String} name: the name we update with
+    * @param {Function} callback: a function will fire after the update
+    ### 
     updateChatingNowPerson: (myname, name, callback)->
         url = '/chat/' + myname + '/update-chating-person/' + name
         data =
@@ -47,8 +53,12 @@ chatingState =
         $.ajax({
             type: 'POST'
             url: url
-            data: name
-        }) 
+            data: namew
+        })
+    ###
+    * Check the name of user we chating with,then we can now whether we are at `private chat` mode
+
+    ###
     isPrivateChat: ->
         isPrivate = if $chatPerson.text() is 'Live-Chat' then false else true
     loadHistory: (num)->

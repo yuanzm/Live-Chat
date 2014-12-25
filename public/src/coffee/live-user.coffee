@@ -9,6 +9,8 @@ if location.pathname == "/"
 	$name = $("#my-name")
 	$liveNumber = $('#live-number')
 
+	Status = require './maintain-chating.coffee'
+
 	###
 	* event handlers bind to live users
 	###
@@ -41,8 +43,9 @@ if location.pathname == "/"
 				name = $(@).find('span').text()
 				gravatar = $(@).find('img').attr('src')
 				selfName = self.getSelfName()
-				isChating = self.detectIsChatting(gravatar)
+				isChating = self.detectIsChatting(name)
 				chatNum = self.checkChatingNum()
+				alert isChating
 				if name isnt selfName and isChating is false 
 					chatUser = 
 						name: name
@@ -52,7 +55,8 @@ if location.pathname == "/"
 					++chatingUsers
 					if not chatNum
 						$chatLeft.addClass('is-chating')
-
+					Status.updateChatingNowPerson selfName, name, (data)->
+						
 		###
 		* display the chat user in chating list
 		* @param {Object} chatUser: the user data of chat user
@@ -67,11 +71,11 @@ if location.pathname == "/"
 			$chatingUser.find('ul').append($(chatDiv))
 		
 		# 判断是否有私聊
-		detectIsChatting: (gravatar)->
+		detectIsChatting: (name)->
 			isChating = false
-			$allChatingUser = $chatingUser.find('img')
+			$allChatingUser = $chatingUser.find('span.chat-user-name')
 			$allChatingUser.each ->
-				if $(@).attr('src') is gravatar
+				if $(@).text() is name
 					return isChating = true
 			return isChating
 		checkChatingNum: ->

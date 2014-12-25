@@ -20,6 +20,7 @@ if location.pathname == "/"
 		###
 		getChatList: ->
 			name = $name.text()
+			self = @
 			Status.getChatPersonsData name, (data)->
 				isChating = data.isChating
 				chatNow = data.chatNow
@@ -27,9 +28,22 @@ if location.pathname == "/"
 					$chatLeft.addClass('is-chating')
 					for user in isChating
 						LiveUser.addChatPerson user
+				if chatNow.length
+					index = self.getUserIndex(chatNow)
+					self.markChatingNowUser index
 
-		markChatingNowUser: (name)->
+		getUserIndex: (name)->
+			currentIndex = 0
+			$chatingUser.find('span.chat-user-name').each (index)->
+				console.log  $(@).text(), index
+				userName = $(@).text()
+				if userName is name
+					currentIndex = index
+					return
+			return currentIndex
 
+		markChatingNowUser: (index)->
+			$chatingUser.find('img').eq(index).addClass 'chat-now'
 		###
 		* get the chating users number
 		###

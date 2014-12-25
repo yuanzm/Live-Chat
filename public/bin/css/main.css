@@ -96,6 +96,8 @@ footer {
 #chat-left.is-chating .panel {
   width: 93%;
   margin-left: 3px; }
+#chat-left.is-chating .chat-now {
+  border: solid red 1px; }
 
 .gravatar {
   width: 30px;
