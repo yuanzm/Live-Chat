@@ -53,7 +53,7 @@ chatingState =
         $.ajax({
             type: 'POST'
             url: url
-            data: namew
+            data: name
         })
     ###
     * Check the name of user we chating with,then we can now whether we are at `private chat` mode

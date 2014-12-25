@@ -514,7 +514,7 @@ chatingState = {
     return $.ajax({
       type: 'POST',
       url: url,
-      data: namew
+      data: name
     });
   },
 
