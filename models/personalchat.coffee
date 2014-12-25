@@ -52,7 +52,10 @@ PersonalChat.getChat = (userName, callback)->
                 if (err)
                     return callback err, null
                 if doc
-                    callback null, doc
+                    userData =
+                        isChating: doc.isChating
+                        chatNow: doc.chatNow
+                    callback null, userData
                 else
                     callback null, null
 ###
@@ -122,7 +125,7 @@ PersonalChat.removeChating = (myName, userName, callback)->
                 {name: myName},
                 {
                     $pull: {
-                        "isChating.$.name": userName
+                        "isChating": {"name": userName}
                     }
                 },
                 {multi:true,w: 1},

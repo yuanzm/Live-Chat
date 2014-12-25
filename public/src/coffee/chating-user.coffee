@@ -15,27 +15,21 @@ if location.pathname == "/"
 			@changeChatingPerson()
 			@removeChatPerson()
 			@getChatList()
-			@getChatingNowUser()
 		###
 		* when login successful or refresh page, load the chat list and display on the page
 		###
 		getChatList: ->
 			name = $name.text()
 			Status.getChatPersonsData name, (data)->
-				# console.log typeof data
-				if data.length
+				isChating = data.isChating
+				chatNow = data.chatNow
+				if isChating.length
 					$chatLeft.addClass('is-chating')
-					for user in data
+					for user in isChating
 						LiveUser.addChatPerson user
 
-		###
-		* when login successful or refresh page, mark the chating now user
-		###
-		getChatingNowUser: ->
-			name = $name.text()
-			Status.getChatingNowPerso name, (data)->
-				if data.length
-					alert(data)
+		markChatingNowUser: (name)->
+
 		###
 		* get the chating users number
 		###
@@ -49,6 +43,8 @@ if location.pathname == "/"
 			$chatingUser.delegate '.close-chating', 'click', ->
 				name = $(@).parent().text()
 				self.removeChatPerson(name)
+				Status.removeUserFromChatList $name.text(), name, (data)->
+					
 				chatingNum = self.checkChatingNum()
 				if chatingNum == 0
 					self.nameChatingPerson('Live-Chat')
@@ -60,6 +56,8 @@ if location.pathname == "/"
 			self = @
 			$chatingUser.delegate 'li', 'click', ->
 				name = $(@).find('.chat-user-name').text()
+				Status.updateChatingNowPerson $name.text(), name, (data)->
+
 				self.nameChatingPerson(name)
 		###
 		* remove a user in chating users list

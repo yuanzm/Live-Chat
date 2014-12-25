@@ -14,16 +14,16 @@ chatingState =
             url: url
             success: (data)->
                 callback data
-        })
-    ###
-    * When a user login successful or refresh page,
-    * query the user chating now
-    ###
-    getChatingNowPerson: (name, callback)->
-        url = '/chat/chating-person/' + name
+        }) 
+    updateChatingNowPerson: (myname, name, callback)->
+        url = '/chat/' + myname + '/update-chating-person/' + name
+        data =
+            "myname": myname
+            "name": name
         $.ajax({
-            type: "GET"
+            type: "POST"
             url: url
+            data: data
             success: (data)->
                 callback data
         })
@@ -31,8 +31,9 @@ chatingState =
     * when click ‘click button’ in the upper right corner of a chating user
     * remove him from the chating users at the database level
     ###
-    removeUserFromChatList: (name, callback)->
-        url = '/chat/remove-user' + name
+    removeUserFromChatList: (myname, name, callback)->
+        url = '/chat/' + myname + '/remove-user/' + name
+        console.log url
         $.ajax({
             type: "DELETE"
             url: url

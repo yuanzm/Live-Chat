@@ -17,8 +17,7 @@ if (location.pathname === "/") {
       this.clickToDeletePerson();
       this.changeChatingPerson();
       this.removeChatPerson();
-      this.getChatList();
-      return this.getChatingNowUser();
+      return this.getChatList();
     },
 
     /*
@@ -28,31 +27,21 @@ if (location.pathname === "/") {
       var name;
       name = $name.text();
       return Status.getChatPersonsData(name, function(data) {
-        var user, _i, _len, _results;
-        if (data.length) {
+        var chatNow, isChating, user, _i, _len, _results;
+        isChating = data.isChating;
+        chatNow = data.chatNow;
+        if (isChating.length) {
           $chatLeft.addClass('is-chating');
           _results = [];
-          for (_i = 0, _len = data.length; _i < _len; _i++) {
-            user = data[_i];
+          for (_i = 0, _len = isChating.length; _i < _len; _i++) {
+            user = isChating[_i];
             _results.push(LiveUser.addChatPerson(user));
           }
           return _results;
         }
       });
     },
-
-    /*
-    		* when login successful or refresh page, mark the chating now user
-     */
-    getChatingNowUser: function() {
-      var name;
-      name = $name.text();
-      return Status.getChatingNowPerso(name, function(data) {
-        if (data.length) {
-          return alert(data);
-        }
-      });
-    },
+    markChatingNowUser: function(name) {},
 
     /*
     		* get the chating users number
@@ -71,6 +60,7 @@ if (location.pathname === "/") {
         var chatingNum, name;
         name = $(this).parent().text();
         self.removeChatPerson(name);
+        Status.removeUserFromChatList($name.text(), name, function(data) {});
         chatingNum = self.checkChatingNum();
         if (chatingNum === 0) {
           self.nameChatingPerson('Live-Chat');
@@ -88,6 +78,7 @@ if (location.pathname === "/") {
       return $chatingUser.delegate('li', 'click', function() {
         var name;
         name = $(this).find('.chat-user-name').text();
+        Status.updateChatingNowPerson($name.text(), name, function(data) {});
         return self.nameChatingPerson(name);
       });
     },
@@ -454,17 +445,17 @@ chatingState = {
       }
     });
   },
-
-  /*
-  * When a user login successful or refresh page,
-  * query the user chating now
-   */
-  getChatingNowPerson: function(name, callback) {
-    var url;
-    url = '/chat/chating-person/' + name;
+  updateChatingNowPerson: function(myname, name, callback) {
+    var data, url;
+    url = '/chat/' + myname + '/update-chating-person/' + name;
+    data = {
+      "myname": myname,
+      "name": name
+    };
     return $.ajax({
-      type: "GET",
+      type: "POST",
       url: url,
+      data: data,
       success: function(data) {
         return callback(data);
       }
@@ -475,9 +466,10 @@ chatingState = {
   * when click ‘click button’ in the upper right corner of a chating user
   * remove him from the chating users at the database level
    */
-  removeUserFromChatList: function(name, callback) {
+  removeUserFromChatList: function(myname, name, callback) {
     var url;
-    url = '/chat/remove-user' + name;
+    url = '/chat/' + myname + '/remove-user/' + name;
+    console.log(url);
     return $.ajax({
       type: "DELETE",
       url: url
