@@ -1,3 +1,4 @@
+passport = require 'passport'
 express = require('express')
 router = express.Router()
 
@@ -71,6 +72,17 @@ router.get '/login', (req, res)->
 		title: "Login"
 	}
 
+router.get '/login/github', passport.authenticate('github', {session: false})
+router.get('/login/github/callback', passport.authenticate('github', {
+	session: false
+	failureRedirect: '/login'
+	successFlash: '登录成功！'
+	}),
+	(req, res)->
+		console.log req.user
+		req.session.user = {name: req.user.username, head: req.user._json.avatar_url}
+		res.redirect('/')
+)
 router.post '/login', (req, res)->
 	md5 = crypto.createHash 'md5'
 	password = md5.update(req.body.passWord).digest('base64')

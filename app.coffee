@@ -1,4 +1,6 @@
 express = require 'express'
+passport = require 'passport'
+GithubStrategy = require('passport-github').Strategy
 path = require 'path'
 favicon = require 'static-favicon'
 logger = require 'morgan'
@@ -34,7 +36,7 @@ app.use (req, res, next)->
 	res.locals.success = if success.length then success	else null
 	next()
 
-
+app.use passport.initialize()
 app.use '/', routes
 app.use '/chat', chat
 
@@ -42,6 +44,15 @@ app.use (req, res, next)->
 	err = new Error("Not Found")
 	err.status = 404
 	next err
+
+passport.use new GithubStrategy({
+	clientID: '137f657d33844175f220'
+	clientSecret: '876984707be52ae1e149b4bf92f772fb99f3cf03'
+	callbackURL: 'http://localhost:3000/login/github/callback'
+},
+(accessToken, refreshToken, profile, done)->
+	done(null, profile)
+)
 
 if app.get('env') is 'development'
 	app.use (err,req,res, next)->
