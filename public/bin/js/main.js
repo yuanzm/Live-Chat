@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $name, LiveUser, Status, chatingUser;
+var $chatLeft, $chatPerson, $chatingUser, $name, LiveUser, Status, UserDom, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
@@ -8,6 +8,7 @@ if (location.pathname === "/") {
   $name = $("#my-name");
   Status = require('./maintain-chating.coffee');
   LiveUser = require('./live-user.coffee');
+  UserDom = require('./user-dom.coffee');
 
   /*
   	* event handlers bind to chating userx
@@ -39,26 +40,10 @@ if (location.pathname === "/") {
           }
         }
         if (chatNow.length) {
-          index = self.getUserIndex(chatNow);
-          return self.markChatingNowUser(index);
+          index = UserDom.getUserIndex(chatNow);
+          return UserDom.markChatingNowUser(index);
         }
       });
-    },
-    getUserIndex: function(name) {
-      var currentIndex;
-      currentIndex = 0;
-      $chatingUser.find('span.chat-user-name').each(function(index) {
-        var userName;
-        console.log($(this).text(), index);
-        userName = $(this).text();
-        if (userName === name) {
-          currentIndex = index;
-        }
-      });
-      return currentIndex;
-    },
-    markChatingNowUser: function(index) {
-      return $chatingUser.find('img').eq(index).addClass('chat-now');
     },
 
     /*
@@ -136,7 +121,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./live-user.coffee":4,"./maintain-chating.coffee":6}],2:[function(require,module,exports){
+},{"./live-user.coffee":4,"./maintain-chating.coffee":6,"./user-dom.coffee":9}],2:[function(require,module,exports){
 var $gravatar, Connect, helper, liveUser, socket;
 
 if (location.pathname === "/") {
@@ -262,7 +247,7 @@ module.exports = chat;
 
 
 },{}],4:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, Status, chatingUsers, liveUser;
+var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, Status, UserDom, chatingUsers, liveUser;
 
 if (location.pathname === "/") {
   $window = $(window);
@@ -275,6 +260,7 @@ if (location.pathname === "/") {
   $name = $("#my-name");
   $liveNumber = $('#live-number');
   Status = require('./maintain-chating.coffee');
+  UserDom = require('./user-dom.coffee');
 
   /*
   	* event handlers bind to live users
@@ -314,25 +300,25 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return $liveUser.delegate('li', 'click', function() {
-        var chatNum, chatUser, gravatar, isChating, name, selfName;
-        name = $(this).find('span').text();
-        gravatar = $(this).find('img').attr('src');
+        var chatNum, chatUser, index, isChating, selfName;
+        chatUser = {
+          name: $(this).find('span').text(),
+          gravatar: $(this).find('img').attr('src')
+        };
         selfName = self.getSelfName();
-        isChating = self.detectIsChatting(name);
+        isChating = self.detectIsChatting(chatUser.name);
         chatNum = self.checkChatingNum();
-        alert(isChating);
-        if (name !== selfName && isChating === false) {
-          chatUser = {
-            name: name,
-            gravatar: gravatar
-          };
+        if (chatUser.name !== selfName && isChating === false) {
           self.addChatPerson(chatUser);
-          self.nameChatingPerson(name);
+          self.nameChatingPerson(chatUser.name);
           ++chatingUsers;
           if (!chatNum) {
             $chatLeft.addClass('is-chating');
           }
-          return Status.updateChatingNowPerson(selfName, name, function(data) {});
+          index = UserDom.getUserIndex(chatUser.name);
+          UserDom.markChatingNowUser(index);
+          Status.addChatPerson(selfName, chatUser, function(data) {});
+          return Status.updateChatingNowPerson(selfName, chatUser.name, function(data) {});
         }
       });
     },
@@ -417,7 +403,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./maintain-chating.coffee":6}],5:[function(require,module,exports){
+},{"./maintain-chating.coffee":6,"./user-dom.coffee":9}],5:[function(require,module,exports){
 var Connect, chatingUser, connect, liveUser, messageSend, sender;
 
 Connect = require("./connect-status.coffee");
@@ -508,13 +494,17 @@ chatingState = {
   * If an user click a live user to chat with,
   * insert him to the history chat person at the database level
    */
-  addChatPerson: function(name) {
-    var url;
-    url = '/chat/add-chat-person' + name;
+  addChatPerson: function(myname, userData, callback) {
+    var data, url;
+    url = '/chat/' + myname + '/add-chat-person/' + userData.name;
+    data = {
+      myname: myname,
+      userData: userData
+    };
     return $.ajax({
       type: 'POST',
       url: url,
-      data: name
+      data: data
     });
   },
 
@@ -667,4 +657,31 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":3,"./maintain-chating.coffee":6,"./message-receive.coffee":7}]},{},[5]);
+},{"./helper.coffee":3,"./maintain-chating.coffee":6,"./message-receive.coffee":7}],9:[function(require,module,exports){
+var $chatingUser, UserDom;
+
+$chatingUser = $('#chating-user');
+
+UserDom = {
+  markChatingNowUser: function(index) {
+    return $chatingUser.find('img').eq(index).addClass('chat-now');
+  },
+  getUserIndex: function(name) {
+    var currentIndex;
+    currentIndex = 0;
+    $chatingUser.find('span.chat-user-name').each(function(index) {
+      var userName;
+      userName = $(this).text();
+      if (userName === name) {
+        currentIndex = index;
+      }
+    });
+    return currentIndex;
+  }
+};
+
+module.exports = UserDom;
+
+
+
+},{}]},{},[5]);

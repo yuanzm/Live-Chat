@@ -6,6 +6,7 @@ if location.pathname == "/"
 
 	Status = require './maintain-chating.coffee'
 	LiveUser = require './live-user.coffee'
+	UserDom = require './user-dom.coffee'
 	###
 	* event handlers bind to chating userx
 	###
@@ -29,21 +30,8 @@ if location.pathname == "/"
 					for user in isChating
 						LiveUser.addChatPerson user
 				if chatNow.length
-					index = self.getUserIndex(chatNow)
-					self.markChatingNowUser index
-
-		getUserIndex: (name)->
-			currentIndex = 0
-			$chatingUser.find('span.chat-user-name').each (index)->
-				console.log  $(@).text(), index
-				userName = $(@).text()
-				if userName is name
-					currentIndex = index
-					return
-			return currentIndex
-
-		markChatingNowUser: (index)->
-			$chatingUser.find('img').eq(index).addClass 'chat-now'
+					index = UserDom.getUserIndex(chatNow)
+					UserDom.markChatingNowUser index
 		###
 		* get the chating users number
 		###

@@ -10,7 +10,7 @@ if location.pathname == "/"
 	$liveNumber = $('#live-number')
 
 	Status = require './maintain-chating.coffee'
-
+	UserDom = require './user-dom.coffee'
 	###
 	* event handlers bind to live users
 	###
@@ -40,23 +40,22 @@ if location.pathname == "/"
 		clickPerson: ->
 			self = @
 			$liveUser.delegate 'li', 'click', ->
-				name = $(@).find('span').text()
-				gravatar = $(@).find('img').attr('src')
+				chatUser = 
+					name: $(@).find('span').text()
+					gravatar: $(@).find('img').attr('src')
 				selfName = self.getSelfName()
-				isChating = self.detectIsChatting(name)
+				isChating = self.detectIsChatting(chatUser.name)
 				chatNum = self.checkChatingNum()
-				alert isChating
-				if name isnt selfName and isChating is false 
-					chatUser = 
-						name: name
-						gravatar: gravatar
+				if chatUser.name isnt selfName and isChating is false 
 					self.addChatPerson(chatUser)
-					self.nameChatingPerson(name)
+					self.nameChatingPerson(chatUser.name)
 					++chatingUsers
 					if not chatNum
 						$chatLeft.addClass('is-chating')
-					Status.updateChatingNowPerson selfName, name, (data)->
-						
+					index = UserDom.getUserIndex(chatUser.name)
+					UserDom.markChatingNowUser index
+					Status.addChatPerson selfName, chatUser, (data)-> 
+					Status.updateChatingNowPerson selfName, chatUser.name, (data)->
 		###
 		* display the chat user in chating list
 		* @param {Object} chatUser: the user data of chat user

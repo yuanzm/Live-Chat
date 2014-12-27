@@ -31,4 +31,13 @@ router.delete '/:myname/remove-user/:name', (req, res)->
             console.log err
         res.send('ok')
         res.end()
+
+router.post '/:myname/add-chat-person/:name', (req, res)->
+    myname = req.body.myname
+    userData = req.body.userData
+    PersonalChat.insertChating myname, userData, (err)->
+        if err
+            console.log err
+        res.send('ok')
+        res.end()
 module.exports = router

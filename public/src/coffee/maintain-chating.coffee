@@ -48,12 +48,15 @@ chatingState =
     * If an user click a live user to chat with,
     * insert him to the history chat person at the database level
     ###
-    addChatPerson: (name)->
-        url = '/chat/add-chat-person' + name
+    addChatPerson: (myname, userData, callback)->
+        url = '/chat/' + myname + '/add-chat-person/' + userData.name
+        data =
+            myname: myname
+            userData: userData
         $.ajax({
             type: 'POST'
             url: url
-            data: name
+            data: data
         })
     ###
     * Check the name of user we chating with,then we can now whether we are at `private chat` mode
