@@ -5,12 +5,13 @@ if location.pathname == "/"
 	$chatLeft = $('#chat-left')
 	$chatingUser = $('#chating-user')
 	$myName = $('#my-name').text()
-	chatingUsers = 0;
 	$name = $("#my-name")
 	$liveNumber = $('#live-number')
 
 	Status = require './maintain-chating.coffee'
 	UserDom = require './user-dom.coffee'
+	LiveChat = require './LiveChat-config.coffee'
+	# Collection = require('./chating-user.coffee').Collection
 	###
 	* event handlers bind to live users
 	###
@@ -20,6 +21,8 @@ if location.pathname == "/"
 		###
 		init: ->
 			@bindEventHandler()
+			self = @
+			setTimeout self.showCollection, 2000, self
 		###
 		* initialize all the event handlers
 		###
@@ -46,14 +49,19 @@ if location.pathname == "/"
 				selfName = self.getSelfName()
 				isChating = self.detectIsChatting(chatUser.name)
 				chatNum = self.checkChatingNum()
-				if chatUser.name isnt selfName and isChating is false 
-					self.addChatPerson(chatUser)
-					self.nameChatingPerson(chatUser.name)
-					++chatingUsers
+				if chatUser.name isnt selfName and isChating is false
 					if not chatNum
 						$chatLeft.addClass('is-chating')
+						self.addChatPerson(LiveChat)
+					# DOM level operation
+					self.addChatPerson(chatUser)
+					self.nameChatingPerson(chatUser.name)
 					index = UserDom.getUserIndex(chatUser.name)
 					UserDom.markChatingNowUser index
+					# Database level operation
+					Status.getEverChat selfName, chatUser.name, (data)->
+						if data is false
+							Status.insertChater selfName, chatUser.name, (data)->
 					Status.addChatPerson selfName, chatUser, (data)-> 
 					Status.updateChatingNowPerson selfName, chatUser.name, (data)->
 		###
@@ -116,4 +124,12 @@ if location.pathname == "/"
 		showUserNumber: (num)->
 			$liveNumber.text(num)
 
+		OneUser: class OneUser
+			constructor: (@name)->
+				@chatStart = 0
+				@chatLimit = 20
+				@chatLStatus = 'live'
+		userCollection: []
+		showCollection: (self)->
+			# console.log(self.userCollection)
 	module.exports = liveUser

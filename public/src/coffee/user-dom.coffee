@@ -2,6 +2,7 @@ $chatingUser = $('#chating-user')
 
 UserDom =
 	markChatingNowUser: (index)->
+		$chatingUser.find('img').removeClass 'chat-now'
 		$chatingUser.find('img').eq(index).addClass 'chat-now'
 
 	getUserIndex: (name)->

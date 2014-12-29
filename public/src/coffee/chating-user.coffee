@@ -7,9 +7,11 @@ if location.pathname == "/"
 	Status = require './maintain-chating.coffee'
 	LiveUser = require './live-user.coffee'
 	UserDom = require './user-dom.coffee'
+	LiveChat = require './LiveChat-config.coffee'
 	###
 	* event handlers bind to chating userx
 	###
+
 	chatingUser =
 		init: ->
 			@clickToDeletePerson()
@@ -27,11 +29,15 @@ if location.pathname == "/"
 				chatNow = data.chatNow
 				if isChating.length
 					$chatLeft.addClass('is-chating')
+					LiveUser.addChatPerson(LiveChat)
 					for user in isChating
 						LiveUser.addChatPerson user
-				if chatNow.length
-					index = UserDom.getUserIndex(chatNow)
-					UserDom.markChatingNowUser index
+						LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name)
+					if chatNow.length
+						index = UserDom.getUserIndex(chatNow)
+						UserDom.markChatingNowUser index
+						self.nameChatingPerson(chatNow)
+					console.log LiveUser.userCollection
 		###
 		* get the chating users number
 		###
@@ -40,7 +46,7 @@ if location.pathname == "/"
 		###
 		* click to delete a chating user
 		###
-		clickToDeletePerson: ->
+		clickToDeletePerson: (event)->
 			self = @
 			$chatingUser.delegate '.close-chating', 'click', ->
 				name = $(@).parent().text()
@@ -48,9 +54,11 @@ if location.pathname == "/"
 				Status.removeUserFromChatList $name.text(), name, (data)->
 					
 				chatingNum = self.checkChatingNum()
-				if chatingNum == 0
+				if chatingNum == 1
 					self.nameChatingPerson('Live-Chat')
 					$chatLeft.removeClass('is-chating')
+				event.stopPropagation()
+
 		###
 		* click a user in chating users list to switch chating user
 		###
@@ -59,8 +67,12 @@ if location.pathname == "/"
 			$chatingUser.delegate 'li', 'click', ->
 				name = $(@).find('.chat-user-name').text()
 				Status.updateChatingNowPerson $name.text(), name, (data)->
-
 				self.nameChatingPerson(name)
+				index = UserDom.getUserIndex(name)
+				UserDom.markChatingNowUser index
+
+				Status.getTwenty $name.text(), name, 0, 3, (data)->
+					console.log  data
 		###
 		* remove a user in chating users list
 		###
@@ -78,4 +90,5 @@ if location.pathname == "/"
 		###
 		nameChatingPerson: (name)->
 			$chatPerson.text(name)
-	module.exports = chatingUser
+	module.exports = 
+		chatingUser: chatingUser

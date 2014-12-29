@@ -6,15 +6,17 @@ if location.pathname == "/"
 			@detectPrivateMessage()
 			@detectMessage()
 		detectMessage: ->
-			_this = @
+			self = @
 			socket.on 'message', (messageData)->
-				_this.showMessage messageData
+				self.showMessage messageData
 		detectPrivateMessage: ->
-			_this = @
-			socket.on 'private message', (data)-> 
-				console.log data.userName + '对你说' + data.message
+			self = @
+			socket.on 'private message', (data)->
+				# alert(data)
+				# console.log data
+				self.showMessage data
 		#display  new message
-		showMessage: (data) ->
+		showMessage: (data) ->			
 			aChat = '<li>'
 			aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">'
 			aChat += '<span>' + data.userName + '</span>'
@@ -22,7 +24,7 @@ if location.pathname == "/"
 			aChat += '<br />'
 			aChat += '<span>' + data.message + '</span>'
 			aChat += '</li>'
-
+			console.log 234234
 			$chatList.append $(aChat)
 
 	module.exports = MessageReceive

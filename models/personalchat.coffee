@@ -1,5 +1,8 @@
 pool = require './db.coffee'
 
+###
+* An entity of collection `allPersonChat`
+###
 class PersonalChat
     ###
     * Constructor function
@@ -10,6 +13,7 @@ class PersonalChat
         @chatNow = ''
         @isChating = []
         @chats = []
+        @offineChat = []
     ###
     * Insert a data inside the database
     * @param {Function} callback: a function will fire after the insertion
@@ -30,6 +34,10 @@ class PersonalChat
                 collection.insert personalChat, {
                     save: true
                 }, (err, chat)->
+                    if err
+                        return callback err
+                    else
+                        return callback null
                     pool.release(db)
 ###
 * get a 'PersonalChat' from database
@@ -51,13 +59,37 @@ PersonalChat.getChat = (userName, callback)->
                 pool.release(db)
                 if (err)
                     return callback err, null
-                if doc
-                    userData =
-                        isChating: doc.isChating
-                        chatNow: doc.chatNow
-                    callback null, userData
                 else
-                    callback null, null
+                    if doc
+                        userData =
+                            isChating: doc.isChating
+                            chatNow: doc.chatNow
+                        callback null, userData
+                    else
+                        callback null, null
+
+PersonalChat.getTwenty = (userName, name, start, end, callback)->
+    pool.acquire (err, db)->
+        if err
+            return callback err
+        db.collection 'allPersonChat', (err, collection)->
+            if err
+                return callback err
+            collection.findOne(
+                {"name": userName},
+                (err, doc)->
+                    if err
+                        return callback err
+                    if doc
+                        queryChat = []
+                        chats = doc.chats
+                        for chat in chats
+                            if chat.chatName is name
+                                queryChat = chat.chatContent.slice(parseInt(start), parseInt(end))
+                        return callback null, queryChat
+                    else
+                        return callback null, null
+            )
 ###
 * To check whether an user is in chat list
 * @param {String} myName: the name of 'PersonalChat'
@@ -105,6 +137,8 @@ PersonalChat.insertChating = (myName, chatData, callback)->
                 (err)->
                     if err
                         return callback err
+                    else
+                        return callback null
                     pool.release(db)
             )
 
@@ -132,6 +166,8 @@ PersonalChat.removeChating = (myName, userName, callback)->
                 (err)->
                     if err
                         return callback err
+                    else
+                        return callback err
                     pool.release db
             )
 ###
@@ -155,7 +191,51 @@ PersonalChat.updateChatingNowUser = (myName, username, callback)->
                 (err)->
                     if err
                         return callback err
+                    else
+                        return callback null
                     pool.release(db)
             )
+
+PersonalChat.getEverChat = (myName, userName, callback)->
+    pool.acquire (err, db)->
+        if err
+            return callback err
+        db.collection 'allPersonChat', (err, collection)->
+            if err
+                return callback err
+            collection.findOne({
+                "name": myName
+                "chats.chatName": userName
+            },
+            (err, doc)->
+                pool.release(db)
+                if doc
+                    callback null, true
+                else
+                    callback null, false
+            )
+
+PersonalChat.insertChater = (myName, userName, callback)->
+    oneChat =
+        chatName: userName
+        chatContent: []
+    pool.acquire (err, db)->
+        if err
+            return callback err
+        db.collection 'allPersonChat', (err, collection)->
+            if err
+                return callback err
+            collection.update(
+                {"name": myName},
+                { $push: { "chats": oneChat}},
+                {multi:true,w: 1},
+                (err)->
+                    pool.release(db)
+                    if err
+                        return callback err
+                    else
+                        return callback null
+            )
+
 
 module.exports = PersonalChat

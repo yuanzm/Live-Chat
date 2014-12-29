@@ -64,27 +64,10 @@ io.on 'connection', (socket)->
 			* 这里的data.userName代表发送者，data代表所发送的信息详情
 			###
 			privateChat = new PrivateChat(data.userName,data.receiverData.name, data)
-			###
-			* Check whether the two users had chatted before
-			###
-			privateChat.getEverChat (err, ever)->
+			# 	else
+			privateChat.saveChat (err)->
 				if err
 					console.log err
-				###
-				* If not,add to the history chats and save the chat message
-				###
-				if not ever
-					privateChat.insertChater (err)->
-						if err
-							console.log err
-					privateChat.saveChat (err)->
-						if err
-							console.log err
-
-				else
-					privateChat.saveChat (err)->
-						if err
-							console.log err 
 			anotherChat = new PrivateChat(data.receiverData.name, data.userName,data)
 			anotherChat.getEverChat (err, ever)->
 				if err
@@ -100,15 +83,15 @@ io.on 'connection', (socket)->
 					anotherChat.saveChat (err)->
 						console.log err
 
-			myName = data.userName
-			userData = data.receiverData
-			PersonalChat.isChating myName, userData.name, (err, ever)->
-				if err
-					console.log err
-				if not ever
-					PersonalChat.insertChating myName, userData, (err)->
-						if err
-							console.log err
+			# myName = data.userName
+			# userData = data.receiverData
+			# PersonalChat.isChating myName, userData.name, (err, ever)->
+			# 	if err
+			# 		console.log err
+			# 	if not ever
+			# 		PersonalChat.insertChating myName, userData, (err)->
+			# 			if err
+			# 				console.log err
 		socket.on 'disconnect', ->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开
 			offlinelist[name] = name

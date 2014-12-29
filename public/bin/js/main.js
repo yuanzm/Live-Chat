@@ -1,5 +1,17 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $name, LiveUser, Status, UserDom, chatingUser;
+var LiveChat;
+
+LiveChat = {
+  name: 'Live-Chat',
+  gravatar: 'https://avatars3.githubusercontent.com/u/6168796?v=3&s=48'
+};
+
+module.exports = LiveChat;
+
+
+
+},{}],2:[function(require,module,exports){
+var $chatLeft, $chatPerson, $chatingUser, $name, LiveChat, LiveUser, Status, UserDom, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
@@ -9,6 +21,7 @@ if (location.pathname === "/") {
   Status = require('./maintain-chating.coffee');
   LiveUser = require('./live-user.coffee');
   UserDom = require('./user-dom.coffee');
+  LiveChat = require('./LiveChat-config.coffee');
 
   /*
   	* event handlers bind to chating userx
@@ -34,14 +47,18 @@ if (location.pathname === "/") {
         chatNow = data.chatNow;
         if (isChating.length) {
           $chatLeft.addClass('is-chating');
+          LiveUser.addChatPerson(LiveChat);
           for (_i = 0, _len = isChating.length; _i < _len; _i++) {
             user = isChating[_i];
             LiveUser.addChatPerson(user);
+            LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name);
           }
-        }
-        if (chatNow.length) {
-          index = UserDom.getUserIndex(chatNow);
-          return UserDom.markChatingNowUser(index);
+          if (chatNow.length) {
+            index = UserDom.getUserIndex(chatNow);
+            UserDom.markChatingNowUser(index);
+            self.nameChatingPerson(chatNow);
+          }
+          return console.log(LiveUser.userCollection);
         }
       });
     },
@@ -56,7 +73,7 @@ if (location.pathname === "/") {
     /*
     		* click to delete a chating user
      */
-    clickToDeletePerson: function() {
+    clickToDeletePerson: function(event) {
       var self;
       self = this;
       return $chatingUser.delegate('.close-chating', 'click', function() {
@@ -65,10 +82,11 @@ if (location.pathname === "/") {
         self.removeChatPerson(name);
         Status.removeUserFromChatList($name.text(), name, function(data) {});
         chatingNum = self.checkChatingNum();
-        if (chatingNum === 0) {
+        if (chatingNum === 1) {
           self.nameChatingPerson('Live-Chat');
-          return $chatLeft.removeClass('is-chating');
+          $chatLeft.removeClass('is-chating');
         }
+        return event.stopPropagation();
       });
     },
 
@@ -79,10 +97,15 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return $chatingUser.delegate('li', 'click', function() {
-        var name;
+        var index, name;
         name = $(this).find('.chat-user-name').text();
         Status.updateChatingNowPerson($name.text(), name, function(data) {});
-        return self.nameChatingPerson(name);
+        self.nameChatingPerson(name);
+        index = UserDom.getUserIndex(name);
+        UserDom.markChatingNowUser(index);
+        return Status.getTwenty($name.text(), name, 0, 3, function(data) {
+          return console.log(data);
+        });
       });
     },
 
@@ -116,12 +139,14 @@ if (location.pathname === "/") {
       return $chatPerson.text(name);
     }
   };
-  module.exports = chatingUser;
+  module.exports = {
+    chatingUser: chatingUser
+  };
 }
 
 
 
-},{"./live-user.coffee":4,"./maintain-chating.coffee":6,"./user-dom.coffee":9}],2:[function(require,module,exports){
+},{"./LiveChat-config.coffee":1,"./live-user.coffee":5,"./maintain-chating.coffee":7,"./user-dom.coffee":10}],3:[function(require,module,exports){
 var $gravatar, Connect, helper, liveUser, socket;
 
 if (location.pathname === "/") {
@@ -205,7 +230,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":3,"./live-user.coffee":4}],3:[function(require,module,exports){
+},{"./helper.coffee":4,"./live-user.coffee":5}],4:[function(require,module,exports){
 var chat;
 
 Date.prototype.Format = function(fmt) {
@@ -246,8 +271,8 @@ module.exports = chat;
 
 
 
-},{}],4:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, Status, UserDom, chatingUsers, liveUser;
+},{}],5:[function(require,module,exports){
+var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, LiveChat, OneUser, Status, UserDom, liveUser;
 
 if (location.pathname === "/") {
   $window = $(window);
@@ -256,11 +281,11 @@ if (location.pathname === "/") {
   $chatLeft = $('#chat-left');
   $chatingUser = $('#chating-user');
   $myName = $('#my-name').text();
-  chatingUsers = 0;
   $name = $("#my-name");
   $liveNumber = $('#live-number');
   Status = require('./maintain-chating.coffee');
   UserDom = require('./user-dom.coffee');
+  LiveChat = require('./LiveChat-config.coffee');
 
   /*
   	* event handlers bind to live users
@@ -271,7 +296,10 @@ if (location.pathname === "/") {
     		* initialize instance
      */
     init: function() {
-      return this.bindEventHandler();
+      var self;
+      this.bindEventHandler();
+      self = this;
+      return setTimeout(self.showCollection, 2000, self);
     },
 
     /*
@@ -309,14 +337,19 @@ if (location.pathname === "/") {
         isChating = self.detectIsChatting(chatUser.name);
         chatNum = self.checkChatingNum();
         if (chatUser.name !== selfName && isChating === false) {
-          self.addChatPerson(chatUser);
-          self.nameChatingPerson(chatUser.name);
-          ++chatingUsers;
           if (!chatNum) {
             $chatLeft.addClass('is-chating');
+            self.addChatPerson(LiveChat);
           }
+          self.addChatPerson(chatUser);
+          self.nameChatingPerson(chatUser.name);
           index = UserDom.getUserIndex(chatUser.name);
           UserDom.markChatingNowUser(index);
+          Status.getEverChat(selfName, chatUser.name, function(data) {
+            if (data === false) {
+              return Status.insertChater(selfName, chatUser.name, function(data) {});
+            }
+          });
           Status.addChatPerson(selfName, chatUser, function(data) {});
           return Status.updateChatingNowPerson(selfName, chatUser.name, function(data) {});
         }
@@ -396,21 +429,34 @@ if (location.pathname === "/") {
      */
     showUserNumber: function(num) {
       return $liveNumber.text(num);
-    }
+    },
+    OneUser: OneUser = (function() {
+      function OneUser(name) {
+        this.name = name;
+        this.chatStart = 0;
+        this.chatLimit = 20;
+        this.chatLStatus = 'live';
+      }
+
+      return OneUser;
+
+    })(),
+    userCollection: [],
+    showCollection: function(self) {}
   };
   module.exports = liveUser;
 }
 
 
 
-},{"./maintain-chating.coffee":6,"./user-dom.coffee":9}],5:[function(require,module,exports){
+},{"./LiveChat-config.coffee":1,"./maintain-chating.coffee":7,"./user-dom.coffee":10}],6:[function(require,module,exports){
 var Connect, chatingUser, connect, liveUser, messageSend, sender;
 
 Connect = require("./connect-status.coffee");
 
 liveUser = require("./live-user.coffee");
 
-chatingUser = require("./chating-user.coffee");
+chatingUser = require("./chating-user.coffee").chatingUser;
 
 messageSend = require("./message-send.coffee");
 
@@ -428,7 +474,7 @@ sender.init();
 
 
 
-},{"./chating-user.coffee":1,"./connect-status.coffee":2,"./live-user.coffee":4,"./message-send.coffee":8}],6:[function(require,module,exports){
+},{"./chating-user.coffee":2,"./connect-status.coffee":3,"./live-user.coffee":5,"./message-send.coffee":9}],7:[function(require,module,exports){
 var $chatPerson, chatingState;
 
 $chatPerson = $('#chat-person');
@@ -515,14 +561,52 @@ chatingState = {
     var isPrivate;
     return isPrivate = $chatPerson.text() === 'Live-Chat' ? false : true;
   },
-  loadHistory: function(num) {}
+  loadHistory: function(num) {},
+  getEverChat: function(myname, name, callback) {
+    var url;
+    url = '/chat/' + myname + '/check-ever-chat/' + name;
+    return $.ajax({
+      type: "GET",
+      url: url,
+      success: function(data) {
+        return callback(data);
+      }
+    });
+  },
+  insertChater: function(myname, name, callback) {
+    var data, url;
+    url = '/chat/' + myname + '/insert-chater/' + name;
+    data = {
+      name: name,
+      myname: myname
+    };
+    return $.ajax({
+      type: "POST",
+      url: url,
+      data: data,
+      success: function(data) {
+        return callback(data);
+      }
+    });
+  },
+  getTwenty: function(myname, name, start, end, callback) {
+    var url;
+    url = '/chat/' + myname + '/get-chat/' + name + '/' + start + '/' + end;
+    return $.ajax({
+      type: "GET",
+      url: url,
+      success: function(data) {
+        return callback(data);
+      }
+    });
+  }
 };
 
 module.exports = chatingState;
 
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var $chatList, MessageReceive, socket;
 
 if (location.pathname === "/") {
@@ -534,17 +618,17 @@ if (location.pathname === "/") {
       return this.detectMessage();
     },
     detectMessage: function() {
-      var _this;
-      _this = this;
+      var self;
+      self = this;
       return socket.on('message', function(messageData) {
-        return _this.showMessage(messageData);
+        return self.showMessage(messageData);
       });
     },
     detectPrivateMessage: function() {
-      var _this;
-      _this = this;
+      var self;
+      self = this;
       return socket.on('private message', function(data) {
-        return console.log(data.userName + '对你说' + data.message);
+        return self.showMessage(data);
       });
     },
     showMessage: function(data) {
@@ -555,6 +639,7 @@ if (location.pathname === "/") {
       aChat += '<br />';
       aChat += '<span>' + data.message + '</span>';
       aChat += '</li>';
+      console.log(234234);
       return $chatList.append($(aChat));
     }
   };
@@ -563,7 +648,7 @@ if (location.pathname === "/") {
 
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, Status, helper, socket;
 
 if (location.pathname === "/") {
@@ -657,13 +742,14 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":3,"./maintain-chating.coffee":6,"./message-receive.coffee":7}],9:[function(require,module,exports){
+},{"./helper.coffee":4,"./maintain-chating.coffee":7,"./message-receive.coffee":8}],10:[function(require,module,exports){
 var $chatingUser, UserDom;
 
 $chatingUser = $('#chating-user');
 
 UserDom = {
   markChatingNowUser: function(index) {
+    $chatingUser.find('img').removeClass('chat-now');
     return $chatingUser.find('img').eq(index).addClass('chat-now');
   },
   getUserIndex: function(name) {
@@ -684,4 +770,4 @@ module.exports = UserDom;
 
 
 
-},{}]},{},[5]);
+},{}]},{},[6]);

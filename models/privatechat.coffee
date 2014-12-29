@@ -34,15 +34,9 @@ class PrivateChat
                 if err
                     pool.release(db)
                     return callback err
-                collection.update(
+                collection.update({"name": myName, "chats.chatName": chatsName},
                     {
-                        "name": myName
-                        "chats.chatName": chatsName
-                    },
-                    {
-                        $push: {
-                            "chats.$.chatContent": chat
-                        }
+                        $push: { "chats.$.chatContent": chat }
                     },
                     {multi:true,w: 1}
                     (err)->

@@ -65,6 +65,36 @@ chatingState =
     isPrivateChat: ->
         isPrivate = if $chatPerson.text() is 'Live-Chat' then false else true
     loadHistory: (num)->
-                
+    
+    getEverChat: (myname, name, callback)->
+        url = '/chat/' + myname + '/check-ever-chat/' + name
+        $.ajax({
+            type: "GET"
+            url: url
+            success: (data)->
+                callback data
+        }) 
+
+    insertChater: (myname, name, callback)->
+        url = '/chat/' + myname + '/insert-chater/' + name
+        data =
+            name: name
+            myname: myname
+        $.ajax({
+            type: "POST"
+            url: url
+            data: data
+            success: (data)->
+                callback data
+        })
+    getTwenty: (myname, name, start, end, callback)->
+        url = '/chat/' + myname + '/get-chat/' + name + '/' + start + '/' + end
+        $.ajax({
+            type: "GET"
+            url: url
+            success: (data)->
+                callback data
+        })
+
 
 module.exports = chatingState

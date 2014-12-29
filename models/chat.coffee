@@ -35,7 +35,7 @@ class Chat
 				collection.insert chat, {save: true}, (err, chat) ->
 					pool.release(db)
 					
-Chat.getChat = (userName, callback)->
+Chat.getTwenty = (userName, page, callback)->
 	pool.acquire (err, db)->
 		if err
 			callback err
@@ -46,11 +46,11 @@ Chat.getChat = (userName, callback)->
 			query = {}
 			if userName
 				query.userName = userName
-			collection.count query, (err)->
-				collection.find(query, {skip: 10, limit: 50}).sort({time: 1}).toArray (err, docs)->
+			collection.count query, (err, total)->
+				collection.find(query, {skip: (page - 1) * 20, limit: 20}).sort({time: 1}).toArray (err, docs)->
 					pool.release(db)
 					if err
-						callback err
+						callback err, null
 					chats = []
 					for doc, index in docs
 						chat = new Chat(doc)

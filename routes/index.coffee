@@ -13,7 +13,7 @@ router.get '/', (req, res)->
 	if req.session.user
 		myName = req.session.user.name
 		chatingUser = []
-		allChats = Chat.getChat null, (err, chats)->
+		allChats = Chat.getTwenty null, 1, (err, chats)->
 			if err
 				chats = []
 			res.render 'chat', {
