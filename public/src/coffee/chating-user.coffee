@@ -3,6 +3,7 @@ if location.pathname == "/"
 	$chatPerson = $('#chat-person')
 	$chatLeft = $('#chat-left')
 	$name = $("#my-name")
+	$liveUser = $('#live-user')
 
 	Status = require './maintain-chating.coffee'
 	LiveUser = require './live-user.coffee'
@@ -30,7 +31,6 @@ if location.pathname == "/"
 				chatNow = data.chatNow
 				if isChating.length
 					$chatLeft.addClass('is-chating')
-					# LiveUser.addChatPerson(LiveChat)
 					for user in isChating
 						LiveUser.addChatPerson user
 						LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name)
@@ -38,7 +38,18 @@ if location.pathname == "/"
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
 						self.nameChatingPerson(chatNow)
-					# console.log LiveUser.userCollection
+
+		markOffLineUsers: (users)->
+			console.log $liveUser.find('li').length
+			$liveUsers = $liveUser.find('span')
+			allLiveUser = []
+			$liveUsers.each ->
+				console.log $(@).text()
+				allLiveUser.push $(@).text()
+			console.log allLiveUser
+			for user in users
+				if user in allLiveUser
+					alert 324 
 		###
 		* click to delete a chating user
 		###

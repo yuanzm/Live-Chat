@@ -11,6 +11,7 @@ if location.pathname == "/"
 	Status = require './maintain-chating.coffee'
 	UserDom = require './user-dom.coffee'
 	LiveChat = require './LiveChat-config.coffee'
+	offlineList = require "./offlinelist.coffee"
 	# Collection = require('./chating-user.coffee').Collection
 	###
 	* event handlers bind to live users
@@ -106,7 +107,7 @@ if location.pathname == "/"
 			$liveUser.empty()
 			for user,userData of allUser
 				self.showNewUser userData
-
+			offlineList.markOffLineUsers()
 		###
 		* display all the users live
 		* @param {Object} userData: user detail data
@@ -132,6 +133,7 @@ if location.pathname == "/"
 				@chatStart = 0
 				@chatLimit = 20
 				@chatLStatus = 'live'
+				@noRead = 0
 		userCollection: []
 		showCollection: (self)->
 			# console.log(self.userCollection)

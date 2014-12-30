@@ -60,6 +60,7 @@ io.on 'connection', (socket)->
 		###
 		socket.on 'private chat', (data)->
 			liveUser[data.receiverData.name].emit 'private message', data
+			socket.emit 'send private message', data
 			###
 			* 这里的data.userName代表发送者，data代表所发送的信息详情
 			###

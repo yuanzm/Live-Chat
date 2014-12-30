@@ -1,3 +1,7 @@
+###
+* A module to process the Ajax request
+###
+
 $chatPerson = $('#chat-person')
 
 chatingState =
@@ -60,12 +64,15 @@ chatingState =
         })
     ###
     * Check the name of user we chating with,then we can now whether we are at `private chat` mode
-
     ###
     isPrivateChat: ->
         isPrivate = if $chatPerson.text() is 'Live-Chat' then false else true
-    loadHistory: (num)->
-    
+    ###
+    * To check whether a user have chatted with before through Ajax
+    * @param {String} myname: self name
+    * @param {String} name: the user's name to be checked
+    * @param {Function} callback: a function which be will fire after the checking 
+    ###
     getEverChat: (myname, name, callback)->
         url = '/chat/' + myname + '/check-ever-chat/' + name
         $.ajax({
@@ -74,7 +81,12 @@ chatingState =
             success: (data)->
                 callback data
         }) 
-
+    ###
+    * To insert a user's name into the database through Ajax
+    * @param {String} myname: self name
+    * @param {String} name: the user's name to be inserted
+    * @param {Function} callback: a function which will be fire after the insertion
+    ###
     insertChater: (myname, name, callback)->
         url = '/chat/' + myname + '/insert-chater/' + name
         data =
@@ -87,6 +99,14 @@ chatingState =
             success: (data)->
                 callback data
         })
+    ###
+    * Get 20 chats with a specific user
+    * @param {String} myname: self name
+    * @param {String} name: the user's name
+    * @param {Number} start: the starting point of the query
+    * @param {end} end: the ending point of the query
+    * @param {Function} callback: a function which will be fire after the query
+    ###
     getTwenty: (myname, name, start, end, callback)->
         url = '/chat/' + myname + '/get-chat/' + name + '/' + start + '/' + end
         $.ajax({
@@ -96,5 +116,5 @@ chatingState =
                 callback data
         })
 
-
+        
 module.exports = chatingState

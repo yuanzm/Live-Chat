@@ -16,6 +16,7 @@ if location.pathname == "/"
 		init: ->
 			@keyDownEvent()
 			@successSendMessage()
+			@successSendPrivateMessage()
 		###
 		* keyboard events
 		###
@@ -61,5 +62,8 @@ if location.pathname == "/"
 			self = @
 			socket.on 'send message',(messageData)->
 				Receiver.showMessage messageData
-
+		successSendPrivateMessage:->
+			self = @
+			socket.on 'send private message', (messageData)->
+				Receiver.showMessage messageData
 	module.exports = MessageSend

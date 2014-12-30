@@ -1,6 +1,13 @@
 if location.pathname == "/"
 	$chatList = $('#chat-list')
+	LiveUser = require './live-user.coffee'
 	socket = io()
+	$name = $("#my-name")
+
+	class Notice
+		constructor: (message)->
+		displayNotice: ->
+
 	MessageReceive =
 		init: ->
 			@detectPrivateMessage()
@@ -12,9 +19,10 @@ if location.pathname == "/"
 		detectPrivateMessage: ->
 			self = @
 			socket.on 'private message', (data)->
-				# alert(data)
-				# console.log data
 				self.showMessage data
+				# console.log LiveUser.userCollection
+				LiveUser.userCollection[data.userName].noRead = 1
+				
 		#display  new message
 		showMessage: (data) ->			
 			aChat = '<li>'
