@@ -63,35 +63,23 @@ io.on 'connection', (socket)->
 			###
 			* 这里的data.userName代表发送者，data代表所发送的信息详情
 			###
-			privateChat = new PrivateChat(data.userName,data.receiverData.name, data)
+			privateChat = new PrivateChat(data.userName,data.receiverData.name, data.userName, data)
 			# 	else
 			privateChat.saveChat (err)->
 				if err
 					console.log err
-			anotherChat = new PrivateChat(data.receiverData.name, data.userName,data)
-			anotherChat.getEverChat (err, ever)->
-				if err
-					console.log err
-				if not err
-					anotherChat.insertChater (err)->
-						if err
-							console.log err
-					anotherChat.saveChat (err)->
-						if err
-							console.log err
-				else
+			anotherChat = new PrivateChat(data.receiverData.name, data.userName, data.userName, data)
+			PersonalChat.getEverChat data.receiverData.name, data.userName, (err, ever)->
+				if ever
 					anotherChat.saveChat (err)->
 						console.log err
-
-			# myName = data.userName
-			# userData = data.receiverData
-			# PersonalChat.isChating myName, userData.name, (err, ever)->
-			# 	if err
-			# 		console.log err
-			# 	if not ever
-			# 		PersonalChat.insertChating myName, userData, (err)->
-			# 			if err
-			# 				console.log err
+				else
+					PersonalChat.insertChater data.receiverData.name, data.userName, (err)->
+						if err
+							console.log err
+					anotherChat.saveChat (err)->
+						if err
+							console.log err
 		socket.on 'disconnect', ->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开
 			offlinelist[name] = name

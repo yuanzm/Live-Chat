@@ -8,6 +8,7 @@ if location.pathname == "/"
 	LiveUser = require './live-user.coffee'
 	UserDom = require './user-dom.coffee'
 	LiveChat = require './LiveChat-config.coffee'
+	Receiver = require './message-receive.coffee'
 	###
 	* event handlers bind to chating userx
 	###
@@ -29,7 +30,7 @@ if location.pathname == "/"
 				chatNow = data.chatNow
 				if isChating.length
 					$chatLeft.addClass('is-chating')
-					LiveUser.addChatPerson(LiveChat)
+					# LiveUser.addChatPerson(LiveChat)
 					for user in isChating
 						LiveUser.addChatPerson user
 						LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name)
@@ -37,26 +38,22 @@ if location.pathname == "/"
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
 						self.nameChatingPerson(chatNow)
-					console.log LiveUser.userCollection
-		###
-		* get the chating users number
-		###
-		checkChatingNum: ->
-			return $chatingUser.find('img').length
+					# console.log LiveUser.userCollection
 		###
 		* click to delete a chating user
 		###
-		clickToDeletePerson: (event)->
+		clickToDeletePerson: ->
 			self = @
-			$chatingUser.delegate '.close-chating', 'click', ->
+			$chatingUser.delegate '.close-chating', 'click', (event)->
 				name = $(@).parent().text()
 				self.removeChatPerson(name)
 				Status.removeUserFromChatList $name.text(), name, (data)->
 					
-				chatingNum = self.checkChatingNum()
-				if chatingNum == 1
+				chatingNum = LiveUser.checkChatingNum()
+				if chatingNum is 0
 					self.nameChatingPerson('Live-Chat')
 					$chatLeft.removeClass('is-chating')
+					Status.updateChatingNowPerson $name.text(), LiveChat.name, (data)->
 				event.stopPropagation()
 
 		###
@@ -66,13 +63,21 @@ if location.pathname == "/"
 			self = @
 			$chatingUser.delegate 'li', 'click', ->
 				name = $(@).find('.chat-user-name').text()
+				gravatar = $(@).find('img').attr('src')
 				Status.updateChatingNowPerson $name.text(), name, (data)->
 				self.nameChatingPerson(name)
 				index = UserDom.getUserIndex(name)
 				UserDom.markChatingNowUser index
-
 				Status.getTwenty $name.text(), name, 0, 3, (data)->
-					console.log  data
+					if data
+						console.log data
+						for chat in data
+							console.log chat
+							chatPackage = 
+								receiverData: {gravatar: gravatar}
+								userName: chat.speaker
+								message: chat.message
+							Receiver.showMessage chatPackage
 		###
 		* remove a user in chating users list
 		###

@@ -52,7 +52,6 @@ if location.pathname == "/"
 				if chatUser.name isnt selfName and isChating is false
 					if not chatNum
 						$chatLeft.addClass('is-chating')
-						self.addChatPerson(LiveChat)
 					# DOM level operation
 					self.addChatPerson(chatUser)
 					self.nameChatingPerson(chatUser.name)
@@ -86,7 +85,11 @@ if location.pathname == "/"
 					return isChating = true
 			return isChating
 		checkChatingNum: ->
-			return $chatingUser.find('img').length
+			self = @
+			num = $chatingUser.find('img').length
+			if self.detectIsChatting(LiveChat.name)
+				num -= 1
+			return num
 
 		###
 		* display the chating user

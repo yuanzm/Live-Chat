@@ -4,12 +4,9 @@ block content
 	div(id="chat-left")
 		div(id="chating-user")
 			ul
-				//- each user in chatingUser
-				//- 	li
-				//- 		span(class="chat-user-name")= user
-				//- 		img(class="gravatar", src="http://secure.gravatar.com/avatar/45c48cce2e2d7fbdea1afc51c7c6ad26?s=48")
-				//- 		div(class="close-chating")
-				//- 			span(class="glyphicon glyphicon-remove-circle")
+				li
+					span(class="chat-user-name") Live-Chat
+					img(class="gravatar", src="https://avatars3.githubusercontent.com/u/6168796?v=3&amp;s=48")
 		div(class="panel panel-primary")
 			div(class="panel-heading")
 				h2(class="panel-title", id="chat-person") Live-Chat
@@ -41,7 +38,7 @@ block content
 						span(class="glyphicon glyphicon-user")   个人信息
 					div(class="panel-body")
 						if user
-							img(id="gravatar" class="gravatar" src= user.head)
+							img(id="gravatar" class="gravatar", src= user.head)
 							span(id="my-name")= user.name
 						else
 							span(id="my-name")

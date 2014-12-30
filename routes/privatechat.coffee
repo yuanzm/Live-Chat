@@ -3,15 +3,19 @@ router = express.Router()
 
 PersonalChat = require '../models/personalchat.coffee'
 
+###
+* Get user's chating status
+###
 router.get '/:name/chat-person', (req, res)->
     name = req.params.name
     PersonalChat.getChat name, (err, userData)->
         if err
             console.log err
         # chatingUser = if userData then userData.isChating else []
-        
         res.json(userData)
-
+###
+* Change user's chating now user
+###
 router.post '/:myname/update-chating-person/:name', (req, res)->
     name = req.body.name
     myname = req.body.myname
@@ -20,6 +24,9 @@ router.post '/:myname/update-chating-person/:name', (req, res)->
         if err
             console.log err
     res.json({result: 'ok'})
+###
+* Delete a user from chat list
+###
 router.delete '/:myname/remove-user/:name', (req, res)->
     myname = req.params.myname
     name = req.params.name
@@ -57,10 +64,8 @@ router.get '/:myname/get-chat/:name/:start/:end', (req, res)->
     name = req.params.name
     start = req.params.start
     end = req.params.end
-    chats = null
     PersonalChat.getTwenty myname, name, start, end, (err, data)->
         if err
             console.log err
-        chats = data
-    res.json chats
+        res.json data
 module.exports = router

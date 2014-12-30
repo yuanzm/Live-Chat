@@ -10,12 +10,13 @@ class PrivateChat
     * @param {String} chatName: chatName attribute of the Embedded sud-document
     * @param {Object} chat: an object contain the detail message
     ###
-    constructor: (myName, chatsName, chat)->
+    constructor: (myName, chatsName, speaker, chat)->
         @chatsName = chatsName  #聊天对象
         #聊天信息的具体内容
         @myName = myName #自己的名字  
         @message = chat.message #聊天信息具体内容
         @time = chat.time #聊天信息发送时间
+        @speaker = speaker
     ###
     * Insert an data to a specific  Embedded sud-document
     * @param {Function} callback: a function will fire after the insertion
@@ -25,6 +26,7 @@ class PrivateChat
         myName = @myName
         #聊天信息的具体内容
         chat =
+            "speaker": @speaker
             "message": @message
             "time": @time
         pool.acquire (err, db)->
