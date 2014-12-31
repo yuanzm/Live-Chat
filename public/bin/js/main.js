@@ -1,4 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+
+/*
+* Web App's name and logo
+ */
 var LiveChat;
 
 LiveChat = {
@@ -11,8 +15,7 @@ module.exports = LiveChat;
 
 
 },{}],2:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $liveUser, $name, LiveChat, LiveUser, Receiver, Status, UserDom, chatingUser,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var $chatLeft, $chatPerson, $chatingUser, $chatsList, $liveUser, $name, LiveChat, LiveUser, Status, UserDom, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
@@ -20,16 +23,20 @@ if (location.pathname === "/") {
   $chatLeft = $('#chat-left');
   $name = $("#my-name");
   $liveUser = $('#live-user');
+  $chatsList = $('#chat-list');
   Status = require('./maintain-chating.coffee');
   LiveUser = require('./live-user.coffee');
   UserDom = require('./user-dom.coffee');
   LiveChat = require('./LiveChat-config.coffee');
-  Receiver = require('./message-receive.coffee');
 
   /*
-  	* event handlers bind to chating userx
+  	* event handlers be bound to chatting users
    */
   chatingUser = {
+
+    /*
+    		* Bind event handlers to users in chatting list by calling some functions
+     */
     init: function() {
       this.clickToDeletePerson();
       this.changeChatingPerson();
@@ -38,7 +45,13 @@ if (location.pathname === "/") {
     },
 
     /*
-    		* when login successful or refresh page, load the chat list and display on the page
+    		* When login successful or refresh the page,load some datas we need.
+    		* Firstly, we need to load the chat user list.
+    		* If there users in the list we loaded just now,
+    		* show the chat list on the page by adding class `is-chating` to the chatting room.
+    		* Also, we need to add the users to array `userCollection` which maintain these users' status.
+    		* Secondly, we also need to get the chatting user,if he exists, mark it in the chat user list.
+    		* Besides, it is essential to rename the chatting user.
      */
     getChatList: function() {
       var name, self;
@@ -63,30 +76,10 @@ if (location.pathname === "/") {
         }
       });
     },
-    markOffLineUsers: function(users) {
-      var $liveUsers, allLiveUser, user, _i, _len, _results;
-      console.log($liveUser.find('li').length);
-      $liveUsers = $liveUser.find('span');
-      allLiveUser = [];
-      $liveUsers.each(function() {
-        console.log($(this).text());
-        return allLiveUser.push($(this).text());
-      });
-      console.log(allLiveUser);
-      _results = [];
-      for (_i = 0, _len = users.length; _i < _len; _i++) {
-        user = users[_i];
-        if (__indexOf.call(allLiveUser, user) >= 0) {
-          _results.push(alert(324));
-        } else {
-          _results.push(void 0);
-        }
-      }
-      return _results;
-    },
 
     /*
-    		* click to delete a chating user
+    		* Click the `close button` to the top right corner of the user's avatar to 
+    		* remove one user from the chat user list.
      */
     clickToDeletePerson: function() {
       var self;
@@ -107,7 +100,12 @@ if (location.pathname === "/") {
     },
 
     /*
-    		* click a user in chating users list to switch chating user
+    		* There are several things need to be executed when click a user in the chat user list
+    		* Firstly, reset the chatting user at the database level through Ajax.
+    		* Secondly, rename the chatting user on the page.
+    		* Thirdly, we need to mark the user we click just now.
+    		* Fourthly, query the last 20 chats through Ajax.
+    		* Lastly, repaint the chat room.
      */
     changeChatingPerson: function() {
       var self;
@@ -121,13 +119,11 @@ if (location.pathname === "/") {
         index = UserDom.getUserIndex(name);
         UserDom.markChatingNowUser(index);
         return Status.getTwenty($name.text(), name, 0, 3, function(data) {
-          var chat, chatPackage, _i, _len, _results;
+          var allMessage, chat, chatPackage, _i, _len;
           if (data) {
-            console.log(data);
-            _results = [];
+            allMessage = [];
             for (_i = 0, _len = data.length; _i < _len; _i++) {
               chat = data[_i];
-              console.log(chat);
               chatPackage = {
                 receiverData: {
                   gravatar: gravatar
@@ -135,12 +131,27 @@ if (location.pathname === "/") {
                 userName: chat.speaker,
                 message: chat.message
               };
-              _results.push(Receiver.showMessage(chatPackage));
+              allMessage.push(chatPackage);
             }
-            return _results;
+            return self.repaintChatRoom(allMessage);
           }
         });
       });
+    },
+
+    /*
+    		* Repaint the chat room
+    		* @param {Array} allmessage: an array contain messages need to be repainted.
+     */
+    repaintChatRoom: function(allMessage) {
+      var message, _i, _len, _results;
+      $chatsList.empty();
+      _results = [];
+      for (_i = 0, _len = allMessage.length; _i < _len; _i++) {
+        message = allMessage[_i];
+        _results.push(UserDom.showMessage(message));
+      }
+      return _results;
     },
 
     /*
@@ -162,11 +173,6 @@ if (location.pathname === "/") {
     },
 
     /*
-    		* switch the chating user through keyboard
-     */
-    keybordchange: function() {},
-
-    /*
     		* display the chating user
      */
     nameChatingPerson: function(name) {
@@ -180,7 +186,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./LiveChat-config.coffee":1,"./live-user.coffee":5,"./maintain-chating.coffee":7,"./message-receive.coffee":8,"./user-dom.coffee":11}],3:[function(require,module,exports){
+},{"./LiveChat-config.coffee":1,"./live-user.coffee":5,"./maintain-chating.coffee":7,"./user-dom.coffee":11}],3:[function(require,module,exports){
 var $gravatar, Connect, helper, liveUser, socket;
 
 if (location.pathname === "/") {
@@ -474,15 +480,42 @@ if (location.pathname === "/") {
         this.name = name;
         this.chatStart = 0;
         this.chatLimit = 20;
-        this.chatLStatus = 'live';
         this.noRead = 0;
       }
+
+      OneUser.prototype.getChatStart = function() {
+        return this.chatStart;
+      };
+
+      OneUser.prototype.setChatStart = function(newStart) {
+        return this.chatStart = newStart;
+      };
+
+      OneUser.prototype.getNoRead = function() {
+        return this.noRead;
+      };
+
+      OneUser.prototype.setNoRead = function(newNoRead) {
+        return this.noRead = newNoRead;
+      };
 
       return OneUser;
 
     })(),
     userCollection: [],
-    showCollection: function(self) {}
+    showCollection: function(self) {},
+    getUserIndex: function(name) {
+      var currentIndex;
+      currentIndex = 0;
+      $liveUser.find('span.chat-user-name').each(function(index) {
+        var userName;
+        userName = $(this).text();
+        if (userName === name) {
+          currentIndex = index;
+        }
+      });
+      return currentIndex;
+    }
   };
   module.exports = liveUser;
 }
@@ -673,51 +706,73 @@ module.exports = chatingState;
 
 
 },{}],8:[function(require,module,exports){
-var $chatList, $name, LiveUser, MessageReceive, Notice, socket;
+var $chatList, $chatPerson, $chatingUser, $liveUser, $name, LiveUser, MessageReceive, UserDom, socket;
 
 if (location.pathname === "/") {
   $chatList = $('#chat-list');
   LiveUser = require('./live-user.coffee');
   socket = io();
   $name = $("#my-name");
-  Notice = (function() {
-    function Notice(message) {}
-
-    Notice.prototype.displayNotice = function() {};
-
-    return Notice;
-
-  })();
+  $chatPerson = $('#chat-person');
+  $chatingUser = $('#chating-user');
+  $liveUser = $('#live-user');
+  UserDom = require('./user-dom.coffee');
   MessageReceive = {
+
+    /*
+    		* Bind event handlers for socket
+     */
     init: function() {
       this.detectPrivateMessage();
       return this.detectMessage();
     },
+
+    /*
+    		* If someone send a group chat message, display it in the chat room
+     */
     detectMessage: function() {
       var self;
       self = this;
       return socket.on('message', function(messageData) {
-        return self.showMessage(messageData);
+        return UserDom.showMessage(messageData);
       });
     },
+
+    /*
+    		* display the unread messages number on user's gravatar
+    		* @param {Number} index: the position of the user in the chat list
+    		* @param {Number} num: the number of unread messages
+     */
+    displayNotice: function(displayArea, index, num) {
+      var aNotice;
+      aNotice = '<div class="notice">';
+      aNotice += '<span class="notice-number">' + num + '</span>';
+      aNotice += '</div>';
+      return displayArea.find('li').eq(index).append($(aNotice));
+    },
+
+    /*
+    		* If receive a private message,
+     */
     detectPrivateMessage: function() {
       var self;
       self = this;
       return socket.on('private message', function(data) {
-        self.showMessage(data);
-        return LiveUser.userCollection[data.userName].noRead = 1;
+        var fromName, index;
+        fromName = data.userName;
+        if (LiveUser.detectIsChatting(fromName)) {
+          if ($chatPerson.text() === fromName) {
+            return UserDom.showMessage(data);
+          } else {
+            LiveUser.userCollection[fromName].noRead += 1;
+            index = UserDom.getUserIndex(fromName);
+            return self.displayNotice($chatingUser, index, LiveUser.userCollection[fromName].noRead);
+          }
+        } else {
+          index = LiveUser.getUserIndex(fromName);
+          return self.displayNotice($liveUser, index, 1);
+        }
       });
-    },
-    showMessage: function(data) {
-      var aChat;
-      aChat = '<li>';
-      aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">';
-      aChat += '<span>' + data.userName + '</span>';
-      aChat += '<br />';
-      aChat += '<span>' + data.message + '</span>';
-      aChat += '</li>';
-      console.log(234234);
-      return $chatList.append($(aChat));
     }
   };
   module.exports = MessageReceive;
@@ -725,13 +780,14 @@ if (location.pathname === "/") {
 
 
 
-},{"./live-user.coffee":5}],9:[function(require,module,exports){
-var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, Status, helper, socket;
+},{"./live-user.coffee":5,"./user-dom.coffee":11}],9:[function(require,module,exports){
+var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, Status, UserDom, helper, socket;
 
 if (location.pathname === "/") {
   Receiver = require("./message-receive.coffee");
   helper = require("./helper.coffee");
   Status = require("./maintain-chating.coffee");
+  UserDom = require('./user-dom.coffee');
   $window = $(window);
   $chatInput = $('#chat-input');
   $name = $('#my-name');
@@ -808,7 +864,7 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return socket.on('send message', function(messageData) {
-        return Receiver.showMessage(messageData);
+        return UserDom.showMessage(messageData);
       });
     };
 
@@ -816,7 +872,7 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return socket.on('send private message', function(messageData) {
-        return Receiver.showMessage(messageData);
+        return UserDom.showMessage(messageData);
       });
     };
 
@@ -828,7 +884,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":4,"./maintain-chating.coffee":7,"./message-receive.coffee":8}],10:[function(require,module,exports){
+},{"./helper.coffee":4,"./maintain-chating.coffee":7,"./message-receive.coffee":8,"./user-dom.coffee":11}],10:[function(require,module,exports){
 
 /*
 * A module to process the offline user list
@@ -897,9 +953,11 @@ module.exports = offLine;
 
 
 },{}],11:[function(require,module,exports){
-var $chatingUser, UserDom;
+var $chatList, $chatingUser, UserDom;
 
 $chatingUser = $('#chating-user');
+
+$chatList = $('#chat-list');
 
 UserDom = {
   markChatingNowUser: function(index) {
@@ -917,6 +975,16 @@ UserDom = {
       }
     });
     return currentIndex;
+  },
+  showMessage: function(data) {
+    var aChat;
+    aChat = '<li>';
+    aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">';
+    aChat += '<span>' + data.userName + '</span>';
+    aChat += '<br />';
+    aChat += '<span>' + data.message + '</span>';
+    aChat += '</li>';
+    return $chatList.append($(aChat));
   }
 };
 

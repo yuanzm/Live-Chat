@@ -84,7 +84,6 @@ PersonalChat.getTwenty = (userName, name, start, end, callback)->
                     if doc
                         queryChat = []
                         chats = doc.chats
-                        console.log chats
                         for chat in chats
                             if chat.chatName is name
                                 queryChat = chat.chatContent.slice(parseInt(start), parseInt(end))

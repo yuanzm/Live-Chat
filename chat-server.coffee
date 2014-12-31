@@ -29,8 +29,8 @@ io.on 'connection', (socket)->
 		#相应用户的刷新页面事件
 		socket.on 'join', (gravatar)->
 			userData =
-				name : name
-				gravatar : gravatar
+				name: name
+				gravatar: gravatar
 			#如果用户在待离线列表中，把该用户从待离线列表中删除
 			if offlinelist.hasOwnProperty(name)
 				delete offlinelist[name]
@@ -84,6 +84,7 @@ io.on 'connection', (socket)->
 		socket.on 'disconnect', ->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开
 			offlinelist[name] = name
+			delete allUser[name]
 			delay = (ms, func) -> setTimeout func, ms
 			hopeConnect =  delay 3000, ->
 				console.log "welcome back"

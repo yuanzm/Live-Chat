@@ -132,9 +132,25 @@ if location.pathname == "/"
 			constructor: (@name)->
 				@chatStart = 0
 				@chatLimit = 20
-				@chatLStatus = 'live'
 				@noRead = 0
+			getChatStart: ->
+				return @chatStart
+			setChatStart: (newStart)->
+				@chatStart = newStart
+			getNoRead: ->
+				return @noRead
+			setNoRead: (newNoRead)->
+				@noRead = newNoRead
+
 		userCollection: []
 		showCollection: (self)->
 			# console.log(self.userCollection)
+		getUserIndex: (name)->
+			currentIndex = 0
+			$liveUser.find('span.chat-user-name').each (index)->
+				userName = $(@).text()
+				if userName is name
+					currentIndex = index
+					return
+			return currentIndex
 	module.exports = liveUser

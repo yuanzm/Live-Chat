@@ -2,6 +2,7 @@ if location.pathname == "/"
 	Receiver = require "./message-receive.coffee"
 	helper = require "./helper.coffee"
 	Status = require "./maintain-chating.coffee"
+	UserDom = require './user-dom.coffee'
 
 	$window = $(window)
 	$chatInput = $('#chat-input')
@@ -61,9 +62,9 @@ if location.pathname == "/"
 		successSendMessage: ->
 			self = @
 			socket.on 'send message',(messageData)->
-				Receiver.showMessage messageData
+				UserDom.showMessage messageData
 		successSendPrivateMessage:->
 			self = @
 			socket.on 'send private message', (messageData)->
-				Receiver.showMessage messageData
+				UserDom.showMessage messageData
 	module.exports = MessageSend

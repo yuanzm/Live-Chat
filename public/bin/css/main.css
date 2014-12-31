@@ -112,7 +112,27 @@ footer {
     margin-top: 20px; }
     #chat-right .user-list ul li {
       cursor: pointer;
-      margin-top: 10px; }
+      width: 65px;
+      margin-top: 10px;
+      position: relative; }
+      #chat-right .user-list ul li .notice {
+        right: 20px; }
+
+ul li .notice {
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  background-color: red;
+  border-radius: 50%; }
+  ul li .notice .notice-number {
+    color: white;
+    width: 15px;
+    display: inline-block;
+    text-align: center;
+    font-size: 12px;
+    position: absolute; }
 
 #sign {
   width: 500px;

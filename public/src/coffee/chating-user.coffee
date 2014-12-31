@@ -1,27 +1,38 @@
 if location.pathname == "/"
+	# Declare some variables
 	$chatingUser = $('#chating-user')
 	$chatPerson = $('#chat-person')
 	$chatLeft = $('#chat-left')
 	$name = $("#my-name")
 	$liveUser = $('#live-user')
+	$chatsList = $('#chat-list')
 
+	# Load some modules
 	Status = require './maintain-chating.coffee'
 	LiveUser = require './live-user.coffee'
 	UserDom = require './user-dom.coffee'
 	LiveChat = require './LiveChat-config.coffee'
-	Receiver = require './message-receive.coffee'
-	###
-	* event handlers bind to chating userx
-	###
 
+	###
+	* event handlers be bound to chatting users
+	###
 	chatingUser =
+		###
+		* Bind event handlers to users in chatting list by calling some functions
+		###
 		init: ->
 			@clickToDeletePerson()
 			@changeChatingPerson()
 			@removeChatPerson()
 			@getChatList()
 		###
-		* when login successful or refresh page, load the chat list and display on the page
+		* When login successful or refresh the page,load some datas we need.
+		* Firstly, we need to load the chat user list.
+		* If there users in the list we loaded just now,
+		* show the chat list on the page by adding class `is-chating` to the chatting room.
+		* Also, we need to add the users to array `userCollection` which maintain these users' status.
+		* Secondly, we also need to get the chatting user,if he exists, mark it in the chat user list.
+		* Besides, it is essential to rename the chatting user. 
 		###
 		getChatList: ->
 			name = $name.text()
@@ -37,21 +48,10 @@ if location.pathname == "/"
 					if chatNow.length
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
-						self.nameChatingPerson(chatNow)
-
-		markOffLineUsers: (users)->
-			console.log $liveUser.find('li').length
-			$liveUsers = $liveUser.find('span')
-			allLiveUser = []
-			$liveUsers.each ->
-				console.log $(@).text()
-				allLiveUser.push $(@).text()
-			console.log allLiveUser
-			for user in users
-				if user in allLiveUser
-					alert 324 
+						self.nameChatingPerson(chatNow) 
 		###
-		* click to delete a chating user
+		* Click the `close button` to the top right corner of the user's avatar to 
+		* remove one user from the chat user list.
 		###
 		clickToDeletePerson: ->
 			self = @
@@ -68,7 +68,12 @@ if location.pathname == "/"
 				event.stopPropagation()
 
 		###
-		* click a user in chating users list to switch chating user
+		* There are several things need to be executed when click a user in the chat user list
+		* Firstly, reset the chatting user at the database level through Ajax.
+		* Secondly, rename the chatting user on the page.
+		* Thirdly, we need to mark the user we click just now.
+		* Fourthly, query the last 20 chats through Ajax.
+		* Lastly, repaint the chat room.
 		###
 		changeChatingPerson: ->
 			self = @
@@ -81,14 +86,23 @@ if location.pathname == "/"
 				UserDom.markChatingNowUser index
 				Status.getTwenty $name.text(), name, 0, 3, (data)->
 					if data
-						console.log data
+						allMessage = []
 						for chat in data
-							console.log chat
 							chatPackage = 
 								receiverData: {gravatar: gravatar}
 								userName: chat.speaker
 								message: chat.message
-							Receiver.showMessage chatPackage
+							allMessage.push chatPackage
+						self.repaintChatRoom allMessage
+
+		###
+		* Repaint the chat room
+		* @param {Array} allmessage: an array contain messages need to be repainted.
+		###
+		repaintChatRoom: (allMessage)->
+			$chatsList.empty()
+			for message in allMessage
+				UserDom.showMessage message
 		###
 		* remove a user in chating users list
 		###
@@ -98,13 +112,10 @@ if location.pathname == "/"
 				if $(user).text() == name
 					$(user).remove()
 		###
-		* switch the chating user through keyboard
-		###
-		keybordchange: ->
-		###
 		* display the chating user
 		###
 		nameChatingPerson: (name)->
 			$chatPerson.text(name)
+
 	module.exports = 
 		chatingUser: chatingUser

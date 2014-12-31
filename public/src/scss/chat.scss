@@ -102,7 +102,30 @@ $chat-height: 400px;
 		margin-top: 20px;
 		ul li {
 			cursor: pointer;
+			width: 65px;
 			margin-top: 10px;
+			position: relative;
+			.notice {
+				right: 20px;
+			}
 		}
+	}
+}
+
+ul li .notice {
+	width: 15px;
+	height: 15px;
+	position: absolute;
+	right: -5px;
+	top: -5px;
+	background-color: red;
+	border-radius: 50%; 
+	.notice-number {
+		color: white;
+		width: 15px;
+		display: inline-block;
+		text-align: center;
+		font-size: 12px;
+		position:absolute;
 	}
 }
