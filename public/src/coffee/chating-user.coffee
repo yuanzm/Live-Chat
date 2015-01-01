@@ -45,10 +45,13 @@ if location.pathname == "/"
 					for user in isChating
 						LiveUser.addChatPerson user
 						LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name)
+						LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name)
 					if chatNow.length
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
-						self.nameChatingPerson(chatNow) 
+						self.nameChatingPerson(chatNow)
+
+
 		###
 		* Click the `close button` to the top right corner of the user's avatar to 
 		* remove one user from the chat user list.
@@ -84,17 +87,43 @@ if location.pathname == "/"
 				self.nameChatingPerson(name)
 				index = UserDom.getUserIndex(name)
 				UserDom.markChatingNowUser index
-				Status.getTwenty $name.text(), name, 0, 3, (data)->
-					if data
-						allMessage = []
-						for chat in data
-							chatPackage = 
-								receiverData: {gravatar: gravatar}
-								userName: chat.speaker
-								message: chat.message
-							allMessage.push chatPackage
-						self.repaintChatRoom allMessage
 
+				if name is LiveChat.name
+					self.loadGroupChat()
+				else
+					self.loadPrivateChat($name.text(), name, gravatar)
+		
+		loadGroupChat: ->
+			self = @
+			group = LiveUser.userCollection[LiveChat.name]
+			start = group.getChatStart()
+			limit = group.getChatLimit()
+			Status.getGroupTwenty start, (data)->
+				if data
+					# allmessage = self.processData data
+					self.repaintChatRoom data
+		processData: (messageData, gravatar)->
+			allmessage = []
+			for chat in messageData
+				chatPackage =
+					receiverData: {gravatar: gravatar}
+					userName: chat.userName
+					message: chat.message
+				allmessage.push chatPackage
+			return allmessage
+		###
+		* Load history chats from database.
+		###
+		loadPrivateChat: (myname, name, gravatar)->
+			self = @
+			chatName = LiveUser.userCollection[name] 
+			start = chatName.getChatStart()
+			limit = chatName.getChatLimit()
+			Status.getTwenty myname, name, start, (start + limit), (data)->
+				if data
+					allmessage = self.processData(data, gravatar)
+					self.repaintChatRoom allmessage				
+					chatName.setChatStart(start + limit)
 		###
 		* Repaint the chat room
 		* @param {Array} allmessage: an array contain messages need to be repainted.
@@ -116,6 +145,8 @@ if location.pathname == "/"
 		###
 		nameChatingPerson: (name)->
 			$chatPerson.text(name)
+
+
 
 	module.exports = 
 		chatingUser: chatingUser

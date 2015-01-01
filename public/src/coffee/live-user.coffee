@@ -141,6 +141,8 @@ if location.pathname == "/"
 				return @noRead
 			setNoRead: (newNoRead)->
 				@noRead = newNoRead
+			getChatLimit: ->
+				return @chatLimit
 
 		userCollection: []
 		showCollection: (self)->

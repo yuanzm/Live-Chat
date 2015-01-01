@@ -67,6 +67,7 @@ if (location.pathname === "/") {
             user = isChating[_i];
             LiveUser.addChatPerson(user);
             LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name);
+            LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name);
           }
           if (chatNow.length) {
             index = UserDom.getUserIndex(chatNow);
@@ -118,24 +119,58 @@ if (location.pathname === "/") {
         self.nameChatingPerson(name);
         index = UserDom.getUserIndex(name);
         UserDom.markChatingNowUser(index);
-        return Status.getTwenty($name.text(), name, 0, 3, function(data) {
-          var allMessage, chat, chatPackage, _i, _len;
-          if (data) {
-            allMessage = [];
-            for (_i = 0, _len = data.length; _i < _len; _i++) {
-              chat = data[_i];
-              chatPackage = {
-                receiverData: {
-                  gravatar: gravatar
-                },
-                userName: chat.speaker,
-                message: chat.message
-              };
-              allMessage.push(chatPackage);
-            }
-            return self.repaintChatRoom(allMessage);
-          }
-        });
+        if (name === LiveChat.name) {
+          return self.loadGroupChat();
+        } else {
+          return self.loadPrivateChat($name.text(), name, gravatar);
+        }
+      });
+    },
+    loadGroupChat: function() {
+      var group, limit, self, start;
+      self = this;
+      group = LiveUser.userCollection[LiveChat.name];
+      start = group.getChatStart();
+      limit = group.getChatLimit();
+      return Status.getGroupTwenty(start, function(data) {
+        if (data) {
+          return self.repaintChatRoom(data);
+        }
+      });
+    },
+    processData: function(messageData, gravatar) {
+      var allmessage, chat, chatPackage, _i, _len;
+      allmessage = [];
+      for (_i = 0, _len = messageData.length; _i < _len; _i++) {
+        chat = messageData[_i];
+        chatPackage = {
+          receiverData: {
+            gravatar: gravatar
+          },
+          userName: chat.userName,
+          message: chat.message
+        };
+        allmessage.push(chatPackage);
+      }
+      return allmessage;
+    },
+
+    /*
+    		* Load history chats from database.
+     */
+    loadPrivateChat: function(myname, name, gravatar) {
+      var chatName, limit, self, start;
+      self = this;
+      chatName = LiveUser.userCollection[name];
+      start = chatName.getChatStart();
+      limit = chatName.getChatLimit();
+      return Status.getTwenty(myname, name, start, start + limit, function(data) {
+        var allmessage;
+        if (data) {
+          allmessage = self.processData(data, gravatar);
+          self.repaintChatRoom(allmessage);
+          return chatName.setChatStart(start + limit);
+        }
       });
     },
 
@@ -499,6 +534,10 @@ if (location.pathname === "/") {
         return this.noRead = newNoRead;
       };
 
+      OneUser.prototype.getChatLimit = function() {
+        return this.chatLimit;
+      };
+
       return OneUser;
 
     })(),
@@ -691,6 +730,24 @@ chatingState = {
   getTwenty: function(myname, name, start, end, callback) {
     var url;
     url = '/chat/' + myname + '/get-chat/' + name + '/' + start + '/' + end;
+    return $.ajax({
+      type: "GET",
+      url: url,
+      success: function(data) {
+        return callback(data);
+      }
+    });
+  },
+
+  /*
+  * Get 20 group chats
+  * @param {Number} start: if there are group chats on the page and we need to 
+  * load more chats, it is necessary to skip the existing chats.
+  * @param {Function} callback: a function which will fire after the query.
+   */
+  getGroupTwenty: function(start, callback) {
+    var url;
+    url = '/chat/group-chat/' + start;
     return $.ajax({
       type: "GET",
       url: url,

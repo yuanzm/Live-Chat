@@ -2,6 +2,7 @@ express = require('express')
 router = express.Router()
 
 PersonalChat = require '../models/personalchat.coffee'
+Chat = require '../models/chat.coffee'
 
 ###
 * Get user's chating status
@@ -68,4 +69,12 @@ router.get '/:myname/get-chat/:name/:start/:end', (req, res)->
         if err
             console.log err
         res.json data
+
+router.get '/group-chat/:start', (req, res)->
+    start = req.params.start   
+    Chat.getTwenty null, start, (err, data)->
+        if err
+            console.log err
+        res.json data
+
 module.exports = router

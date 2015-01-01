@@ -116,5 +116,20 @@ chatingState =
                 callback data
         })
 
+    ###
+    * Get 20 group chats
+    * @param {Number} start: if there are group chats on the page and we need to 
+    * load more chats, it is necessary to skip the existing chats.
+    * @param {Function} callback: a function which will fire after the query.
+    ###
+    getGroupTwenty: (start, callback)->
+        url = '/chat/group-chat/' + start
+        
+        $.ajax({
+            type: "GET"
+            url: url
+            success: (data)->
+                callback data
+        })
         
 module.exports = chatingState
