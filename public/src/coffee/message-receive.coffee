@@ -21,6 +21,7 @@ if location.pathname == "/"
 		detectMessage: ->
 			self = @
 			socket.on 'message', (messageData)->
+				console.log messageData
 				UserDom.showMessage messageData
 		###
 		* display the unread messages number on user's gravatar

@@ -28,19 +28,20 @@ if location.pathname == "/"
 					$chatInput.focus()
 
 				if event.which is 13
-					###
-					* detail of message,including the sender's name and message content
-					###
-					data =
-						time: helper.getTime()
-						userName: $name.text()
-						message: $chatInput.val()
-					receiverData = 
-						name: $chatPerson.text()
-						gravatar: $gravatar.attr('src')
-					data.receiverData = receiverData
-					$chatInput.val('')
-					self.sendMessage(data)
+					if $chatInput.val() isnt ''
+						###
+						* detail of message,including the sender's name and message content
+						###
+						data =
+							time: helper.getTime()
+							userName: $name.text()
+							message: $chatInput.val()
+						receiverData = 
+							name: $chatPerson.text()
+							gravatar: $gravatar.attr('src')
+						data.receiverData = receiverData
+						$chatInput.val('')
+						self.sendMessage(data)
 
 		###
 		* send message
@@ -48,6 +49,7 @@ if location.pathname == "/"
 		###
 		sendMessage: (messageData)->
 			isPrivate = Status.isPrivateChat()
+			# console.log isPrivate
 			# console.log "isPrivate=" + isPrivate
 			if isPrivate
 				socket.emit 'private chat', messageData

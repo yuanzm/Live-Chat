@@ -15,7 +15,7 @@ module.exports = LiveChat;
 
 
 },{}],2:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $chatsList, $liveUser, $name, LiveChat, LiveUser, Status, UserDom, chatingUser;
+var $chatLeft, $chatPerson, $chatingUser, $chatsList, $gravatar, $liveUser, $name, LiveChat, LiveUser, Status, UserDom, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
@@ -24,6 +24,7 @@ if (location.pathname === "/") {
   $name = $("#my-name");
   $liveUser = $('#live-user');
   $chatsList = $('#chat-list');
+  $gravatar = $('#gravatar');
   Status = require('./maintain-chating.coffee');
   LiveUser = require('./live-user.coffee');
   UserDom = require('./user-dom.coffee');
@@ -67,12 +68,12 @@ if (location.pathname === "/") {
             user = isChating[_i];
             LiveUser.addChatPerson(user);
             LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name);
-            LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name);
           }
+          LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name);
           if (chatNow.length) {
             index = UserDom.getUserIndex(chatNow);
             UserDom.markChatingNowUser(index);
-            return self.nameChatingPerson(chatNow);
+            return self.nameChattingPerson(chatNow);
           }
         }
       });
@@ -92,12 +93,15 @@ if (location.pathname === "/") {
         Status.removeUserFromChatList($name.text(), name, function(data) {});
         chatingNum = LiveUser.checkChatingNum();
         if (chatingNum === 0) {
-          self.nameChatingPerson('Live-Chat');
+          self.nameChattingPerson('Live-Chat');
           $chatLeft.removeClass('is-chating');
           Status.updateChatingNowPerson($name.text(), LiveChat.name, function(data) {});
         }
         return event.stopPropagation();
       });
+    },
+    getSelfGravatar: function() {
+      return $gravatar.attr('src');
     },
 
     /*
@@ -112,42 +116,51 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return $chatingUser.delegate('li', 'click', function() {
-        var gravatar, index, name;
+        var chatNow, gravatar, index, name, status;
         name = $(this).find('.chat-user-name').text();
         gravatar = $(this).find('img').attr('src');
-        Status.updateChatingNowPerson($name.text(), name, function(data) {});
-        self.nameChatingPerson(name);
-        index = UserDom.getUserIndex(name);
-        UserDom.markChatingNowUser(index);
-        if (name === LiveChat.name) {
-          return self.loadGroupChat();
-        } else {
-          return self.loadPrivateChat($name.text(), name, gravatar);
+        chatNow = self.getChattingPerson();
+        if (chatNow !== name) {
+          Status.updateChatingNowPerson($name.text(), name, function(data) {});
+          self.nameChattingPerson(name);
+          index = UserDom.getUserIndex(name);
+          UserDom.markChatingNowUser(index);
+          status = self.getChatStatus(name);
+          if (name === LiveChat.name) {
+            return self.loadGroupChat(status.start, status.limit);
+          } else {
+            return self.loadPrivateChat(name, gravatar, status.start, status.limit);
+          }
         }
       });
     },
-    loadGroupChat: function() {
-      var group, limit, self, start;
-      self = this;
-      group = LiveUser.userCollection[LiveChat.name];
-      start = group.getChatStart();
-      limit = group.getChatLimit();
-      return Status.getGroupTwenty(start, function(data) {
-        if (data) {
-          return self.repaintChatRoom(data);
-        }
-      });
+    getChatStatus: function(name) {
+      var chatName, status;
+      chatName = LiveUser.userCollection[name];
+      return status = {
+        start: chatName.getChatStart(),
+        limit: chatName.getChatLimit()
+      };
     },
+
+    /*
+    		* When load chats from database,we need to package it to insert into the front-end templates
+    		* @param {Array} messageData: an array of chats
+    		* @param {gravatar} gravatar:
+     */
     processData: function(messageData, gravatar) {
-      var allmessage, chat, chatPackage, _i, _len;
+      var allmessage, chat, chatPackage, myGravatar, _i, _len;
+      myGravatar = this.getSelfGravatar();
       allmessage = [];
       for (_i = 0, _len = messageData.length; _i < _len; _i++) {
         chat = messageData[_i];
+        gravatar = chat.speaker === $name.text() ? myGravatar : gravatar;
+        console.log(gravatar);
         chatPackage = {
           receiverData: {
             gravatar: gravatar
           },
-          userName: chat.userName,
+          userName: chat.speaker,
           message: chat.message
         };
         allmessage.push(chatPackage);
@@ -158,20 +171,34 @@ if (location.pathname === "/") {
     /*
     		* Load history chats from database.
      */
-    loadPrivateChat: function(myname, name, gravatar) {
-      var chatName, limit, self, start;
+    loadPrivateChat: function(name, gravatar, start, limit) {
+      var self;
       self = this;
-      chatName = LiveUser.userCollection[name];
-      start = chatName.getChatStart();
-      limit = chatName.getChatLimit();
-      return Status.getTwenty(myname, name, start, start + limit, function(data) {
-        var allmessage;
+      return Status.getTwenty($name.text(), name, start, start + limit, function(data) {
+        var allmessage, chatLength;
         if (data) {
           allmessage = self.processData(data, gravatar);
           self.repaintChatRoom(allmessage);
-          return chatName.setChatStart(start + limit);
+          chatLength = allmessage.length;
+          self.updateChatStatus(name, chatLength);
+          return console.log(LiveUser.userCollection[name].getChatStart());
         }
       });
+    },
+    loadGroupChat: function(start, limit) {
+      var self;
+      self = this;
+      return Status.getGroupTwenty(start, function(data) {
+        if (data) {
+          return self.repaintChatRoom(data);
+        }
+      });
+    },
+    updateChatStatus: function(name, chatLength) {
+      var chatName, oldStart;
+      chatName = LiveUser.userCollection[name];
+      oldStart = chatName.getChatStart();
+      return chatName.setChatStart(oldStart + chatLength);
     },
 
     /*
@@ -210,8 +237,15 @@ if (location.pathname === "/") {
     /*
     		* display the chating user
      */
-    nameChatingPerson: function(name) {
+    nameChattingPerson: function(name) {
       return $chatPerson.text(name);
+    },
+
+    /*
+    		* Get chatting user
+     */
+    getChattingPerson: function() {
+      return $chatPerson.text();
     }
   };
   module.exports = {
@@ -791,6 +825,7 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return socket.on('message', function(messageData) {
+        console.log(messageData);
         return UserDom.showMessage(messageData);
       });
     },
@@ -875,22 +910,24 @@ if (location.pathname === "/") {
           $chatInput.focus();
         }
         if (event.which === 13) {
+          if ($chatInput.val() !== '') {
 
-          /*
-          					* detail of message,including the sender's name and message content
-           */
-          data = {
-            time: helper.getTime(),
-            userName: $name.text(),
-            message: $chatInput.val()
-          };
-          receiverData = {
-            name: $chatPerson.text(),
-            gravatar: $gravatar.attr('src')
-          };
-          data.receiverData = receiverData;
-          $chatInput.val('');
-          return self.sendMessage(data);
+            /*
+            						* detail of message,including the sender's name and message content
+             */
+            data = {
+              time: helper.getTime(),
+              userName: $name.text(),
+              message: $chatInput.val()
+            };
+            receiverData = {
+              name: $chatPerson.text(),
+              gravatar: $gravatar.attr('src')
+            };
+            data.receiverData = receiverData;
+            $chatInput.val('');
+            return self.sendMessage(data);
+          }
         }
       });
     };

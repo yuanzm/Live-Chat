@@ -6,6 +6,7 @@ if location.pathname == "/"
 	$name = $("#my-name")
 	$liveUser = $('#live-user')
 	$chatsList = $('#chat-list')
+	$gravatar = $('#gravatar')
 
 	# Load some modules
 	Status = require './maintain-chating.coffee'
@@ -45,12 +46,11 @@ if location.pathname == "/"
 					for user in isChating
 						LiveUser.addChatPerson user
 						LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name)
-						LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name)
+					LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name)
 					if chatNow.length
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
-						self.nameChatingPerson(chatNow)
-
+						self.nameChattingPerson(chatNow)
 
 		###
 		* Click the `close button` to the top right corner of the user's avatar to 
@@ -65,11 +65,13 @@ if location.pathname == "/"
 					
 				chatingNum = LiveUser.checkChatingNum()
 				if chatingNum is 0
-					self.nameChatingPerson('Live-Chat')
+					self.nameChattingPerson('Live-Chat')
 					$chatLeft.removeClass('is-chating')
 					Status.updateChatingNowPerson $name.text(), LiveChat.name, (data)->
 				event.stopPropagation()
 
+		getSelfGravatar: ->
+			return $gravatar.attr('src')
 		###
 		* There are several things need to be executed when click a user in the chat user list
 		* Firstly, reset the chatting user at the database level through Ajax.
@@ -83,47 +85,67 @@ if location.pathname == "/"
 			$chatingUser.delegate 'li', 'click', ->
 				name = $(@).find('.chat-user-name').text()
 				gravatar = $(@).find('img').attr('src')
-				Status.updateChatingNowPerson $name.text(), name, (data)->
-				self.nameChatingPerson(name)
-				index = UserDom.getUserIndex(name)
-				UserDom.markChatingNowUser index
+				chatNow = self.getChattingPerson()
+				if chatNow isnt name
+					Status.updateChatingNowPerson $name.text(), name, (data)->
+					self.nameChattingPerson(name)
+					index = UserDom.getUserIndex(name)
+					UserDom.markChatingNowUser index
+					status = self.getChatStatus(name)
+					
+					if name is LiveChat.name
+						self.loadGroupChat(status.start, status.limit)
+					else
+						self.loadPrivateChat(name, gravatar, status.start, status.limit)
+	
+		getChatStatus: (name)->
+			chatName = LiveUser.userCollection[name] 
+			return status =
+				start:  chatName.getChatStart()
+				limit: chatName.getChatLimit()
 
-				if name is LiveChat.name
-					self.loadGroupChat()
-				else
-					self.loadPrivateChat($name.text(), name, gravatar)
-		
-		loadGroupChat: ->
-			self = @
-			group = LiveUser.userCollection[LiveChat.name]
-			start = group.getChatStart()
-			limit = group.getChatLimit()
-			Status.getGroupTwenty start, (data)->
-				if data
-					# allmessage = self.processData data
-					self.repaintChatRoom data
+		###
+		* When load chats from database,we need to package it to insert into the front-end templates
+		* @param {Array} messageData: an array of chats
+		* @param {gravatar} gravatar: 
+		###
 		processData: (messageData, gravatar)->
+			myGravatar = @getSelfGravatar()
 			allmessage = []
 			for chat in messageData
+				gravatar = if chat.speaker is $name.text() then myGravatar else gravatar 
+				console.log gravatar 
 				chatPackage =
 					receiverData: {gravatar: gravatar}
-					userName: chat.userName
+					userName: chat.speaker
 					message: chat.message
 				allmessage.push chatPackage
 			return allmessage
 		###
 		* Load history chats from database.
 		###
-		loadPrivateChat: (myname, name, gravatar)->
+		loadPrivateChat: (name, gravatar, start, limit)->
 			self = @
-			chatName = LiveUser.userCollection[name] 
-			start = chatName.getChatStart()
-			limit = chatName.getChatLimit()
-			Status.getTwenty myname, name, start, (start + limit), (data)->
+			Status.getTwenty $name.text(), name, start, (start + limit), (data)->
 				if data
 					allmessage = self.processData(data, gravatar)
-					self.repaintChatRoom allmessage				
-					chatName.setChatStart(start + limit)
+					self.repaintChatRoom allmessage								
+					chatLength = allmessage.length
+					self.updateChatStatus name, chatLength
+
+					console.log LiveUser.userCollection[name].getChatStart()
+
+		loadGroupChat: (start, limit)->
+			self = @
+			Status.getGroupTwenty start, (data)->
+				if data
+					self.repaintChatRoom data
+
+		updateChatStatus: (name, chatLength)->
+			chatName = LiveUser.userCollection[name] 
+			oldStart = chatName.getChatStart()
+			chatName.setChatStart(oldStart + chatLength)
+
 		###
 		* Repaint the chat room
 		* @param {Array} allmessage: an array contain messages need to be repainted.
@@ -143,10 +165,12 @@ if location.pathname == "/"
 		###
 		* display the chating user
 		###
-		nameChatingPerson: (name)->
+		nameChattingPerson: (name)->
 			$chatPerson.text(name)
-
-
-
+		###
+		* Get chatting user
+		###
+		getChattingPerson: ->
+			return $chatPerson.text()
 	module.exports = 
 		chatingUser: chatingUser

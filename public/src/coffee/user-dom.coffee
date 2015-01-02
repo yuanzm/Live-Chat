@@ -15,7 +15,7 @@ UserDom =
 				return
 		return currentIndex
 	#display  new message
-	showMessage: (data) ->			
+	showMessage: (data) ->	
 		aChat = '<li>'
 		aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">'
 		aChat += '<span>' + data.userName + '</span>'
