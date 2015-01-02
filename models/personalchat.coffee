@@ -86,7 +86,7 @@ PersonalChat.getTwenty = (userName, name, start, end, callback)->
                         chats = doc.chats
                         for chat in chats
                             if chat.chatName is name
-                                queryChat = chat.chatContent.slice(parseInt(start), parseInt(end))
+                                queryChat = chat.chatContent.reverse().slice(parseInt(start), parseInt(end)).reverse()
                         return callback null, queryChat
                     else
                         return callback null, null

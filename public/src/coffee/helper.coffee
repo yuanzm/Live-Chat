@@ -1,3 +1,12 @@
+###
+* A module containing the auxiliary function
+###
+
+###
+* A function extends the Date's prototype
+* @param {String} fmt: a string format date
+* @return {String} fmt: a string of date
+###
 Date.prototype.Format = (fmt) ->
 	o = 
 		"M+" : this.getMonth() + 1

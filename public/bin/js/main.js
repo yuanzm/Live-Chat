@@ -15,7 +15,11 @@ module.exports = LiveChat;
 
 
 },{}],2:[function(require,module,exports){
-var $chatLeft, $chatPerson, $chatingUser, $chatsList, $gravatar, $liveUser, $name, LiveChat, LiveUser, Status, UserDom, chatingUser;
+
+/*
+* A module to process the chat user list
+ */
+var $chatLeft, $chatPerson, $chatingUser, $chatsList, $gravatar, $liveUser, $name, LiveChat, LiveUser, LoadChats, Status, UserDom, chatingUser;
 
 if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
@@ -29,6 +33,7 @@ if (location.pathname === "/") {
   LiveUser = require('./live-user.coffee');
   UserDom = require('./user-dom.coffee');
   LiveChat = require('./LiveChat-config.coffee');
+  LoadChats = require('./chats.coffee');
 
   /*
   	* event handlers be bound to chatting users
@@ -127,9 +132,9 @@ if (location.pathname === "/") {
           UserDom.markChatingNowUser(index);
           status = self.getChatStatus(name);
           if (name === LiveChat.name) {
-            return self.loadGroupChat(status.start, status.limit);
+            return LoadChats.loadGroupChat(status.start, status.limit);
           } else {
-            return self.loadPrivateChat(name, gravatar, status.start, status.limit);
+            return LoadChats.loadPrivateChat(name, gravatar, status.start, status.limit);
           }
         }
       });
@@ -141,79 +146,6 @@ if (location.pathname === "/") {
         start: chatName.getChatStart(),
         limit: chatName.getChatLimit()
       };
-    },
-
-    /*
-    		* When load chats from database,we need to package it to insert into the front-end templates
-    		* @param {Array} messageData: an array of chats
-    		* @param {gravatar} gravatar:
-     */
-    processData: function(messageData, gravatar) {
-      var allmessage, chat, chatPackage, myGravatar, _i, _len;
-      myGravatar = this.getSelfGravatar();
-      allmessage = [];
-      for (_i = 0, _len = messageData.length; _i < _len; _i++) {
-        chat = messageData[_i];
-        gravatar = chat.speaker === $name.text() ? myGravatar : gravatar;
-        console.log(gravatar);
-        chatPackage = {
-          receiverData: {
-            gravatar: gravatar
-          },
-          userName: chat.speaker,
-          message: chat.message
-        };
-        allmessage.push(chatPackage);
-      }
-      return allmessage;
-    },
-
-    /*
-    		* Load history chats from database.
-     */
-    loadPrivateChat: function(name, gravatar, start, limit) {
-      var self;
-      self = this;
-      return Status.getTwenty($name.text(), name, start, start + limit, function(data) {
-        var allmessage, chatLength;
-        if (data) {
-          allmessage = self.processData(data, gravatar);
-          self.repaintChatRoom(allmessage);
-          chatLength = allmessage.length;
-          self.updateChatStatus(name, chatLength);
-          return console.log(LiveUser.userCollection[name].getChatStart());
-        }
-      });
-    },
-    loadGroupChat: function(start, limit) {
-      var self;
-      self = this;
-      return Status.getGroupTwenty(start, function(data) {
-        if (data) {
-          return self.repaintChatRoom(data);
-        }
-      });
-    },
-    updateChatStatus: function(name, chatLength) {
-      var chatName, oldStart;
-      chatName = LiveUser.userCollection[name];
-      oldStart = chatName.getChatStart();
-      return chatName.setChatStart(oldStart + chatLength);
-    },
-
-    /*
-    		* Repaint the chat room
-    		* @param {Array} allmessage: an array contain messages need to be repainted.
-     */
-    repaintChatRoom: function(allMessage) {
-      var message, _i, _len, _results;
-      $chatsList.empty();
-      _results = [];
-      for (_i = 0, _len = allMessage.length; _i < _len; _i++) {
-        message = allMessage[_i];
-        _results.push(UserDom.showMessage(message));
-      }
-      return _results;
     },
 
     /*
@@ -255,7 +187,114 @@ if (location.pathname === "/") {
 
 
 
-},{"./LiveChat-config.coffee":1,"./live-user.coffee":5,"./maintain-chating.coffee":7,"./user-dom.coffee":11}],3:[function(require,module,exports){
+},{"./LiveChat-config.coffee":1,"./chats.coffee":3,"./live-user.coffee":6,"./maintain-chating.coffee":8,"./user-dom.coffee":12}],3:[function(require,module,exports){
+var $chatsList, $chattingUser, $gravatar, $name, LiveChat, LiveUser, Status, UserDom, loadChats, processData, repaintChatRoom, updateChatStatus;
+
+LiveUser = require('./live-user.coffee');
+
+Status = require('./maintain-chating.coffee');
+
+UserDom = require('./user-dom.coffee');
+
+LiveChat = require('./LiveChat-config.coffee');
+
+$chattingUser = $('#chating-user');
+
+$gravatar = $('#gravatar');
+
+$name = $("#my-name");
+
+$chatsList = $('#chat-list');
+
+
+/*
+* When load chats from database,we need to package it to insert into the front-end templates
+* @param {Array} messageData: an array of chats
+* @param {gravatar} gravatar:
+ */
+
+processData = function(messageData, gravatar) {
+  var allmessage, chat, chatPackage, myGravatar, _i, _len;
+  myGravatar = UserDom.getSelfGravatar();
+  allmessage = [];
+  for (_i = 0, _len = messageData.length; _i < _len; _i++) {
+    chat = messageData[_i];
+    gravatar = chat.speaker === $name.text() ? myGravatar : gravatar;
+    chatPackage = {
+      receiverData: {
+        gravatar: gravatar
+      },
+      userName: chat.speaker,
+      message: chat.message
+    };
+    allmessage.push(chatPackage);
+  }
+  return allmessage;
+};
+
+updateChatStatus = function(name, chatLength) {
+  var $isChatting, chatName, oldStart;
+  $isChatting = $chattingUser.find('.chat-user-name');
+  $isChatting.each(function() {
+    return LiveUser.userCollection[$(this).text()].setChatStart(0);
+  });
+  chatName = LiveUser.userCollection[name];
+  oldStart = chatName.getChatStart();
+  return chatName.setChatStart(oldStart + chatLength);
+};
+
+
+/*
+* Repaint the chat room
+* @param {Array} allmessage: an array contain messages need to be repainted.
+ */
+
+repaintChatRoom = function(allMessage) {
+  var message, _i, _len, _results;
+  $chatsList.empty();
+  _results = [];
+  for (_i = 0, _len = allMessage.length; _i < _len; _i++) {
+    message = allMessage[_i];
+    _results.push(UserDom.showMessage(message));
+  }
+  return _results;
+};
+
+loadChats = {
+
+  /*
+  	* Load history chats from database.
+   */
+  loadPrivateChat: function(name, gravatar, start, limit) {
+    var self;
+    self = this;
+    return Status.getTwenty($name.text(), name, start, start + limit, function(data) {
+      var allmessage, chatLength;
+      if (data) {
+        allmessage = processData(data, gravatar);
+        repaintChatRoom(allmessage);
+        chatLength = allmessage.length;
+        return updateChatStatus(name, chatLength);
+      }
+    });
+  },
+  loadGroupChat: function(start, limit) {
+    var self;
+    self = this;
+    return Status.getGroupTwenty(start, function(data) {
+      if (data) {
+        repaintChatRoom(data);
+        return updateChatStatus(LiveChat.name, data.length);
+      }
+    });
+  }
+};
+
+module.exports = loadChats;
+
+
+
+},{"./LiveChat-config.coffee":1,"./live-user.coffee":6,"./maintain-chating.coffee":8,"./user-dom.coffee":12}],4:[function(require,module,exports){
 var $gravatar, Connect, helper, liveUser, socket;
 
 if (location.pathname === "/") {
@@ -339,7 +378,17 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":4,"./live-user.coffee":5}],4:[function(require,module,exports){
+},{"./helper.coffee":5,"./live-user.coffee":6}],5:[function(require,module,exports){
+
+/*
+* A module containing the auxiliary function
+ */
+
+/*
+* A function extends the Date's prototype
+* @param {String} fmt: a string format date
+* @return {String} fmt: a string of date
+ */
 var chat;
 
 Date.prototype.Format = function(fmt) {
@@ -380,7 +429,7 @@ module.exports = chat;
 
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var $chatLeft, $chatPerson, $chatingUser, $liveNumber, $liveUser, $myName, $name, $window, LiveChat, OneUser, Status, UserDom, liveUser, offlineList;
 
 if (location.pathname === "/") {
@@ -406,10 +455,7 @@ if (location.pathname === "/") {
     		* initialize instance
      */
     init: function() {
-      var self;
-      this.bindEventHandler();
-      self = this;
-      return setTimeout(self.showCollection, 2000, self);
+      return this.bindEventHandler();
     },
 
     /*
@@ -595,7 +641,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./LiveChat-config.coffee":1,"./maintain-chating.coffee":7,"./offlinelist.coffee":10,"./user-dom.coffee":11}],6:[function(require,module,exports){
+},{"./LiveChat-config.coffee":1,"./maintain-chating.coffee":8,"./offlinelist.coffee":11,"./user-dom.coffee":12}],7:[function(require,module,exports){
 var Connect, chatingUser, connect, liveUser, messageSend, sender;
 
 Connect = require("./connect-status.coffee");
@@ -620,7 +666,7 @@ sender.init();
 
 
 
-},{"./chating-user.coffee":2,"./connect-status.coffee":3,"./live-user.coffee":5,"./message-send.coffee":9}],7:[function(require,module,exports){
+},{"./chating-user.coffee":2,"./connect-status.coffee":4,"./live-user.coffee":6,"./message-send.coffee":10}],8:[function(require,module,exports){
 
 /*
 * A module to process the Ajax request
@@ -796,7 +842,7 @@ module.exports = chatingState;
 
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var $chatList, $chatPerson, $chatingUser, $liveUser, $name, LiveUser, MessageReceive, UserDom, socket;
 
 if (location.pathname === "/") {
@@ -872,7 +918,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./live-user.coffee":5,"./user-dom.coffee":11}],9:[function(require,module,exports){
+},{"./live-user.coffee":6,"./user-dom.coffee":12}],10:[function(require,module,exports){
 var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, Status, UserDom, helper, socket;
 
 if (location.pathname === "/") {
@@ -978,7 +1024,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./helper.coffee":4,"./maintain-chating.coffee":7,"./message-receive.coffee":8,"./user-dom.coffee":11}],10:[function(require,module,exports){
+},{"./helper.coffee":5,"./maintain-chating.coffee":8,"./message-receive.coffee":9,"./user-dom.coffee":12}],11:[function(require,module,exports){
 
 /*
 * A module to process the offline user list
@@ -1046,12 +1092,14 @@ module.exports = offLine;
 
 
 
-},{}],11:[function(require,module,exports){
-var $chatList, $chatingUser, UserDom;
+},{}],12:[function(require,module,exports){
+var $chatList, $chatingUser, $gravatar, UserDom;
 
 $chatingUser = $('#chating-user');
 
 $chatList = $('#chat-list');
+
+$gravatar = $('#gravatar');
 
 UserDom = {
   markChatingNowUser: function(index) {
@@ -1079,6 +1127,9 @@ UserDom = {
     aChat += '<span>' + data.message + '</span>';
     aChat += '</li>';
     return $chatList.append($(aChat));
+  },
+  getSelfGravatar: function() {
+    return $gravatar.attr('src');
   }
 };
 
@@ -1086,4 +1137,4 @@ module.exports = UserDom;
 
 
 
-},{}]},{},[6]);
+},{}]},{},[7]);

@@ -1,5 +1,6 @@
 $chatingUser = $('#chating-user')
 $chatList = $('#chat-list')
+$gravatar = $('#gravatar')
 
 UserDom =
 	markChatingNowUser: (index)->
@@ -24,5 +25,8 @@ UserDom =
 		aChat += '<span>' + data.message + '</span>'
 		aChat += '</li>'
 		$chatList.append $(aChat)
+	getSelfGravatar: ->
+		return $gravatar.attr('src')
+
 
 module.exports = UserDom

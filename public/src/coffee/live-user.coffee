@@ -22,8 +22,6 @@ if location.pathname == "/"
 		###
 		init: ->
 			@bindEventHandler()
-			self = @
-			setTimeout self.showCollection, 2000, self
 		###
 		* initialize all the event handlers
 		###

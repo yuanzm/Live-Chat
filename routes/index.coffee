@@ -11,21 +11,13 @@ PersonalChat = require '../models/personalchat.coffee'
 router.get '/', (req, res)->
 	allChats = null
 	if req.session.user
-		myName = req.session.user.name
-		chatingUser = []
-		allChats = Chat.getTwenty null, 1, (err, chats)->
-			if err
-				chats = []
-			res.render 'chat', {
-				title: "Live-Chat"
-				user: req.session.user
-				chats: chats
-			}
+		res.render 'chat', {
+			title: "Live-Chat"
+			user: req.session.user
+		}
 	else
 		res.render 'chat', {
-			className: ''
 			title: "Live-Chat"
-			chatingUser: []
 		}
 
 
