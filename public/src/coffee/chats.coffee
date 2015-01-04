@@ -57,9 +57,8 @@ repaintChatRoom = (allMessage, needEmpty)->
 	if needEmpty
 		$chatsList.empty()
 	for message in allMessage
-		UserDom.showMessage message
+		UserDom.showMessage message, true
 	$chatsList.prepend($('<a class="load-more">Load more</a>'))
-
 loadChats =
 	###
 	* Load history chats from database.
@@ -72,7 +71,10 @@ loadChats =
 		Status.getTwenty $name.text(), name, start, (start + limit), (data)->
 			if data
 				allmessage = processData(data)
-				repaintChatRoom allmessage, needEmpty								
+				repaintChatRoom allmessage, needEmpty	
+				if needEmpty
+					console.log 'ciao'
+					$('#chat-room').mCustomScrollbar('scrollTo',"bottom")						
 				chatLength = allmessage.length
 				updateChatStatus name, chatLength
 	
@@ -84,6 +86,8 @@ loadChats =
 			if data
 				repaintChatRoom data, needEmpty
 				updateChatStatus LiveChat.name, data.length
+			if needEmpty
+				$('#chat-room').mCustomScrollbar('scrollTo',"bottom")
 
 	loadMore: ->
 		self = @

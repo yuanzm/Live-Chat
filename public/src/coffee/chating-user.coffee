@@ -102,12 +102,17 @@ if location.pathname == "/"
 					index = UserDom.getUserIndex(name)
 					UserDom.markChatingNowUser index
 					status = self.getChatStatus(name)
-					
+
 					if name is LiveChat.name
 						LoadChats.loadGroupChat(true)
 					else
 						LoadChats.loadPrivateChat(name, true)
-	
+					UserDom.removeNotice($chatingUser,name)
+					LiveUser.userCollection[name].setNoRead(0)
+
+					# UserDom.scrollToBottom()
+					$('#chat-room').mCustomScrollbar('scrollTo',"bottom")
+
 		getChatStatus: (name)->
 			chatName = LiveUser.userCollection[name] 
 			return status =

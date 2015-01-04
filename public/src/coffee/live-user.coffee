@@ -74,6 +74,7 @@ if location.pathname == "/"
 			chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>'
 			chatDiv += '</div></li>'
 			$chatingUser.find('ul').append($(chatDiv))
+			UserDom.emptyChatRoom()
 		
 		# 判断是否有私聊
 		detectIsChatting: (name)->

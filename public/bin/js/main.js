@@ -138,10 +138,13 @@ if (location.pathname === "/") {
           UserDom.markChatingNowUser(index);
           status = self.getChatStatus(name);
           if (name === LiveChat.name) {
-            return LoadChats.loadGroupChat(true);
+            LoadChats.loadGroupChat(true);
           } else {
-            return LoadChats.loadPrivateChat(name, true);
+            LoadChats.loadPrivateChat(name, true);
           }
+          UserDom.removeNotice($chatingUser, name);
+          LiveUser.userCollection[name].setNoRead(0);
+          return $('#chat-room').mCustomScrollbar('scrollTo', "bottom");
         }
       });
     },
@@ -286,7 +289,7 @@ repaintChatRoom = function(allMessage, needEmpty) {
   }
   for (_i = 0, _len = allMessage.length; _i < _len; _i++) {
     message = allMessage[_i];
-    UserDom.showMessage(message);
+    UserDom.showMessage(message, true);
   }
   return $chatsList.prepend($('<a class="load-more">Load more</a>'));
 };
@@ -307,6 +310,10 @@ loadChats = {
       if (data) {
         allmessage = processData(data);
         repaintChatRoom(allmessage, needEmpty);
+        if (needEmpty) {
+          console.log('ciao');
+          $('#chat-room').mCustomScrollbar('scrollTo', "bottom");
+        }
         chatLength = allmessage.length;
         return updateChatStatus(name, chatLength);
       }
@@ -320,7 +327,10 @@ loadChats = {
     return Status.getGroupTwenty(start, function(data) {
       if (data) {
         repaintChatRoom(data, needEmpty);
-        return updateChatStatus(LiveChat.name, data.length);
+        updateChatStatus(LiveChat.name, data.length);
+      }
+      if (needEmpty) {
+        return $('#chat-room').mCustomScrollbar('scrollTo', "bottom");
       }
     });
   },
@@ -574,7 +584,8 @@ if (location.pathname === "/") {
       chatDiv += '<div class="close-chating">';
       chatDiv += '<span class="glyphicon glyphicon-remove-circle"></span>';
       chatDiv += '</div></li>';
-      return $chatingUser.find('ul').append($(chatDiv));
+      $chatingUser.find('ul').append($(chatDiv));
+      return UserDom.emptyChatRoom();
     },
     detectIsChatting: function(name) {
       var $allChatingUser, isChating;
@@ -714,6 +725,16 @@ chatingUser.init();
 sender = new messageSend();
 
 sender.init();
+
+$('#chat-room').mCustomScrollbar({
+  theme: "minimal-dark",
+  scrollButtons: {
+    enable: false,
+    scrollType: "continuous",
+    scrollSpeed: 500,
+    scrollAmount: 40
+  }
+});
 
 
 
@@ -894,7 +915,7 @@ module.exports = chatingState;
 
 
 },{}],9:[function(require,module,exports){
-var $chatList, $chatPerson, $chatingUser, $liveUser, $name, LiveUser, MessageReceive, UserDom, socket;
+var $chatList, $chatPerson, $chatingUser, $liveUser, $name, LiveChat, LiveUser, MessageReceive, UserDom, socket;
 
 if (location.pathname === "/") {
   $chatList = $('#chat-list');
@@ -905,6 +926,7 @@ if (location.pathname === "/") {
   $chatingUser = $('#chating-user');
   $liveUser = $('#live-user');
   UserDom = require('./user-dom.coffee');
+  LiveChat = require('./LiveChat-config.coffee');
   MessageReceive = {
 
     /*
@@ -922,8 +944,13 @@ if (location.pathname === "/") {
       var self;
       self = this;
       return socket.on('message', function(messageData) {
-        console.log(messageData);
-        return UserDom.showMessage(messageData);
+        var chatNow;
+        chatNow = UserDom.getChattingNow();
+        if (chatNow !== LiveChat.name) {
+          return self.addNotice(LiveChat.name);
+        } else {
+          return UserDom.showMessage(messageData);
+        }
       });
     },
 
@@ -932,12 +959,20 @@ if (location.pathname === "/") {
     		* @param {Number} index: the position of the user in the chat list
     		* @param {Number} num: the number of unread messages
      */
-    displayNotice: function(displayArea, index, num) {
-      var aNotice;
+    displayNotice: function(name, displayArea, num) {
+      var aNotice, index;
+      index = UserDom.getUserIndex(name);
+      console.log(index);
       aNotice = '<div class="notice">';
       aNotice += '<span class="notice-number">' + num + '</span>';
       aNotice += '</div>';
       return displayArea.find('li').eq(index).append($(aNotice));
+    },
+    addNotice: function(name) {
+      var index;
+      LiveUser.userCollection[name].noRead += 1;
+      index = UserDom.getUserIndex(name);
+      return this.displayNotice(name, $chatingUser, LiveUser.userCollection[name].noRead);
     },
 
     /*
@@ -955,11 +990,10 @@ if (location.pathname === "/") {
           } else {
             LiveUser.userCollection[fromName].noRead += 1;
             index = UserDom.getUserIndex(fromName);
-            return self.displayNotice($chatingUser, index, LiveUser.userCollection[fromName].noRead);
+            return self.displayNotice(fromName, $chatingUser, LiveUser.userCollection[fromName].noRead);
           }
         } else {
-          index = LiveUser.getUserIndex(fromName);
-          return self.displayNotice($liveUser, index, 1);
+          return self.displayNotice(fromName, $liveUser, 1);
         }
       });
     }
@@ -969,7 +1003,7 @@ if (location.pathname === "/") {
 
 
 
-},{"./live-user.coffee":6,"./user-dom.coffee":12}],10:[function(require,module,exports){
+},{"./LiveChat-config.coffee":1,"./live-user.coffee":6,"./user-dom.coffee":12}],10:[function(require,module,exports){
 var $chatInput, $chatPerson, $gravatar, $name, $window, MessageSend, Receiver, Status, UserDom, helper, socket;
 
 if (location.pathname === "/") {
@@ -1144,7 +1178,7 @@ module.exports = offLine;
 
 
 },{}],12:[function(require,module,exports){
-var $chatList, $chatNow, $chatingUser, $gravatar, UserDom;
+var $chatList, $chatNow, $chatRoom, $chatingUser, $gravatar, UserDom;
 
 $chatingUser = $('#chating-user');
 
@@ -1153,6 +1187,8 @@ $chatList = $('#chat-list');
 $gravatar = $('#gravatar');
 
 $chatNow = $('#chat-person');
+
+$chatRoom = $('#chat-room');
 
 UserDom = {
   markChatingNowUser: function(index) {
@@ -1177,7 +1213,12 @@ UserDom = {
     });
     return currentIndex;
   },
-  showMessage: function(data) {
+  removeNotice: function(displayArea, name) {
+    var index;
+    index = UserDom.getUserIndex(name);
+    return displayArea.find('li').eq(index).find('.notice').remove();
+  },
+  showMessage: function(data, isprepend) {
     var aChat;
     aChat = '<li>';
     aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">';
@@ -1185,13 +1226,23 @@ UserDom = {
     aChat += '<br />';
     aChat += '<span>' + data.message + '</span>';
     aChat += '</li>';
-    return $chatList.prepend($(aChat));
+    if (isprepend) {
+      return $chatList.prepend($(aChat));
+    } else {
+      return $chatList.append($(aChat));
+    }
   },
   getSelfGravatar: function() {
     return $gravatar.attr('src');
   },
   getChattingNow: function() {
     return $chatNow.text();
+  },
+  scrollToBottom: function() {
+    return $chatRoom.scrollTop($chatRoom[0].scrollHeight);
+  },
+  emptyChatRoom: function() {
+    return $chatList.empty();
   }
 };
 

@@ -12,3 +12,13 @@ chatingUser.init()
 
 sender = new messageSend()
 sender.init()
+
+$('#chat-room').mCustomScrollbar({
+	theme:"minimal-dark"
+	scrollButtons:{
+	 	enable:false,
+	 	scrollType:"continuous",
+	 	scrollSpeed:500,
+	 	scrollAmount:40
+	}
+})

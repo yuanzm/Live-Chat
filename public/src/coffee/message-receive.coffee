@@ -7,6 +7,7 @@ if location.pathname == "/"
 	$chatingUser = $('#chating-user')
 	$liveUser = $('#live-user')
 	UserDom = require './user-dom.coffee'
+	LiveChat = require './LiveChat-config.coffee'
 
 	MessageReceive =
 		###
@@ -21,18 +22,30 @@ if location.pathname == "/"
 		detectMessage: ->
 			self = @
 			socket.on 'message', (messageData)->
-				console.log messageData
-				UserDom.showMessage messageData
+				chatNow = UserDom.getChattingNow()
+				if chatNow isnt LiveChat.name
+					self.addNotice LiveChat.name
+				else
+					UserDom.showMessage messageData
+
 		###
 		* display the unread messages number on user's gravatar
 		* @param {Number} index: the position of the user in the chat list
 		* @param {Number} num: the number of unread messages
 		###
-		displayNotice: (displayArea, index, num)->
+		displayNotice: (name, displayArea, num)->
+			index = UserDom.getUserIndex name
+			console.log index
 			aNotice = '<div class="notice">'
 			aNotice += '<span class="notice-number">' + num + '</span>'
 			aNotice += '</div>'
 			displayArea.find('li').eq(index).append($(aNotice))
+		
+		addNotice: (name)->
+			LiveUser.userCollection[name].noRead += 1
+			index = UserDom.getUserIndex name
+			@displayNotice name, $chatingUser, LiveUser.userCollection[name].noRead
+
 		###
 		* If receive a private message,
 		###
@@ -46,8 +59,7 @@ if location.pathname == "/"
 					else
 						LiveUser.userCollection[fromName].noRead += 1
 						index = UserDom.getUserIndex fromName
-						self.displayNotice $chatingUser, index, LiveUser.userCollection[fromName].noRead
+						self.displayNotice fromName, $chatingUser, LiveUser.userCollection[fromName].noRead
 				else
-					index = LiveUser.getUserIndex fromName
-					self.displayNotice $liveUser, index, 1
+					self.displayNotice fromName, $liveUser, 1
 	module.exports = MessageReceive

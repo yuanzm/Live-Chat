@@ -2,6 +2,7 @@ $chatingUser = $('#chating-user')
 $chatList = $('#chat-list')
 $gravatar = $('#gravatar')
 $chatNow = $('#chat-person')
+$chatRoom = $('#chat-room')
 
 UserDom =
 	markChatingNowUser: (index)->
@@ -12,6 +13,7 @@ UserDom =
 		name = $chatNow.text()
 		index = @getUserIndex name
 		$chatingUser.find('img').eq(index).attr('src')
+
 	getUserIndex: (name)->
 		currentIndex = 0
 		$chatingUser.find('span.chat-user-name').each (index)->
@@ -20,8 +22,12 @@ UserDom =
 				currentIndex = index
 				return
 		return currentIndex
+
+	removeNotice: (displayArea, name)->
+		index = UserDom.getUserIndex name
+		displayArea.find('li').eq(index).find('.notice').remove()
 	#display  new message
-	showMessage: (data) ->	
+	showMessage: (data, isprepend) ->	
 		aChat = '<li>'
 		aChat += '<img class="gravatar" src="' + data.receiverData.gravatar + '">'
 		aChat += '<span>' + data.userName + '</span>'
@@ -29,10 +35,16 @@ UserDom =
 		aChat += '<br />'
 		aChat += '<span>' + data.message + '</span>'
 		aChat += '</li>'
-		$chatList.prepend $(aChat)
+		if isprepend
+			$chatList.prepend $(aChat)
+		else
+			$chatList.append $(aChat)
 	getSelfGravatar: ->
 		return $gravatar.attr('src')
 	getChattingNow: ->
 		return $chatNow.text()
-
+	scrollToBottom: ->
+		$chatRoom.scrollTop($chatRoom[0].scrollHeight)
+	emptyChatRoom: ->
+		$chatList.empty()
 module.exports = UserDom

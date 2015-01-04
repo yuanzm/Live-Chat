@@ -47,10 +47,7 @@ footer {
   #chat-left .panel {
     height: 100%; }
   #chat-left .panel-body {
-    height: 325px;
-    overflow: auto; }
-  #chat-left #chat-panel {
-    overflow: auto; }
+    height: 325px; }
   #chat-left .panel-footer {
     padding: 0; }
   #chat-left .input-group {
@@ -118,7 +115,7 @@ footer {
     margin-top: 20px; }
     #chat-right .user-list ul li {
       cursor: pointer;
-      width: 65px;
+      width: 100px;
       margin-top: 10px;
       position: relative; }
       #chat-right .user-list ul li .notice {

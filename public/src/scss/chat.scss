@@ -17,10 +17,10 @@ $chat-height: 400px;
 	}
 	.panel-body {
 		height: 325px;
-		overflow: auto;
+		// overflow: auto;
 	}
 	#chat-panel {
-		overflow: auto;
+		// overflow: auto;
 	}
 	.panel-footer {
 		padding: 0;
@@ -107,7 +107,7 @@ $chat-height: 400px;
 		margin-top: 20px;
 		ul li {
 			cursor: pointer;
-			width: 65px;
+			width: 100px;
 			margin-top: 10px;
 			position: relative;
 			.notice {
