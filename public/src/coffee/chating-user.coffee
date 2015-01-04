@@ -18,6 +18,7 @@ if location.pathname == "/"
 	LiveChat = require './LiveChat-config.coffee'
 	LoadChats = require './chats.coffee'
 
+	LoadChats.loadMore()
 	###
 	* event handlers be bound to chatting users
 	###
@@ -55,6 +56,11 @@ if location.pathname == "/"
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
 						self.nameChattingPerson(chatNow)
+
+						if chatNow is LiveChat.name
+							LoadChats.loadGroupChat(true)
+						else
+							LoadChats.loadPrivateChat(chatNow, true)
 
 		###
 		* Click the `close button` to the top right corner of the user's avatar to 
@@ -98,9 +104,9 @@ if location.pathname == "/"
 					status = self.getChatStatus(name)
 					
 					if name is LiveChat.name
-						LoadChats.loadGroupChat(status.start, status.limit)
+						LoadChats.loadGroupChat(true)
 					else
-						LoadChats.loadPrivateChat(name, gravatar, status.start, status.limit)
+						LoadChats.loadPrivateChat(name, true)
 	
 		getChatStatus: (name)->
 			chatName = LiveUser.userCollection[name] 

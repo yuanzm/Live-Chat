@@ -65,6 +65,12 @@ footer {
     #chat-left .chat-list .user-list {
       height: 320px; }
 
+.load-more {
+  cursor: pointer; }
+
+.load-more:hover {
+  text-decoration: none; }
+
 #chat-left.is-chating #chating-user {
   width: 6%;
   float: left;

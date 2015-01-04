@@ -34,6 +34,7 @@ if (location.pathname === "/") {
   UserDom = require('./user-dom.coffee');
   LiveChat = require('./LiveChat-config.coffee');
   LoadChats = require('./chats.coffee');
+  LoadChats.loadMore();
 
   /*
   	* event handlers be bound to chatting users
@@ -78,7 +79,12 @@ if (location.pathname === "/") {
           if (chatNow.length) {
             index = UserDom.getUserIndex(chatNow);
             UserDom.markChatingNowUser(index);
-            return self.nameChattingPerson(chatNow);
+            self.nameChattingPerson(chatNow);
+            if (chatNow === LiveChat.name) {
+              return LoadChats.loadGroupChat(true);
+            } else {
+              return LoadChats.loadPrivateChat(chatNow, true);
+            }
           }
         }
       });
@@ -132,9 +138,9 @@ if (location.pathname === "/") {
           UserDom.markChatingNowUser(index);
           status = self.getChatStatus(name);
           if (name === LiveChat.name) {
-            return LoadChats.loadGroupChat(status.start, status.limit);
+            return LoadChats.loadGroupChat(true);
           } else {
-            return LoadChats.loadPrivateChat(name, gravatar, status.start, status.limit);
+            return LoadChats.loadPrivateChat(name, true);
           }
         }
       });
@@ -188,7 +194,7 @@ if (location.pathname === "/") {
 
 
 },{"./LiveChat-config.coffee":1,"./chats.coffee":3,"./live-user.coffee":6,"./maintain-chating.coffee":8,"./user-dom.coffee":12}],3:[function(require,module,exports){
-var $chatsList, $chattingUser, $gravatar, $name, LiveChat, LiveUser, Status, UserDom, loadChats, processData, repaintChatRoom, updateChatStatus;
+var $chatsList, $chattingUser, $gravatar, $loadMore, $name, LiveChat, LiveUser, Status, UserDom, getChatStatus, loadChats, processData, repaintChatRoom, updateChatStatus;
 
 LiveUser = require('./live-user.coffee');
 
@@ -206,6 +212,8 @@ $name = $("#my-name");
 
 $chatsList = $('#chat-list');
 
+$loadMore = $('.load-more');
+
 
 /*
 * When load chats from database,we need to package it to insert into the front-end templates
@@ -213,9 +221,10 @@ $chatsList = $('#chat-list');
 * @param {gravatar} gravatar:
  */
 
-processData = function(messageData, gravatar) {
-  var allmessage, chat, chatPackage, myGravatar, _i, _len;
+processData = function(messageData) {
+  var allmessage, chat, chatPackage, gravatar, myGravatar, _i, _len;
   myGravatar = UserDom.getSelfGravatar();
+  gravatar = UserDom.getChattingGravatar();
   allmessage = [];
   for (_i = 0, _len = messageData.length; _i < _len; _i++) {
     chat = messageData[_i];
@@ -232,11 +241,31 @@ processData = function(messageData, gravatar) {
   return allmessage;
 };
 
+
+/*
+* Before loading more chats, we need to know the status of chats in chat room
+* @param {String} name: the name of user
+ */
+
+getChatStatus = function(name) {
+  var chatName, status;
+  console.log(name);
+  chatName = LiveUser.userCollection[name];
+  return status = {
+    start: chatName.getChatStart(),
+    limit: chatName.getChatLimit()
+  };
+};
+
 updateChatStatus = function(name, chatLength) {
   var $isChatting, chatName, oldStart;
   $isChatting = $chattingUser.find('.chat-user-name');
   $isChatting.each(function() {
-    return LiveUser.userCollection[$(this).text()].setChatStart(0);
+    var thisname;
+    thisname = $(this).text();
+    if (thisname !== name) {
+      return LiveUser.userCollection[thisname].setChatStart(0);
+    }
   });
   chatName = LiveUser.userCollection[name];
   oldStart = chatName.getChatStart();
@@ -249,15 +278,17 @@ updateChatStatus = function(name, chatLength) {
 * @param {Array} allmessage: an array contain messages need to be repainted.
  */
 
-repaintChatRoom = function(allMessage) {
-  var message, _i, _len, _results;
-  $chatsList.empty();
-  _results = [];
+repaintChatRoom = function(allMessage, needEmpty) {
+  var message, _i, _len;
+  $('.load-more').remove();
+  if (needEmpty) {
+    $chatsList.empty();
+  }
   for (_i = 0, _len = allMessage.length; _i < _len; _i++) {
     message = allMessage[_i];
-    _results.push(UserDom.showMessage(message));
+    UserDom.showMessage(message);
   }
-  return _results;
+  return $chatsList.prepend($('<a class="load-more">Load more</a>'));
 };
 
 loadChats = {
@@ -265,27 +296,47 @@ loadChats = {
   /*
   	* Load history chats from database.
    */
-  loadPrivateChat: function(name, gravatar, start, limit) {
-    var self;
+  loadPrivateChat: function(name, needEmpty) {
+    var limit, self, start, status;
+    status = getChatStatus(name);
+    start = status.start;
+    limit = status.limit;
     self = this;
     return Status.getTwenty($name.text(), name, start, start + limit, function(data) {
       var allmessage, chatLength;
       if (data) {
-        allmessage = processData(data, gravatar);
-        repaintChatRoom(allmessage);
+        allmessage = processData(data);
+        repaintChatRoom(allmessage, needEmpty);
         chatLength = allmessage.length;
         return updateChatStatus(name, chatLength);
       }
     });
   },
-  loadGroupChat: function(start, limit) {
-    var self;
+  loadGroupChat: function(needEmpty) {
+    var self, start, status;
     self = this;
+    status = getChatStatus(LiveChat.name);
+    start = status.start;
     return Status.getGroupTwenty(start, function(data) {
       if (data) {
-        repaintChatRoom(data);
+        repaintChatRoom(data, needEmpty);
         return updateChatStatus(LiveChat.name, data.length);
       }
+    });
+  },
+  loadMore: function() {
+    var self;
+    self = this;
+    return $chatsList.delegate('.load-more', 'click', function() {
+      var chatNow, gravatar;
+      chatNow = UserDom.getChattingNow();
+      if (chatNow === LiveChat.name) {
+        self.loadGroupChat(false);
+      } else {
+        gravatar = UserDom.getChattingGravatar(chatNow);
+        self.loadPrivateChat(chatNow, false);
+      }
+      return false;
     });
   }
 };
@@ -1093,7 +1144,7 @@ module.exports = offLine;
 
 
 },{}],12:[function(require,module,exports){
-var $chatList, $chatingUser, $gravatar, UserDom;
+var $chatList, $chatNow, $chatingUser, $gravatar, UserDom;
 
 $chatingUser = $('#chating-user');
 
@@ -1101,10 +1152,18 @@ $chatList = $('#chat-list');
 
 $gravatar = $('#gravatar');
 
+$chatNow = $('#chat-person');
+
 UserDom = {
   markChatingNowUser: function(index) {
     $chatingUser.find('img').removeClass('chat-now');
     return $chatingUser.find('img').eq(index).addClass('chat-now');
+  },
+  getChattingGravatar: function() {
+    var index, name;
+    name = $chatNow.text();
+    index = this.getUserIndex(name);
+    return $chatingUser.find('img').eq(index).attr('src');
   },
   getUserIndex: function(name) {
     var currentIndex;
@@ -1126,10 +1185,13 @@ UserDom = {
     aChat += '<br />';
     aChat += '<span>' + data.message + '</span>';
     aChat += '</li>';
-    return $chatList.append($(aChat));
+    return $chatList.prepend($(aChat));
   },
   getSelfGravatar: function() {
     return $gravatar.attr('src');
+  },
+  getChattingNow: function() {
+    return $chatNow.text();
   }
 };
 

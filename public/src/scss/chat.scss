@@ -1,7 +1,6 @@
 $name-height: 80px;
 $chat-height: 400px;
 
-
 // chat-left style
 #chat-left {
 	width: 70%;
@@ -41,6 +40,12 @@ $chat-height: 400px;
 			height: $chat-height - $name-height;
 		}
 	}
+}
+.load-more {
+	cursor: pointer;
+}
+.load-more:hover {
+	text-decoration: none;
 }
 
 #chat-left.is-chating {
