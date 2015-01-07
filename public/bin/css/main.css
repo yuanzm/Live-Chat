@@ -1,4 +1,4 @@
-@charset "UTF-8";
+@charset "GBK";
 * {
   margin: 0;
   padding: 0; }
@@ -146,5 +146,3 @@ ul li .notice {
   #sign button {
     margin-right: 20px;
     margin-top: 20px; }
-
-/*# sourceMappingURL=main.css.map */
