@@ -68,6 +68,7 @@ if (location.pathname === "/") {
         var chatNow, index, isChating, user, _i, _len;
         isChating = data.isChating;
         chatNow = data.chatNow;
+        LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name);
         if (isChating.length) {
           $chatLeft.addClass('is-chating');
           for (_i = 0, _len = isChating.length; _i < _len; _i++) {
@@ -75,7 +76,6 @@ if (location.pathname === "/") {
             LiveUser.addChatPerson(user);
             LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name);
           }
-          LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name);
           if (chatNow.length) {
             index = UserDom.getUserIndex(chatNow);
             UserDom.markChatingNowUser(index);
@@ -86,6 +86,8 @@ if (location.pathname === "/") {
               return LoadChats.loadPrivateChat(chatNow, true);
             }
           }
+        } else {
+          return LoadChats.loadGroupChat(true);
         }
       });
     },
@@ -556,7 +558,9 @@ if (location.pathname === "/") {
         if (chatUser.name !== selfName && isChating === false) {
           if (!chatNum) {
             $chatLeft.addClass('is-chating');
+            self.userCollection[chatUser.name] = new self.OneUser(chatUser.name);
           }
+          self.userCollection[LiveChat.name] = new self.OneUser(LiveChat.name);
           self.addChatPerson(chatUser);
           self.nameChatingPerson(chatUser.name);
           index = UserDom.getUserIndex(chatUser.name);

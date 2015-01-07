@@ -51,7 +51,9 @@ if location.pathname == "/"
 				if chatUser.name isnt selfName and isChating is false
 					if not chatNum
 						$chatLeft.addClass('is-chating')
+						self.userCollection[chatUser.name] = new self.OneUser(chatUser.name)
 					# DOM level operation
+					self.userCollection[LiveChat.name] = new self.OneUser(LiveChat.name)
 					self.addChatPerson(chatUser)
 					self.nameChatingPerson(chatUser.name)
 					index = UserDom.getUserIndex(chatUser.name)

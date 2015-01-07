@@ -46,12 +46,12 @@ if location.pathname == "/"
 			Status.getChatPersonsData name, (data)->
 				isChating = data.isChating
 				chatNow = data.chatNow
+				LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name)
 				if isChating.length
 					$chatLeft.addClass('is-chating')
 					for user in isChating
 						LiveUser.addChatPerson user
 						LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name)
-					LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name)
 					if chatNow.length
 						index = UserDom.getUserIndex(chatNow)
 						UserDom.markChatingNowUser index
@@ -61,6 +61,9 @@ if location.pathname == "/"
 							LoadChats.loadGroupChat(true)
 						else
 							LoadChats.loadPrivateChat(chatNow, true)
+				else
+
+					LoadChats.loadGroupChat(true)
 
 		###
 		* Click the `close button` to the top right corner of the user's avatar to 

@@ -34,6 +34,7 @@ io.on 'connection', (socket)->
 			#如果用户在待离线列表中，把该用户从待离线列表中删除
 			if offlinelist.hasOwnProperty(name)
 				delete offlinelist[name]
+				++userNumbers
 				clearTimeout(hopeConnect)
 			#如果在线用户列表中不存在该用户，则添加到在线用户列表中
 			if allUser.hasOwnProperty(name)
@@ -85,6 +86,7 @@ io.on 'connection', (socket)->
 			#防抖操作：用户刷新页面不算离开，关掉页面三秒之后才算离开
 			offlinelist[name] = name
 			delete allUser[name]
+			--userNumbers
 			delay = (ms, func) -> setTimeout func, ms
 			hopeConnect =  delay 3000, ->
 				console.log "welcome back"
