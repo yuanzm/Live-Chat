@@ -50,3 +50,7 @@ Live-Chat是基于Node的Express框架开发的实时聊天WebApp。应用实现
 - `cd Live-Chat`
 - `npm install`
 - `grunt`
+
+### TODO
+- 完成消息离线
+- 完善页面效果
