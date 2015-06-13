@@ -7,12 +7,13 @@ var UserProxy = require('./user.js');
 /*
  * 新建一条通知
  */ 
-exports.newAndSave = function(content, sender_id, receiver_id, callback) {
+exports.newAndSave = function(content, sender_id, receiver_id, has_read, callback) {
 	var message = new Message();
 
 	message.content = content;
 	message.sender_id = sender_id;
 	message.receiver_id = receiver_id;
+	message.has_read = has_read;
 
 	message.save(callback);
 }

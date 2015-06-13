@@ -10,7 +10,7 @@ signUpDataBus = {
         password: data.password,
         rePassword: data.rePassword,
         loginname: data.loginname,
-        avatar: "/public/static/avatar.jpg",
+        avatar: "/public/images/static/avatar.jpg",
         email: data.email
       },
       success: function(data) {

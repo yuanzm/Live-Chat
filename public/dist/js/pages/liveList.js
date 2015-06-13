@@ -12339,7 +12339,7 @@ if (logStatus === '1') {
 module.exports = chatConnect;
 
 
-},{"./chatBottom.coffee":2,"./chatHost.coffee":4,"./mockData.coffee":7,"./tpl.coffee":8}],4:[function(require,module,exports){
+},{"./chatBottom.coffee":2,"./chatHost.coffee":4,"./mockData.coffee":8,"./tpl.coffee":9}],4:[function(require,module,exports){
 var chatHost;
 
 chatHost = {
@@ -12379,13 +12379,138 @@ module.exports = person;
 
 
 },{}],6:[function(require,module,exports){
-var $allLiveUser, $chatBottomBar, chatBottom, chatConnect, currentId, liveList, person, tpl;
+var $allChattingUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, mockData, person, tpl;
+
+mockData = require('./mockData.coffee');
 
 tpl = require('./tpl.coffee');
 
 person = require('./chatPerson.coffee');
 
 chatConnect = require('./chatConnect.coffee');
+
+$allChattingUser = $('.all-chatting-user');
+
+currentId = $('#current-userid').val();
+
+$chatBottomBar = $('.chat-bottpm-bar');
+
+chatBottom = require('./chatBottom.coffee');
+
+chattingList = {
+  getIndexInTheChatList: function(id) {
+    var flag;
+    flag = false;
+    $('.chat-contact').each(function(index, item) {
+      var userIndex;
+      id = id;
+      userIndex = $(item).find('.user-name').data('userid');
+      if (userIndex === id) {
+        return flag = index;
+      }
+    });
+    return flag;
+  },
+  getCurrentChatIndex: function() {
+    var currentIndex;
+    currentIndex = 0;
+    $('.chat-contact').each(function(index, item) {
+      if ($(item).hasClass('active')) {
+        return currentIndex = index;
+      }
+    });
+    return currentIndex;
+  },
+  addNewMessageToUser: function(index) {
+    var $contact, currentNumber, newNumber;
+    $contact = $('.chat-contact').eq(index);
+    currentNumber = Math.floor($contact.find('.unread-number').text());
+    newNumber = currentNumber + 1 > 99 ? 99 : currentNumber + 1;
+    return $contact.find('.unread-number').removeClass('hidden').text(newNumber);
+  },
+  markAsReadedForOneUser: function(index) {
+    var $contact;
+    $contact = $('.chat-contact').eq(index);
+    return $contact.find('.unread-number').text('0').addClass('hidden');
+  },
+  markUserAsActicve: function(index) {
+    return $('.chat-contact').eq(index).addClass('active').siblings('.chat-contact').removeClass('active');
+  },
+  getUnreadMessageNumber: function(index) {
+    var $contact, currentNumber;
+    $contact = $('.chat-contact').eq(index);
+    currentNumber = Math.floor($contact.find('.unread-number').text());
+    return currentNumber;
+  },
+  getUserOnlineState: function(index) {
+    var $contact, online;
+    $contact = $('.chat-contact').eq(index);
+    online = $contact.find('.status').hasClass('on') ? true : false;
+    return online;
+  },
+  changeUserOnlineState: function(index, value) {
+    var $contact;
+    $contact = $('.chat-contact').eq(index);
+    return $contact.find('.status').removeClass('on').removeClass('off').addClass(value);
+  },
+  addUserToChatList: function(toUsername, toId, toAvatar, status, isClick) {
+    var contact, flag, str;
+    flag = chattingList.getIndexInTheChatList(toId);
+    if (flag === false) {
+      contact = {
+        avatar: toAvatar,
+        id: toId,
+        username: toUsername,
+        new_msg_count: 0,
+        className: 'hidden',
+        status: status
+      };
+      str = $(tpl.oneChatterCompile(contact));
+      $allChattingUser.append(str);
+      if (isClick) {
+        return chattingList.markUserAsActicve(chattingList.getIndexInTheChatList(toId));
+      }
+    } else {
+      if (isClick) {
+        chattingList.markUserAsActicve(flag);
+        return chattingList.markAsReadedForOneUser(flag);
+      }
+    }
+  },
+  toggleChattingUser: function() {
+    var currentPerson, data, liIndex, temp, toId;
+    currentPerson = person.getChatId();
+    toId = $(this).find('.user-name').data('userid') + '';
+    liIndex = chattingList.getIndexInTheChatList(toId);
+    $(this).addClass('active').siblings('.chat-contact').removeClass('active');
+    $('.chat-log').empty();
+    person.setChatId(toId);
+    temp = chattingList.getUnreadMessageNumber(liIndex);
+    chatBottom.removeNumber(temp);
+    chattingList.markAsReadedForOneUser(liIndex);
+    data = {
+      who: currentId,
+      dowhat: 'load_clear_unread_chat_msg',
+      to: toId
+    };
+    chatConnect.socket.send(data);
+    return false;
+  }
+};
+
+module.exports = chattingList;
+
+
+},{"./chatBottom.coffee":2,"./chatConnect.coffee":3,"./chatPerson.coffee":5,"./mockData.coffee":8,"./tpl.coffee":9}],7:[function(require,module,exports){
+var $allLiveUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, liveList, person, tpl;
+
+tpl = require('./tpl.coffee');
+
+person = require('./chatPerson.coffee');
+
+chatConnect = require('./chatConnect.coffee');
+
+chattingList = require('./chattingList.coffee');
 
 $allLiveUser = $('.all-live-user');
 
@@ -12424,13 +12549,27 @@ liveList = {
     if (index !== false) {
       return $('.live-contact').eq(index).fadeOut().remove();
     }
+  },
+  liveUserClickHandler: function() {
+    var $this, id, index, toAvatar, toUserName;
+    $this = $(this);
+    id = $this.find('.user-name').data('userid');
+    toUserName = $this.find('.user-name').text();
+    index = chattingList.getIndexInTheChatList(id);
+    toAvatar = $this.find('.chat-avatar').attr('src');
+    if (id !== currentId) {
+      if (index === false) {
+        person.setChatId(id);
+        return chattingList.addUserToChatList(toUserName, id, toAvatar, 'on', true);
+      }
+    }
   }
 };
 
 module.exports = liveList;
 
 
-},{"./chatBottom.coffee":2,"./chatConnect.coffee":3,"./chatPerson.coffee":5,"./tpl.coffee":8}],7:[function(require,module,exports){
+},{"./chatBottom.coffee":2,"./chatConnect.coffee":3,"./chatPerson.coffee":5,"./chattingList.coffee":6,"./tpl.coffee":9}],8:[function(require,module,exports){
 var chatList, msgs;
 
 chatList = {
@@ -12467,7 +12606,7 @@ module.exports = {
 };
 
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var oneChatterCompile, oneChatterTemplate, oneLiveCompile, oneLiveTemplate, oneMessageCompile, oneMessageTemplate, _;
 
 _ = require('lodash');
@@ -12491,13 +12630,13 @@ module.exports = {
 };
 
 
-},{"./tpl/one-chatter.tpl":9,"./tpl/one-live-user.tpl":10,"./tpl/one-message.tpl":11,"lodash":1}],9:[function(require,module,exports){
+},{"./tpl/one-chatter.tpl":10,"./tpl/one-live-user.tpl":11,"./tpl/one-message.tpl":12,"lodash":1}],10:[function(require,module,exports){
 module.exports = "<li class=\"chat-contact\">\r\n\t<div class=\"user-avatar\">\r\n\t\t<img class=\"chat-avatar\" src=\"<%- avatar %>\">\r\n\t</div>\r\n\t<span class=\"user-name\" data-userid=\"<%- id %>\"><%- username %></span>\r\n\t<span class=\"unread-number <%- className %> \"><%- new_msg_count %></span>\r\n\r\n\t<span class=\"status <%- status %>\"></span>\r\n</li>";
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = "<li class=\"live-contact\">\r\n\t<div class=\"user-avatar\">\r\n\t\t<img class=\"chat-avatar\" src=\"public/images/static/avatar.jpg\" width=\"40\" height=\"40\">\r\n\t</div>\r\n\t<span class=\"user-name\" data-userid=\"<%- userid %>\"><%- name %></span>\r\n</li>";
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = "<div class=\"one-message <%- className %>\">\r\n\t<div class=\"avatar\">\r\n\t\t<img src=\"<%- avatar %>\" alt=\"avatar\">\r\n\t</div>\r\n\t<div class=\"info\">\r\n\t\t<span class=\"name\"><%- name %></span>\r\n\t\t<p class=\"chat-message\"><%- content %></p>\r\n\t</div>\r\n</div>";
 
-},{}]},{},[6]);
+},{}]},{},[7]);

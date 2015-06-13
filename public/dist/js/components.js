@@ -17,8 +17,14 @@ $(function() {
   }
   if (index !== void 0) {
     nav = $("#header").find(".nav").find("li").removeClass("active");
-    return $(nav[index]).addClass("active");
+    $(nav[index]).addClass("active");
   }
+  return $('#logout').on('click', function() {
+    return $.ajax({
+      type: 'post',
+      url: '/signout'
+    });
+  });
 });
 
 

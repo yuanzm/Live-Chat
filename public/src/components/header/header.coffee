@@ -13,3 +13,9 @@ $ ->
 	if(index != undefined)
 		nav = $("#header").find(".nav").find("li").removeClass("active");
 		$(nav[index]).addClass("active");
+
+	$('#logout').on 'click', ->
+		$.ajax({
+			type: 'post'
+			url: '/signout',
+		})

@@ -38,8 +38,33 @@ exports.set = function(key, value, time, callback) {
     logger.debug('Cache', 'set', key, (duration + 'ms').green);
 };
 
-exports.setLive = function(key, value, callback) {
-     redis.set(key, value, callback);
+exports.setLive = function(key, o, callback) {
+    // console.log(key)
+    var cache = [];
+    JSON.stringify(o, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+                // Circular reference found, discard key
+                return;
+            }
+            // Store value in our collection
+            cache.push(value);
+        }
+        return value;
+    });
+    cache = null; // Enable garbage collection
+    redis.set(key, o, callback);
+}
+
+exports.getLive = function(key, callback) {
+    // console.log(key)
+    redis.get(key, function(err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, data);
+        }
+    });
 }
 
 exports.remove = function(key, callback) {

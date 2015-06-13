@@ -16,6 +16,7 @@ var UserSchema = new Schema({
     qq: {type: String},
 	name: {type: String},
 
+    online: {type: Boolean, default: false},
     score: {type: Number, default: 0},
     topic_count: {type: Number, default: 0},
     comment_count: {type: Number,default: 0},

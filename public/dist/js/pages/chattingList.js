@@ -12403,8 +12403,8 @@ chattingList = {
     flag = false;
     $('.chat-contact').each(function(index, item) {
       var userIndex;
-      id = parseInt(id);
-      userIndex = parseInt($(item).find('.user-name').data('userid'));
+      id = id;
+      userIndex = $(item).find('.user-name').data('userid');
       if (userIndex === id) {
         return flag = index;
       }
@@ -12493,7 +12493,7 @@ chattingList = {
       dowhat: 'load_clear_unread_chat_msg',
       to: toId
     };
-    chatConnect.ws.send(JSON.stringify(data));
+    chatConnect.socket.send(data);
     return false;
   }
 };

@@ -33,11 +33,10 @@ chatPanel =
 	        return
 	    data =
 	        who: currentId
-	        dowhat: 'chat'
 	        to: person.getChatId()
 	        msg: msg
 
-	    chatConnect.ws.send(JSON.stringify(data))
+	    chatConnect.socket.emit('chat', data);
 
 	    chatPanel.loadMessageToBox("right", msg, currentUsername, avatar);
 	    chatPanel.scrollBottom()  # 滚轮事件

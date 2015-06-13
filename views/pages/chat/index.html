@@ -4,16 +4,16 @@
 	<!-- 用户是否登录 -->
 	<% if (current_user) { %>
 		<input type="hidden" value="1" id="logStatus">
+		<!-- 当前用户的个人数据 -->
+	  	<div id="chat-data">
+	   		<input type="hidden" name="current_user_id" value="<%= current_user.id %>" id="current-userid">
+	    	<input type="hidden" name="current_user_name" value="<%= current_user.loginname %>" id="current-username">
+	  	</div>
 	<% } %>
 	<% if (!current_user) { %>
 		<input type="hidden" value="0" id="logStatus">
 	<% } %>
 
-	<!-- 当前用户的个人数据 -->
-  	<div id="chat-data">
-   		<input type="hidden" name="current_user_id" value="<%= current_user.id %>" id="current-userid">
-    	<input type="hidden" name="current_user_name" value="<%= current_user.loginname %>" id="current-username">
-  	</div>
   	
 	<div class="chat-bottpm-bar hidden">
 		<span class="message-logo"></span>

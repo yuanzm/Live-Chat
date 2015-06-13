@@ -4,6 +4,7 @@
 tpl = require './tpl.coffee'
 person = require './chatPerson.coffee'
 chatConnect = require './chatConnect.coffee'
+chattingList = require './chattingList.coffee'
 
 # 缓存DOM节点变量
 $allLiveUser = $('.all-live-user')
@@ -17,10 +18,10 @@ liveList =
 	    flag = false
 
 	    $('.live-contact').each (index, item)->
-          id = id
-          userIndex = $(item).find('.user-name').data('userid')
-          if userIndex is id
-              flag = index
+          	id = id
+          	userIndex = $(item).find('.user-name').data('userid')
+          	if userIndex is id
+            	flag = index
 
 	    return flag
 
@@ -38,5 +39,16 @@ liveList =
 		index = liveList.getIndexInTheChatList(id)
 		if index isnt false
 			$('.live-contact').eq(index).fadeOut().remove();
+
+	liveUserClickHandler: ->
+		$this = $(this)
+		id = $this.find('.user-name').data('userid')
+		toUserName = $this.find('.user-name').text()
+		index = chattingList.getIndexInTheChatList(id)
+		toAvatar = $this.find('.chat-avatar').attr('src')
+		if id isnt currentId
+			if index is false
+				person.setChatId(id)
+				chattingList.addUserToChatList(toUserName, id, toAvatar, 'on', true);
 
 module.exports = liveList

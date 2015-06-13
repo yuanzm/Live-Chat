@@ -43,12 +43,12 @@ messageRouter = (data, socket)->
         sender = data.who
         index = chattingList.getIndexInTheChatList(sender)
         currentIndex = chattingList.getCurrentChatIndex()
-        console.log index, currentIndex
+        # console.log index, currentIndex
         if index != false
             if index is currentIndex
                 console.log '消息的发送方就是当前聊天对象'
                 # 消息的发送方就是当前聊天对象
-                chatPanel.loadMessageToBox('left', data.msg.msg, toUsername, data.msg.avatar)
+                chatPanel.loadMessageToBox('left', data.msg.content, data.msg.username, data.msg.avatar)
             else
                 console.log '消息的发送方不是当前聊天对象，但是在聊天列表里面'
                 # 消息的发送方不是当前聊天对象，但是在聊天列表里面

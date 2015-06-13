@@ -109,7 +109,7 @@
   position: absolute;
   right: 19px;
   top: 14px;
-  background: url("../../images/icon/status.gif") no-repeat;
+  background: url("../../images/icons/status.gif") no-repeat;
 }
 #chat-box .chat-list li .status.on {
   background-position: 0 0;
@@ -119,7 +119,7 @@
 }
 #chat-box .chat-log {
   overflow: auto;
-  width: 400px;
+  width: 525px;
   height: 378px;
   padding: 10px;
 }
@@ -261,7 +261,7 @@
   height: 18px;
   margin-left: 10px;
   line-height: 40px;
-  background: url("../../images/icon/message-orange.png") 0 -16px no-repeat;
+  background: url("../../images/icons/message-orange.png") 0 -16px no-repeat;
 }
 .chat-bottpm-bar em {
   line-height: 40px;

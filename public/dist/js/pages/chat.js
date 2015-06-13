@@ -12238,29 +12238,11 @@
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
-
-/*
- * chat.coffee
- * Author: yuanzm
- *
- * 聊天模块
- *   1. 在任何页面加载的时候，先判断用户是否登录，如果登录，与聊天服务器建立连接，如果没有登录，不建立连接
- *   2. 在任何页面，与聊天服务器建立连接之后，获取历史聊天用户列表，并且加载到页面
- *   3. 在任何页面，加载好了用户历史聊天用户列表之后，判断是否有未读消息，如果有，显示底部的私聊栏
- *   4. 在任何页面，加载好了用户历史聊天用户列表之后，最后一个聊天用户为当前聊天用户
- *   5. 在任何页面，点击下面的私聊栏，清零未读数目，弹出聊天面板，点击聊天面板的叉叉，关闭聊天面板，重新显示私聊栏
- *   6. 在用户资料页面，点击`谈一谈`按钮，首先判断该用户是否在历史聊天用户中，如果不在添加到历史聊天对象，如果在，把该用户设置成正在聊天对象
- *   7. 在任何面，收到了新消息，首先判断聊天面板是否打开
-        a. 如果打开，先判断收到的消息是否为当前聊天对象，如果是，直接显示消息，如果不是，判断是否在聊天列表，如果在，加上小红点，如果不在，添加到聊天对象，并加上小红点
-        b. 如果没有打开，执行上述操作的同时，私聊栏显示未读数目
- */
-var chatBottom, chatConnect, chatMain, chatPanel, chattingList, messageRouter, openState;
+var chatBottom, chatConnect, chatPanel, chattingList, liveList, messageRouter, openState;
 
 chattingList = require('./chattingList.coffee');
 
 chatPanel = require('./chatPanel.coffee');
-
-chatMain = require('./chatMain.coffee');
 
 chatBottom = require('./chatBottom.coffee');
 
@@ -12268,9 +12250,12 @@ chatConnect = require('./chatConnect.coffee');
 
 messageRouter = require('./messageRouter.coffee');
 
+liveList = require('./liveList.coffee');
+
 openState = false;
 
 $(function() {
+  $("body").delegate('.live-contact', 'click', liveList.liveUserClickHandler);
   $("body").delegate('#chat-box', 'keydown', chatPanel.keyDownSendMessage);
   $("body").delegate('#chat-submit', 'click', chatPanel.sendMessage);
   $("body").delegate('.chat-close-btn', 'click', chatBottom.closeChatBottom);
@@ -12286,7 +12271,7 @@ $(function() {
 });
 
 
-},{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatMain.coffee":6,"./chatPanel.coffee":7,"./chattingList.coffee":9,"./messageRouter.coffee":11}],3:[function(require,module,exports){
+},{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatPanel.coffee":6,"./chattingList.coffee":8,"./liveList.coffee":9,"./messageRouter.coffee":10}],3:[function(require,module,exports){
 var $chatBottomBar, $chatBox, ChatBottom, chatBottom;
 
 $chatBottomBar = $('.chat-bottpm-bar');
@@ -12388,7 +12373,7 @@ if (logStatus === '1') {
 module.exports = chatConnect;
 
 
-},{"./chatBottom.coffee":3,"./chatHost.coffee":5,"./mockData.coffee":12,"./tpl.coffee":13}],5:[function(require,module,exports){
+},{"./chatBottom.coffee":3,"./chatHost.coffee":5,"./mockData.coffee":11,"./tpl.coffee":12}],5:[function(require,module,exports){
 var chatHost;
 
 chatHost = {
@@ -12401,51 +12386,6 @@ module.exports = chatHost;
 
 
 },{}],6:[function(require,module,exports){
-var chatConnect, chatMain, chattingList, currentId, logStatus, toAvatar, toId, toUsername;
-
-currentId = $('#current-userid').val();
-
-toId = $('#to-userid').val();
-
-toUsername = $('#to-username').val();
-
-toAvatar = $('.avatar img').attr('src');
-
-logStatus = $('#logStatus').val();
-
-chattingList = require('./chattingList.coffee');
-
-chatConnect = require('./chatConnect.coffee');
-
-chatMain = {
-  talkHandler: function() {
-    var data;
-    if (logStatus === '0') {
-      alert("请先登录");
-      return;
-    }
-    if (currentId === toId) {
-      alert('不能和自己聊天');
-      return;
-    }
-    $('#chat-box').show();
-    window.openState = true;
-    if (currentId && toId) {
-      chattingList.addUserToChatList(toUsername, toId, toAvatar, 'on', true);
-      data = {
-        who: currentId,
-        dowhat: 'chat_log',
-        to: toId
-      };
-      return chatConnect.ws.send(JSON.stringify(data));
-    }
-  }
-};
-
-module.exports = chatMain;
-
-
-},{"./chatConnect.coffee":4,"./chattingList.coffee":9}],7:[function(require,module,exports){
 var avatar, chatConnect, chatPanel, currentId, currentUsername, logStatus, person, toAvatar, toId, toUsername, tpl;
 
 chatConnect = require('./chatConnect.coffee');
@@ -12489,11 +12429,10 @@ chatPanel = {
     }
     data = {
       who: currentId,
-      dowhat: 'chat',
       to: person.getChatId(),
       msg: msg
     };
-    chatConnect.ws.send(JSON.stringify(data));
+    chatConnect.socket.emit('chat', data);
     chatPanel.loadMessageToBox("right", msg, currentUsername, avatar);
     return chatPanel.scrollBottom();
   },
@@ -12537,7 +12476,7 @@ chatPanel = {
 module.exports = chatPanel;
 
 
-},{"./chatConnect.coffee":4,"./chatPerson.coffee":8,"./tpl.coffee":13}],8:[function(require,module,exports){
+},{"./chatConnect.coffee":4,"./chatPerson.coffee":7,"./tpl.coffee":12}],7:[function(require,module,exports){
 var ChatPerson, person, toId;
 
 ChatPerson = (function() {
@@ -12564,7 +12503,7 @@ person = new ChatPerson(toId);
 module.exports = person;
 
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var $allChattingUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, mockData, person, tpl;
 
 mockData = require('./mockData.coffee');
@@ -12589,8 +12528,8 @@ chattingList = {
     flag = false;
     $('.chat-contact').each(function(index, item) {
       var userIndex;
-      id = parseInt(id);
-      userIndex = parseInt($(item).find('.user-name').data('userid'));
+      id = id;
+      userIndex = $(item).find('.user-name').data('userid');
       if (userIndex === id) {
         return flag = index;
       }
@@ -12679,7 +12618,7 @@ chattingList = {
       dowhat: 'load_clear_unread_chat_msg',
       to: toId
     };
-    chatConnect.ws.send(JSON.stringify(data));
+    chatConnect.socket.send(data);
     return false;
   }
 };
@@ -12687,14 +12626,16 @@ chattingList = {
 module.exports = chattingList;
 
 
-},{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatPerson.coffee":8,"./mockData.coffee":12,"./tpl.coffee":13}],10:[function(require,module,exports){
-var $allLiveUser, $chatBottomBar, chatBottom, chatConnect, currentId, liveList, person, tpl;
+},{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatPerson.coffee":7,"./mockData.coffee":11,"./tpl.coffee":12}],9:[function(require,module,exports){
+var $allLiveUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, liveList, person, tpl;
 
 tpl = require('./tpl.coffee');
 
 person = require('./chatPerson.coffee');
 
 chatConnect = require('./chatConnect.coffee');
+
+chattingList = require('./chattingList.coffee');
 
 $allLiveUser = $('.all-live-user');
 
@@ -12733,13 +12674,27 @@ liveList = {
     if (index !== false) {
       return $('.live-contact').eq(index).fadeOut().remove();
     }
+  },
+  liveUserClickHandler: function() {
+    var $this, id, index, toAvatar, toUserName;
+    $this = $(this);
+    id = $this.find('.user-name').data('userid');
+    toUserName = $this.find('.user-name').text();
+    index = chattingList.getIndexInTheChatList(id);
+    toAvatar = $this.find('.chat-avatar').attr('src');
+    if (id !== currentId) {
+      if (index === false) {
+        person.setChatId(id);
+        return chattingList.addUserToChatList(toUserName, id, toAvatar, 'on', true);
+      }
+    }
   }
 };
 
 module.exports = liveList;
 
 
-},{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatPerson.coffee":8,"./tpl.coffee":13}],11:[function(require,module,exports){
+},{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatPerson.coffee":7,"./chattingList.coffee":8,"./tpl.coffee":12}],10:[function(require,module,exports){
 var $chatBottomBar, chatBottom, chatPanel, chattingList, currentId, liveList, messageRouter, mockData, person, toAvatar, toUsername, tpl;
 
 chattingList = require('./chattingList.coffee');
@@ -12791,11 +12746,10 @@ messageRouter = function(data, socket) {
     sender = data.who;
     index = chattingList.getIndexInTheChatList(sender);
     currentIndex = chattingList.getCurrentChatIndex();
-    console.log(index, currentIndex);
     if (index !== false) {
       if (index === currentIndex) {
         console.log('消息的发送方就是当前聊天对象');
-        chatPanel.loadMessageToBox('left', data.msg.msg, toUsername, data.msg.avatar);
+        chatPanel.loadMessageToBox('left', data.msg.content, data.msg.username, data.msg.avatar);
       } else {
         console.log('消息的发送方不是当前聊天对象，但是在聊天列表里面');
         chattingList.addNewMessageToUser(index);
@@ -12868,7 +12822,7 @@ messageRouter = function(data, socket) {
 module.exports = messageRouter;
 
 
-},{"./chatBottom.coffee":3,"./chatPanel.coffee":7,"./chatPerson.coffee":8,"./chattingList.coffee":9,"./liveList.coffee":10,"./mockData.coffee":12,"./tpl.coffee":13}],12:[function(require,module,exports){
+},{"./chatBottom.coffee":3,"./chatPanel.coffee":6,"./chatPerson.coffee":7,"./chattingList.coffee":8,"./liveList.coffee":9,"./mockData.coffee":11,"./tpl.coffee":12}],11:[function(require,module,exports){
 var chatList, msgs;
 
 chatList = {
@@ -12905,7 +12859,7 @@ module.exports = {
 };
 
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var oneChatterCompile, oneChatterTemplate, oneLiveCompile, oneLiveTemplate, oneMessageCompile, oneMessageTemplate, _;
 
 _ = require('lodash');
@@ -12929,13 +12883,13 @@ module.exports = {
 };
 
 
-},{"./tpl/one-chatter.tpl":14,"./tpl/one-live-user.tpl":15,"./tpl/one-message.tpl":16,"lodash":1}],14:[function(require,module,exports){
+},{"./tpl/one-chatter.tpl":13,"./tpl/one-live-user.tpl":14,"./tpl/one-message.tpl":15,"lodash":1}],13:[function(require,module,exports){
 module.exports = "<li class=\"chat-contact\">\r\n\t<div class=\"user-avatar\">\r\n\t\t<img class=\"chat-avatar\" src=\"<%- avatar %>\">\r\n\t</div>\r\n\t<span class=\"user-name\" data-userid=\"<%- id %>\"><%- username %></span>\r\n\t<span class=\"unread-number <%- className %> \"><%- new_msg_count %></span>\r\n\r\n\t<span class=\"status <%- status %>\"></span>\r\n</li>";
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = "<li class=\"live-contact\">\r\n\t<div class=\"user-avatar\">\r\n\t\t<img class=\"chat-avatar\" src=\"public/images/static/avatar.jpg\" width=\"40\" height=\"40\">\r\n\t</div>\r\n\t<span class=\"user-name\" data-userid=\"<%- userid %>\"><%- name %></span>\r\n</li>";
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = "<div class=\"one-message <%- className %>\">\r\n\t<div class=\"avatar\">\r\n\t\t<img src=\"<%- avatar %>\" alt=\"avatar\">\r\n\t</div>\r\n\t<div class=\"info\">\r\n\t\t<span class=\"name\"><%- name %></span>\r\n\t\t<p class=\"chat-message\"><%- content %></p>\r\n\t</div>\r\n</div>";
 
 },{}]},{},[2]);
