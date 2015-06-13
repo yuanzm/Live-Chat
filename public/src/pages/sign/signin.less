@@ -1,0 +1,89 @@
+@bg-color: #7ecac9;
+
+#main {
+	width: 840px;
+	margin: 0 auto;
+	padding-top: 131px;
+	overflow: hidden;
+
+	.page-left {
+		width: 400px;
+		height: 300px;
+		float: left;
+	}
+
+	.page-right {
+		width: 340px;
+		margin-left: 100px;
+		float: left;
+
+		h2 {
+			color: #fff;
+			height: 60px;
+			font-size: 19.5px;
+			vertical-align: middle;
+			background-color: @bg-color;
+			border-top-right-radius: 10px;
+			border-top-left-radius: 10px;
+			text-align: center;
+			line-height: 60px;
+		}
+
+		.login-form {
+			background-color: #fff;
+			height: 220px;
+			padding: 10px;
+
+			.login-item {
+				width: 295px;
+				margin: 0 auto;
+				margin-top: 12px;
+
+				input {
+					height: 34px;
+					width: 283px;
+					border-radius: 10px;
+					border: 1px solid #cae9e9;
+					font-size: 15px;
+					outline: none;
+					padding: 5px 5px 5px 10px;
+				}
+			}
+			.login-tips {
+				font-size: 14px;
+				display: inline-block;
+				margin-left: 20px;
+				margin-top: 5px;
+			}
+			.red-tip {
+				color: red;
+			}
+			.green-tip {
+				color: green;
+			}
+			.login-link {
+				width: 295px;
+				margin: 0 auto;
+				margin-top: 10px;
+
+				a {
+					color: #493f35;
+					font-size: 15px;
+					text-decoration: none;
+				}
+			}
+		}
+		#login-btn {
+			width: 100px;
+			height: 38px;
+			background-color: @bg-color;
+			border: 0px;
+			border-radius: 10px;
+			color: #fff;
+			font-size: 17px;
+			float: right;
+			margin-top: 30px;
+			cursor: pointer;
+		}
+	}
+}

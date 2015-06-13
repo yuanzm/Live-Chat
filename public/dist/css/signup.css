@@ -1,0 +1,79 @@
+#main {
+  width: 840px;
+  margin: 0 auto;
+  padding-top: 131px;
+  overflow: hidden;
+}
+#main .page-left {
+  width: 400px;
+  height: 300px;
+  float: left;
+}
+#main .page-right {
+  width: 340px;
+  margin-left: 100px;
+  float: left;
+}
+#main .page-right h2 {
+  color: #fff;
+  height: 60px;
+  font-size: 19.5px;
+  vertical-align: middle;
+  background-color: #7ecac9;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  text-align: center;
+  line-height: 60px;
+}
+#main .page-right .login-form {
+  background-color: #fff;
+  height: 240px;
+  padding: 10px;
+}
+#main .page-right .login-form .login-item {
+  width: 295px;
+  margin: 0 auto;
+  margin-top: 12px;
+}
+#main .page-right .login-form .login-item input {
+  height: 25px;
+  width: 283px;
+  border-radius: 10px;
+  border: 1px solid #cae9e9;
+  font-size: 15px;
+  outline: none;
+  padding: 5px 5px 5px 10px;
+}
+#main .page-right .login-form .login-tips {
+  font-size: 14px;
+  display: inline-block;
+  margin-left: 20px;
+  margin-top: 5px;
+}
+#main .page-right .login-form .red-tip {
+  color: red;
+}
+#main .page-right .login-form .green-tip {
+  color: green;
+}
+#main .page-right .login-form .login-link {
+  width: 295px;
+  margin: 0 auto;
+}
+#main .page-right .login-form .login-link a {
+  color: #493f35;
+  font-size: 15px;
+  text-decoration: none;
+}
+#main .page-right #signup-btn {
+  width: 100px;
+  height: 38px;
+  background-color: #7ecac9;
+  border: 0px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 17px;
+  float: right;
+  margin-top: 30px;
+  cursor: pointer;
+}

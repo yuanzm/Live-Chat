@@ -1,131 +1,68 @@
-module.exports = (grunt) ->
-	coffeeify = require("coffeeify")
-	stringify = require("stringify")
+module.exports = (grunt)->
 
-	grunt.initConfig
-		# Start a connect web server.
-		connect:
-			options:
-				port: 8000
-				hostname: '127.0.0.1'
-				livereload: 35729
-		
-		# Clean files and folders
-		clean:
-			bin: ["bin"]
-			dist: ["dist"]
-			sassCache: '.sass-cache'
+    stringify = require 'stringify'
+    coffeeify = require 'coffeeify'
 
-		# Copy files and folders
-		copy:
-			assets:
-				src: "assets/**/*"
-				dest: "dist/"
-			lib:
-				src: "lib/**/*"
-				dest: "dist/"
+    grunt.initConfig
+        copy:
+            dev:
+                files: [
+                    {src: ["lib/jquery/dist/jquery.min.js"], dest: 'dist/lib/jquery.min.js'},
+                    {src: ["lib/jquery/dist/jquery.min.map"], dest: 'dist/lib/jquery.min.map'},
+                    {src: ["lib/socket.io-1.3.5.js"], dest: 'dist/lib/socket.io-1.3.5.js'}
+                ]
+        clean:
+            dist: ['dist']
 
-		# Grunt task for node-browserify
-		browserify:
-			dev:
+        browserify:
+            components:
                 options:
-                    preBundleCB: (b)->
-                        b.transform(coffeeify)
-                        b.transform(stringify({extensions: [".html"]}))
+                  preBundleCB: (b)->
+                    b.transform(coffeeify)
+                    b.transform(stringify({extensions: ['.hbs', '.html', '.tpl', '.txt']}))
                 expand: true
                 flatten: true
-                src: ["src/coffee/main.coffee"]
-                dest: "bin/js"
-                ext: ".js"
-            test:
-            	options:
-            		preBundleCB: (b)->
-            			b.transform(coffeeify)
-            			b.transform(stringify({extensions: [".html"]}))
-            	expand: true
-            	flatten: true
-            	src: ["test/test.coffee"]
-            	dest: "bin/test"
-            	ext: ".js"
-		# Minify files with UglifyJS
-		uglify:
-			build:
-				files: [{
-				    expand: true
-				    cwd: 'bin/js'
-				    src: '**/*.js'
-				    dest: 'dist/js'
-				}]
-		# Compress CSS files
-		cssmin:    
-		    build:
-		        files:
-		            "dist/css/main.css": ["bin/css/main.css"]
+                files: {
+                    'dist/js/components.js': ['src/components/**/*.coffee']
+                    'dist/js/common.js': ['src/common/**/*.coffee'],
+                }
 
-		# Run predefined tasks whenever watched file patterns are added, changed or deleted	
-		watch:
-			livereload:
-				options:
-					livereload: '<%=connect.options.livereload%>'
+            pages:
+                options:
+                  preBundleCB: (b)->
+                    b.transform(coffeeify)
+                    b.transform(stringify({extensions: ['.hbs', '.html', '.tpl', '.txt']}))
+                expand: true
+                flatten: true
+                src: ['src/pages/**/*.coffee']
+                dest: 'dist/js/pages/'
+                ext: '.js'
 
-				files: [
-					"src/**/*.coffee"
-					"src/**/*.scss"
-					"test/**/*.coffee"
-					"test/**/*.html"
-				]
-			compile:
-				files: [
-					"src/**/*.coffee"
-					"src/**/*.scss"
-					"test/**/*.coffee"
-					"test/**/*.html"
+        watch:
+            compile:
+                files: ['src/**/*.less', 'src/**/*.coffee']
+                tasks: ['browserify', 'less']
 
-				]
-				tasks: ["browserify", "sass"]
+        less:
+            components:
+                files:
+                    'dist/css/layout.css': ['src/components/**/*.less', 'src/common/**/*.less']
+                    'dist/css/signup.css': ['src/pages/sign/signup.less']
+                    'dist/css/signin.css': ['src/pages/sign/signin.less']
+                    'dist/css/chat.css': ['src/pages/chat/chat.less']
 
-		# Compile Sass to CSS
-		sass:
-			dist:
-				files:
-					"bin/css/main.css": "src/scss/main.scss"
-		mocha:
-	        test:
-	            src: ["test/**/*.html"]
-	            options:
-	                run: true
-	                reporter: "Spec"
+    grunt.loadNpmTasks 'grunt-browserify'
+    grunt.loadNpmTasks 'grunt-contrib-less'
+    grunt.loadNpmTasks 'grunt-contrib-copy'
+    grunt.loadNpmTasks 'grunt-contrib-clean'
+    grunt.loadNpmTasks 'grunt-contrib-watch'
+    grunt.loadNpmTasks 'grunt-contrib-less'
 
-	grunt.loadNpmTasks "grunt-contrib-clean"
-	grunt.loadNpmTasks "grunt-contrib-connect"
-	grunt.loadNpmTasks "grunt-browserify"
-	grunt.loadNpmTasks "grunt-contrib-watch"
-	grunt.loadNpmTasks "grunt-contrib-sass"
-	grunt.loadNpmTasks "grunt-contrib-uglify"
-	grunt.loadNpmTasks "grunt-contrib-cssmin"
-	grunt.loadNpmTasks "grunt-contrib-copy"
-	grunt.loadNpmTasks "grunt-contrib-jade"
-	grunt.loadNpmTasks "grunt-mocha"
-
-	grunt.registerTask "default", ->
-		grunt.task.run [
-			"connect"
-			"clean:bin"
-			"browserify"
-			"sass"
-			# "mocha"
-			"watch"
-		]
-
-	grunt.registerTask "build", ->
-		grunt.task.run [
-			"clean:bin"
-			"clean:dist"
-			"browserify"
-			"sass"
-			# "mocha"
-			"clean:sassCache"
-			"cssmin"
-			"uglify"
-			"copy"
-		]
+    grunt.registerTask 'default', ->
+        grunt.task.run [
+            'clean'
+            'copy'
+            'browserify'
+            'less'
+            'watch'
+        ]

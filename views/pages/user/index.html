@@ -1,0 +1,9 @@
+<h1>个人中心</h1>
+<h1><%= user.loginname %></h1>
+<ul>
+    <% for (var topic in topicList) { %>
+        <li>
+            <%= topicList[topic].content %>
+        </li>
+    <% } %>
+</ul>

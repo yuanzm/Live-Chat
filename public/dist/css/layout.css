@@ -1,0 +1,251 @@
+footer {
+  width: 100%;
+  height: 50px;
+  display: block;
+  position: absolute;
+  bottom: 0px;
+  background-color: #7ecac8;
+}
+footer p {
+  color: #fff;
+  line-height: 50px;
+  text-align: center;
+}
+
+.btn {
+  width: 98px;
+  height: 35px;
+  line-height: 35px;
+  font-family: "Microsoft YaHei";
+  text-align: center;
+  background-color: #7ecac9;
+  font-size: 18px;
+  display: inline-block;
+  margin: 0 auto;
+  margin-top: 12px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  color: #fff;
+  border: 0px;
+}
+header {
+  width: 100%;
+  background-color: #fff;
+}
+header #header {
+  width: 1024px;
+  margin: 0 auto;
+  height: 70px;
+  overflow: hidden;
+  position: relative;
+}
+header #header .logo {
+  display: block;
+  float: left;
+}
+header #header .logo img {
+  margin-top: 10px;
+}
+header #header ul {
+  overflow: hidden;
+  float: left;
+}
+header #header ul li {
+  float: left;
+}
+header #header ul li a {
+  display: inline-block;
+  text-align: center;
+  line-height: 35px;
+  text-decoration: none;
+}
+header #header .nav {
+  padding-top: 17px;
+  margin-left: 20px;
+}
+header #header .nav li {
+  float: left;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+header #header .nav li a {
+  width: 93px;
+  text-align: center;
+  color: #4d3e2b;
+}
+header #header .nav li a:hover {
+  background-color: #7ecac8;
+  color: #fff;
+}
+header #header .nav li.active {
+  background-color: #7ecac8;
+}
+header #header .nav li.active a {
+  color: #fff;
+}
+header #header .user-info {
+  float: right;
+  margin-right: 40px;
+  padding-top: 17px;
+}
+header #header .user-info li {
+  margin-left: 23px;
+}
+header #header .user-info li a {
+  color: #2b2b2b;
+}
+header #header .user-info li.info img {
+  vertical-align: middle;
+  border-radius: 17px;
+  -moz-border-radius: 17px;
+  -webkit-border-radius: 17px;
+}
+header #header .user-info li.info span {
+  line-height: 34px;
+  vertical-align: middle;
+}
+header #header .user-info li.logout a {
+  width: 45px;
+  height: 43px;
+  background: url(../../images/common/log-out.png) no-repeat 0 15px;
+  padding-left: 12px;
+  padding-top: 1px;
+  font-size: 14px;
+}
+header #header .user-info li.login,
+header #header .user-info li.register {
+  margin-left: 5px;
+}
+header #header .user-info li.login a,
+header #header .user-info li.register a {
+  font-size: 14px;
+}
+header #header .user-info li.login a:hover,
+header #header .user-info li.register a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  width: 98px;
+  height: 35px;
+  line-height: 35px;
+  font-family: "Microsoft YaHei";
+  text-align: center;
+  background-color: #7ecac9;
+  font-size: 18px;
+  display: inline-block;
+  margin: 0 auto;
+  margin-top: 12px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  color: #fff;
+  border: 0px;
+}
+
+@charset "utf-8";
+/*
+ * layout.less
+ * author: yuanzm
+ */
+/*
+ * CSS Reset
+ * 重置浏览器默认样式，保证所有浏览器看起来的效果是一样的
+ */
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+fieldset,
+input,
+textarea,
+p,
+blockquote,
+th,
+td {
+  padding: 0;
+  margin: 0;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-weight: normal;
+  font-style: normal;
+}
+ol,
+ul {
+  list-style: none;
+}
+caption,
+th {
+  text-align: left;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+  font-size: 100%;
+}
+q:before,
+q:after {
+  content: '';
+}
+abbr,
+acronym {
+  border: 0;
+}
+li {
+  list-style-type: none;
+}
+a {
+  text-decoration: none;
+}
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  background-color: #f3f3f3;
+}
+body {
+  font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif, "宋体";
+}
+#wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /*IE6不识别min-height*/
+  position: relative;
+  background-color: #f3f3f3;
+}
+#main {
+  width: 1024px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}

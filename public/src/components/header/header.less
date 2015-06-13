@@ -1,0 +1,105 @@
+@import '../../common/common.less';
+
+@header-height: 70px;
+@nav-bg: #7ecac8;
+
+header {
+	width: 100%;
+    background-color: #fff;
+
+    #header {
+    	width: 1024px;
+        margin: 0 auto;
+        height: @header-height;
+        overflow: hidden;
+        position: relative;
+        .logo {
+        	display: block;
+        	float: left;
+        	img {
+	        	margin-top: 10px;
+        	}
+        }
+        ul {
+            overflow: hidden;
+        	float: left;
+            li {
+                float: left;
+                a {
+                    display: inline-block;
+                    text-align: center;
+                    line-height: 35px;
+                    text-decoration: none;
+                }
+            }
+        }
+
+        .nav {
+        	padding-top: 17px;
+            margin-left: 20px;
+        	li {
+                float: left;
+                vertical-align:middle;
+                margin-left: 5px;
+                a {
+                    width: 93px;
+                    text-align: center;
+                    color: #4d3e2b;
+                    &:hover {
+                        background-color: @nav-bg;
+                        color: #fff;
+                    }
+                }
+                &.active {
+                    background-color: @nav-bg;
+                    a {
+                        color: #fff;
+                    }
+                }
+            }
+        }
+
+        .user-info {
+            float: right;
+            margin-right: 40px;
+            padding-top: 17px;
+            li {
+                margin-left: 23px;
+                a {
+                    color: #2b2b2b;
+                }
+                &.info {
+                    img {
+                        vertical-align: middle;
+                        .border-radius(17px);
+                    }
+                    span {
+                        line-height: 34px;
+                        vertical-align: middle;
+                    }
+                }
+
+                &.logout {
+                    a {
+                        width: 45px;
+                        height: 43px;
+                        background: url(./../../images/common/log-out.png) no-repeat 0 15px;
+                        padding-left: 12px;
+                        padding-top: 1px;
+                        font-size: 14px;
+                    }
+                }
+
+                &.login, &.register {
+                    margin-left: 5px;
+                    a {
+                        font-size: 14px;
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live-Chat</title>
+    <link rel="stylesheet" type="text/css" href="/public/dist/css/layout.css">
+	<script type="text/javascript" src="/public/dist/lib/jquery.min.js"></script>
+	<script type="text/javascript" src="/public/dist/lib/socket.io-1.3.5.js"></script>
+	<script type="text/javascript" src="/public/dist/js/common.js"></script>
+	<script type="text/javascript" src="/public/dist/js/components.js"></script>
+</head>
+<body>
+	<div id="wrapper">
+	    <%- partial('components/header') %>
+	    <div id='main'>
+	        <%- body %>
+	    </div>
+	    <%- partial('components/footer') %>
+	</div>
+</body>
+</html>

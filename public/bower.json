@@ -1,0 +1,26 @@
+{
+  "name": "SE-308-Software-Design-Projects",
+  "version": "0.0.1",
+  "homepage": "https://github.com/yuanzm/SE-308-Software-Design-Projects",
+  "authors": [
+    "yuanzm <1229084233@qq.com>"
+  ],
+  "description": "project for course SE-308",
+  "keywords": [
+    "node",
+    "chat"
+  ],
+  "dependencies": {
+    "jquery": "*",
+    "lodash": "~3.9.3"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib/",
+    "test",
+    "tests"
+  ]
+}

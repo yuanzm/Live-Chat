@@ -1,0 +1,57 @@
+<link rel="stylesheet" type="text/css" href="/public/dist/css/chat.css">
+
+<div id="chat">
+	<!-- 用户是否登录 -->
+	<% if (current_user) { %>
+		<input type="hidden" value="1" id="logStatus">
+	<% } %>
+	<% if (!current_user) { %>
+		<input type="hidden" value="0" id="logStatus">
+	<% } %>
+
+	<!-- 当前用户的个人数据 -->
+  	<div id="chat-data">
+   		<input type="hidden" name="current_user_id" value="<%= current_user.id %>" id="current-userid">
+    	<input type="hidden" name="current_user_name" value="<%= current_user.loginname %>" id="current-username">
+  	</div>
+  	
+	<div class="chat-bottpm-bar hidden">
+		<span class="message-logo"></span>
+		<span class="message-number"></span>
+		<em class="message-title">私信聊天</em>
+	</div>
+
+	<div id="chat-box">
+		<div class="chat-banner">
+			Live-Chat
+			<a href="javascript: void(0);" class="chat-close-btn">X</a>
+		</div>
+		<div class="chat-list">
+			<ul class="all-chatting-user">
+				
+			</ul>
+		</div>
+		<div class="chat-panel">
+	      	<div class="chat-log">
+	      		
+	      	</div>
+	      	<!-- <div class="chat-bar"></div> -->
+	      	<div class="chat-input">
+	        	<input type="text" id="chat-input-box" value="" placeholder="按回车键发送信息">
+	        	<input type="submit" id="chat-submit" class="btn" value="发送">
+	      	</div>
+		</div>
+	</div>
+
+	<div class="live-user-list">
+		<div class="live-user-banner">
+			在线用户
+		</div>
+		<ul class="all-live-user">
+			
+		</ul>
+	</div>
+
+</div>
+
+<script type="text/javascript" src="/public/dist/js/pages/chat.js"></script>
