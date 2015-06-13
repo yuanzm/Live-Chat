@@ -6,7 +6,7 @@ block content
 		div.user-list
 			div(class="panel panel-primary")
 				div(class="panel-heading")
-					span(class="glyphicon glyphicon-user")   Regist
+					span(class="glyphicon glyphicon-user")   用户注册
 				div(class="panel-body")
 					form(rol="from",method="post")
 						if error
@@ -14,13 +14,12 @@ block content
 						if success
 							p= success
 						div.form-group
-							label(for="exampleInputName") nickName
-							input(type="text", class="form-control", id="exampleInputName", placeholder="nickName", name="nickName")
+							label(for="exampleInputName") 昵称
+							input(type="text", class="form-control", id="exampleInputName", placeholder="请输入昵称", name="nickName")
 						div.form-group
-							label(for="exampleInputEmail") email
-							input(type="text", class="form-control", id="exampleInputEmail", placeholder="email", name="email")
+							label(for="exampleInputEmail") 邮箱
+							input(type="text", class="form-control", id="exampleInputEmail", placeholder="请输入邮箱", name="email")
 						div.form-group
-							label(for="exampleInputPassword1") passWord
-							input(type="password", class="form-control", id="exampleInputPassword1", placeholder="passWord", name="passWord")
-							button(type="submit", class="btn btn-primary") Regist
-
+							label(for="exampleInputPassword1") 密码
+							input(type="password", class="form-control", id="exampleInputPassword1", placeholder="请输入密码", name="passWord")
+							button(type="submit", class="btn btn-primary") 注册

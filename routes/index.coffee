@@ -28,7 +28,9 @@ router.get '/regist', (req, res)->
 
 router.post '/regist', (req, res)->
 	md5 = crypto.createHash 'md5'
-	password = md5.update(req.body.passWord).digest('base64')
+	console.log req.body
+	password = md5.update(req.body.password).digest('base64')
+	console.log 213123123123
 	md5 = crypto.createHash 'md5'
 	email_MD5 =  md5.update(req.body.email.toLowerCase()).digest('hex')
 	console.log email_MD5

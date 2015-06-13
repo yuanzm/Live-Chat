@@ -13,7 +13,6 @@ LiveChat = {
 module.exports = LiveChat;
 
 
-
 },{}],2:[function(require,module,exports){
 
 /*
@@ -65,14 +64,14 @@ if (location.pathname === "/") {
       name = $name.text();
       self = this;
       return Status.getChatPersonsData(name, function(data) {
-        var chatNow, index, isChating, user, _i, _len;
+        var chatNow, i, index, isChating, len, user;
         isChating = data.isChating;
         chatNow = data.chatNow;
         LiveUser.userCollection[LiveChat.name] = new LiveUser.OneUser(LiveChat.name);
         if (isChating.length) {
           $chatLeft.addClass('is-chating');
-          for (_i = 0, _len = isChating.length; _i < _len; _i++) {
-            user = isChating[_i];
+          for (i = 0, len = isChating.length; i < len; i++) {
+            user = isChating[i];
             LiveUser.addChatPerson(user);
             LiveUser.userCollection[user.name] = new LiveUser.OneUser(user.name);
           }
@@ -163,18 +162,18 @@ if (location.pathname === "/") {
     		* remove a user in chating users list
      */
     removeChatPerson: function(name) {
-      var allChatingUser, user, _i, _len, _results;
+      var allChatingUser, i, len, results, user;
       allChatingUser = $chatingUser.find('li');
-      _results = [];
-      for (_i = 0, _len = allChatingUser.length; _i < _len; _i++) {
-        user = allChatingUser[_i];
+      results = [];
+      for (i = 0, len = allChatingUser.length; i < len; i++) {
+        user = allChatingUser[i];
         if ($(user).text() === name) {
-          _results.push($(user).remove());
+          results.push($(user).remove());
         } else {
-          _results.push(void 0);
+          results.push(void 0);
         }
       }
-      return _results;
+      return results;
     },
 
     /*
@@ -195,7 +194,6 @@ if (location.pathname === "/") {
     chatingUser: chatingUser
   };
 }
-
 
 
 },{"./LiveChat-config.coffee":1,"./chats.coffee":3,"./live-user.coffee":6,"./maintain-chating.coffee":8,"./user-dom.coffee":12}],3:[function(require,module,exports){
@@ -227,12 +225,12 @@ $loadMore = $('.load-more');
  */
 
 processData = function(messageData) {
-  var allmessage, chat, chatPackage, gravatar, myGravatar, _i, _len;
+  var allmessage, chat, chatPackage, gravatar, i, len, myGravatar;
   myGravatar = UserDom.getSelfGravatar();
   gravatar = UserDom.getChattingGravatar();
   allmessage = [];
-  for (_i = 0, _len = messageData.length; _i < _len; _i++) {
-    chat = messageData[_i];
+  for (i = 0, len = messageData.length; i < len; i++) {
+    chat = messageData[i];
     gravatar = chat.speaker === $name.text() ? myGravatar : gravatar;
     chatPackage = {
       receiverData: {
@@ -284,13 +282,13 @@ updateChatStatus = function(name, chatLength) {
  */
 
 repaintChatRoom = function(allMessage, needEmpty) {
-  var message, _i, _len;
+  var i, len, message;
   $('.load-more').remove();
   if (needEmpty) {
     $chatsList.empty();
   }
-  for (_i = 0, _len = allMessage.length; _i < _len; _i++) {
-    message = allMessage[_i];
+  for (i = 0, len = allMessage.length; i < len; i++) {
+    message = allMessage[i];
     UserDom.showMessage(message, true);
   }
   return $chatsList.prepend($('<a class="load-more">Load more</a>'));
@@ -354,7 +352,6 @@ loadChats = {
 };
 
 module.exports = loadChats;
-
 
 
 },{"./LiveChat-config.coffee":1,"./live-user.coffee":6,"./maintain-chating.coffee":8,"./user-dom.coffee":12}],4:[function(require,module,exports){
@@ -440,7 +437,6 @@ if (location.pathname === "/") {
 }
 
 
-
 },{"./helper.coffee":5,"./live-user.coffee":6}],5:[function(require,module,exports){
 
 /*
@@ -489,7 +485,6 @@ chat = {
 };
 
 module.exports = chat;
-
 
 
 },{}],6:[function(require,module,exports){
@@ -657,8 +652,8 @@ if (location.pathname === "/") {
       return $liveNumber.text(num);
     },
     OneUser: OneUser = (function() {
-      function OneUser(name) {
-        this.name = name;
+      function OneUser(name1) {
+        this.name = name1;
         this.chatStart = 0;
         this.chatLimit = 20;
         this.noRead = 0;
@@ -706,7 +701,6 @@ if (location.pathname === "/") {
 }
 
 
-
 },{"./LiveChat-config.coffee":1,"./maintain-chating.coffee":8,"./offlinelist.coffee":11,"./user-dom.coffee":12}],7:[function(require,module,exports){
 var Connect, chatingUser, connect, liveUser, messageSend, sender;
 
@@ -739,7 +733,6 @@ $('#chat-room').mCustomScrollbar({
     scrollAmount: 40
   }
 });
-
 
 
 },{"./chating-user.coffee":2,"./connect-status.coffee":4,"./live-user.coffee":6,"./message-send.coffee":10}],8:[function(require,module,exports){
@@ -917,7 +910,6 @@ chatingState = {
 module.exports = chatingState;
 
 
-
 },{}],9:[function(require,module,exports){
 var $chatList, $chatPerson, $chatingUser, $liveUser, $name, LiveChat, LiveUser, MessageReceive, UserDom, socket;
 
@@ -1004,7 +996,6 @@ if (location.pathname === "/") {
   };
   module.exports = MessageReceive;
 }
-
 
 
 },{"./LiveChat-config.coffee":1,"./live-user.coffee":6,"./user-dom.coffee":12}],10:[function(require,module,exports){
@@ -1112,14 +1103,13 @@ if (location.pathname === "/") {
 }
 
 
-
 },{"./helper.coffee":5,"./maintain-chating.coffee":8,"./message-receive.coffee":9,"./user-dom.coffee":12}],11:[function(require,module,exports){
 
 /*
 * A module to process the offline user list
  */
 var $chatList, $liveUser, offLine,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 $chatList = $('#chating-user');
 
@@ -1128,7 +1118,7 @@ $liveUser = $('#live-user');
 offLine = {
   offLineList: [],
   markOffLineUsers: function() {
-    var $chatLists, $liveUsers, chat, chatArray, liveArray, _i, _len, _results;
+    var $chatLists, $liveUsers, chat, chatArray, i, len, liveArray, results;
     $chatLists = $chatList.find('span');
     $liveUsers = $liveUser.find('span');
     chatArray = [];
@@ -1141,21 +1131,21 @@ offLine = {
     $liveUsers.each(function() {
       return liveArray.push($(this).text());
     });
-    _results = [];
-    for (_i = 0, _len = chatArray.length; _i < _len; _i++) {
-      chat = chatArray[_i];
+    results = [];
+    for (i = 0, len = chatArray.length; i < len; i++) {
+      chat = chatArray[i];
       if (this.offLineList[chat]) {
         this.opaqueUser(chat);
         delete this.offLineList[chat];
       }
-      if (!(__indexOf.call(liveArray, chat) >= 0)) {
+      if (!(indexOf.call(liveArray, chat) >= 0)) {
         this.offLineList[chat] = chat;
-        _results.push(this.translucentUser(chat));
+        results.push(this.translucentUser(chat));
       } else {
-        _results.push(void 0);
+        results.push(void 0);
       }
     }
-    return _results;
+    return results;
   },
   translucentUser: function(name) {
     var $chatLists;
@@ -1178,7 +1168,6 @@ offLine = {
 };
 
 module.exports = offLine;
-
 
 
 },{}],12:[function(require,module,exports){
@@ -1251,7 +1240,6 @@ UserDom = {
 };
 
 module.exports = UserDom;
-
 
 
 },{}]},{},[7]);
