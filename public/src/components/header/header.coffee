@@ -5,10 +5,12 @@ $ ->
 	console.log target
 	if(target == "" || target == "test")
 		index = 0
-	else if (target == "signup")
-		index  = 2
-	else if(target == "signin") 
+
+	else if(target == "chat") 
 		index = 1
+
+	else if(target == "setting") 
+		index = 2
 
 	if(index != undefined)
 		nav = $("#header").find(".nav").find("li").removeClass("active");
@@ -18,4 +20,9 @@ $ ->
 		$.ajax({
 			type: 'post'
 			url: '/signout',
+			success: (data)->
+				if data.errCode is 200
+					setTimeout ->
+						window.location.href = '/'
+					, 1000
 		})

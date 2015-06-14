@@ -12238,7 +12238,7 @@
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
-var chatBottom, chatConnect, chatPanel, chattingList, liveList, messageRouter, openState;
+var chatBottom, chatConnect, chatPanel, chattingList, liveList, messageRouter;
 
 chattingList = require('./chattingList.coffee');
 
@@ -12251,8 +12251,6 @@ chatConnect = require('./chatConnect.coffee');
 messageRouter = require('./messageRouter.coffee');
 
 liveList = require('./liveList.coffee');
-
-openState = false;
 
 $(function() {
   $("body").delegate('.live-contact', 'click', liveList.liveUserClickHandler);
@@ -12286,14 +12284,12 @@ ChatBottom = (function() {
   ChatBottom.prototype.clickBottomHandler = function() {
     $(this).hide();
     $chatBox.show();
-    $('.chat-contact').last().click();
-    return window.openState = true;
+    return $('.chat-contact').last().click();
   };
 
   ChatBottom.prototype.closeChatBottom = function() {
     $chatBox.hide();
-    $chatBottomBar.show();
-    return window.openState = false;
+    return $chatBottomBar.show();
   };
 
   ChatBottom.prototype.setChatBottomNumber = function(messageNumber) {
@@ -12366,6 +12362,8 @@ ChatConnect = (function() {
 
 chatConnect = null;
 
+console.log(logStatus);
+
 if (logStatus === '1') {
   chatConnect = new ChatConnect();
 }
@@ -12386,7 +12384,7 @@ module.exports = chatHost;
 
 
 },{}],6:[function(require,module,exports){
-var avatar, chatConnect, chatPanel, currentId, currentUsername, logStatus, person, toAvatar, toId, toUsername, tpl;
+var chatConnect, chatPanel, currentId, currentUserAvatar, currentUsername, groupChatId, logStatus, person, toAvatar, toId, toUsername, tpl;
 
 chatConnect = require('./chatConnect.coffee');
 
@@ -12406,7 +12404,9 @@ toAvatar = $('.avatar img').attr('src');
 
 logStatus = $('#logStatus').val();
 
-avatar = $('.avatar').attr('src');
+currentUserAvatar = $('#current-user-avatar').val();
+
+groupChatId = $('#group-chat-id').val();
 
 chatPanel = {
   keyDownSendMessage: function(event) {
@@ -12421,20 +12421,34 @@ chatPanel = {
     return chatBox.scrollTop(scrollTop);
   },
   sendMessage: function(event) {
-    var data, msg;
-    event.preventDefault();
-    msg = $('#chat-input-box').val();
-    if (!msg) {
-      return;
+    var data, msg, type;
+    if (logStatus === '0') {
+      return alert('未登录不能聊天');
+    } else {
+      event.preventDefault();
+      msg = $('#chat-input-box').val();
+      type = '';
+      if (!msg) {
+        return;
+      }
+      console.log(person.getChatId());
+      if (person.getChatId() === groupChatId) {
+        type = 'group-chat';
+      } else {
+        type = 'chat';
+      }
+      data = {
+        type: type,
+        who: currentId,
+        to: person.getChatId(),
+        msg: msg,
+        sender_name: currentUsername,
+        sender_avatar: currentUserAvatar
+      };
+      chatConnect.socket.emit('chat', data);
+      chatPanel.loadMessageToBox("right", msg, currentUsername, currentUserAvatar);
+      return chatPanel.scrollBottom();
     }
-    data = {
-      who: currentId,
-      to: person.getChatId(),
-      msg: msg
-    };
-    chatConnect.socket.emit('chat', data);
-    chatPanel.loadMessageToBox("right", msg, currentUsername, avatar);
-    return chatPanel.scrollBottom();
   },
 
   /*
@@ -12463,10 +12477,10 @@ chatPanel = {
     $('.chat-log').html('');
     for (i = _i = 0, _ref = msgs.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
       msg = msgs[i];
-      if (msg.sender === currentId) {
-        chatPanel.loadMessageToBox('right', msg.content, currentUsername, avatar);
+      if (msg.sender_id === currentId) {
+        chatPanel.loadMessageToBox('right', msg.content, currentUsername, currentUserAvatar);
       } else {
-        chatPanel.loadMessageToBox('left', msg.content, toUsername, avatar);
+        chatPanel.loadMessageToBox('left', msg.content, msg.sender_name, msg.sender_avatar);
       }
     }
     return chatPanel.scrollBottom();
@@ -12504,7 +12518,7 @@ module.exports = person;
 
 
 },{}],8:[function(require,module,exports){
-var $allChattingUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, mockData, person, tpl;
+var $allChattingUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, groupChatId, mockData, person, tpl;
 
 mockData = require('./mockData.coffee');
 
@@ -12521,6 +12535,8 @@ currentId = $('#current-userid').val();
 $chatBottomBar = $('.chat-bottpm-bar');
 
 chatBottom = require('./chatBottom.coffee');
+
+groupChatId = $('#group-chat-id').val();
 
 chattingList = {
   getIndexInTheChatList: function(id) {
@@ -12615,10 +12631,13 @@ chattingList = {
     chattingList.markAsReadedForOneUser(liIndex);
     data = {
       who: currentId,
-      dowhat: 'load_clear_unread_chat_msg',
       to: toId
     };
-    chatConnect.socket.send(data);
+    if (toId === groupChatId) {
+      chatConnect.socket.emit('clear_group_msg', data);
+    } else {
+      chatConnect.socket.emit('load_clear_unread_chat_msg', data);
+    }
     return false;
   }
 };
@@ -12685,7 +12704,8 @@ liveList = {
     if (id !== currentId) {
       if (index === false) {
         person.setChatId(id);
-        return chattingList.addUserToChatList(toUserName, id, toAvatar, 'on', true);
+        chattingList.addUserToChatList(toUserName, id, toAvatar, 'on', true);
+        return $('.chat-contact').eq($('.chat-contact').length - 1).click();
       }
     }
   }
@@ -12695,7 +12715,7 @@ module.exports = liveList;
 
 
 },{"./chatBottom.coffee":3,"./chatConnect.coffee":4,"./chatPerson.coffee":7,"./chattingList.coffee":8,"./tpl.coffee":12}],10:[function(require,module,exports){
-var $chatBottomBar, chatBottom, chatPanel, chattingList, currentId, liveList, messageRouter, mockData, person, toAvatar, toUsername, tpl;
+var $chatBottomBar, $currentPage, chatBottom, chatPanel, chattingList, currentId, groupChatId, liveList, messageRouter, mockData, person, toAvatar, toUsername, tpl;
 
 chattingList = require('./chattingList.coffee');
 
@@ -12719,8 +12739,12 @@ toUsername = $('#to-username').val();
 
 toAvatar = $('.avatar img').attr('src');
 
+$currentPage = $('#currentPage');
+
+groupChatId = $('#group-chat-id').val();
+
 messageRouter = function(data, socket) {
-  var contact, contacts, currentIndex, flag, i, index, isInLiveChat, liveUserArray, msgs, newIndex, sender, status, total_new_msg_count, user, _i, _j, _k, _len, _len1, _ref;
+  var contact, contacts, currentIndex, flag, i, index, isInLiveChat, liveUserArray, messages, newIndex, sender, status, total_new_msg_count, user, _i, _j, _k, _len, _len1, _ref;
   if (data.dowhat === 'login') {
     console.log('user_id: ' + data.who + ': ' + data.dowhat);
     isInLiveChat = liveList.getIndexInTheChatList(data.user._id);
@@ -12762,7 +12786,7 @@ messageRouter = function(data, socket) {
       chattingList.addNewMessageToUser(newIndex);
       chatBottom.addOneUnread();
     }
-    if (!window.openState) {
+    if (!$currentPage) {
       console.log('有新消息来了');
       chatBottom.loadChatBottomBar();
       if (index !== false) {
@@ -12789,33 +12813,33 @@ messageRouter = function(data, socket) {
     }
   }
   if (data.dowhat === 'get_chat_list') {
-    if (data.msg) {
-      total_new_msg_count = data.msg.total_new_msg_count;
-      contacts = data.msg.contacts;
-      if (total_new_msg_count > 0) {
-        chatBottom.setUnread(total_new_msg_count);
-        chatBottom.loadChatBottomBar();
-      }
-      if (contacts.length) {
-        for (_j = 0, _len1 = contacts.length; _j < _len1; _j++) {
-          contact = contacts[_j];
-          contact.className = '';
-          chattingList.addUserToChatList(contact.username, contact.id, contact.avatar, contact.online, false);
-          for (i = _k = 0, _ref = parseInt(contact.new_msg_count); 0 <= _ref ? _k < _ref : _k > _ref; i = 0 <= _ref ? ++_k : --_k) {
-            chattingList.addNewMessageToUser(chattingList.getIndexInTheChatList(contact.id));
-          }
+    console.log(data);
+    total_new_msg_count = data.total_new_msg_count;
+    contacts = data.contacts;
+    if (total_new_msg_count > 0) {
+      chatBottom.setUnread(total_new_msg_count);
+      chatBottom.loadChatBottomBar();
+    }
+    if (contacts.length) {
+      for (_j = 0, _len1 = contacts.length; _j < _len1; _j++) {
+        contact = contacts[_j];
+        contact.className = '';
+        chattingList.addUserToChatList(contact.username, contact.id, contact.avatar, contact.online, false);
+        for (i = _k = 0, _ref = parseInt(contact.new_msg_count); 0 <= _ref ? _k < _ref : _k > _ref; i = 0 <= _ref ? ++_k : --_k) {
+          chattingList.addNewMessageToUser(chattingList.getIndexInTheChatList(contact.id));
         }
-        person.setChatId(contacts[contacts.length - 1].id);
       }
     }
+    person.setChatId(groupChatId);
+    socket.emit('clear_group_msg');
   }
   if (data.dowhat === 'chat_log') {
     console.log(data);
-    msgs = data.msg.msg;
-    index = chattingList.getIndexInTheChatList(data.msg.id);
-    status = data.msg.online === 1 ? 'on' : 'off';
+    messages = data.messages;
+    index = chattingList.getIndexInTheChatList(data.id);
+    status = data.online === true ? 'on' : 'off';
     chattingList.changeUserOnlineState(index, status);
-    return chatPanel.loadChatLog(msgs);
+    return chatPanel.loadChatLog(messages);
   }
 };
 

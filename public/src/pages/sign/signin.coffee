@@ -57,5 +57,5 @@ loginBtnHandler = ->
 	                if data.intendedUrl
 	                    location.href = data.intendedUrl
 	                else 
-	                    location.href = '/test'
+	                    location.href = '/'
 	            , 1000

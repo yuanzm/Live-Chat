@@ -1,0 +1,146 @@
+.btn {
+  width: 98px;
+  height: 35px;
+  line-height: 35px;
+  font-family: "Microsoft YaHei";
+  text-align: center;
+  background-color: #7ecac9;
+  font-size: 18px;
+  display: inline-block;
+  margin: 0 auto;
+  margin-top: 12px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  color: #fff;
+  border: 0px;
+}
+.base-content {
+  color: #838383;
+  margin-top: 30px;
+  width: 930px;
+  background-color: #fff;
+  padding: 20px;
+}
+.base-content h3 {
+  margin-bottom: 15px;
+  font-family: "微软雅黑";
+}
+.base-content hr {
+  border: 0px;
+  border-top: 1px solid #dcdcdc;
+}
+.base-content .content-main {
+  overflow: hidden;
+}
+.base-content .content-main p {
+  font-family: "微软雅黑";
+  color: #d5caac;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+}
+.base-content .content-main .main-p1 {
+  margin-top: 15px;
+}
+.base-content .content-main .main-p2 {
+  line-height: 2em;
+}
+.base-content .content-main .content-row {
+  width: 100%;
+  float: left;
+  margin-bottom: 15px;
+}
+.base-content .content-main .content-row .label {
+  float: left;
+  line-height: 35px;
+  vertical-align: middle;
+  width: 94px;
+  font-family: "微软雅黑";
+}
+.base-content .content-main .content-row .content-input {
+  float: left;
+}
+.base-content .content-main .content-row .content-input .content-img {
+  float: left;
+}
+.base-content .content-main .content-row .content-input .person-img {
+  width: 50px;
+  height: 50px;
+}
+.base-content .content-main .content-row .content-input #realname,
+.base-content .content-main .content-row .content-input #store {
+  border: solid 1px #d8d8d8;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 262px;
+  height: 35px;
+  margin-left: 0px;
+  outline: none;
+  padding: 0px 10px 0px 10px;
+}
+.base-content .content-main .content-row .content-input #QQ,
+.base-content .content-main .content-row .content-input #location,
+.base-content .content-main .content-row .content-input #signature {
+  border: solid 1px #d8d8d8;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 264px;
+  height: 35px;
+  margin-left: 0px;
+  outline: none;
+  padding: 0px 10px 0px 10px;
+}
+.base-content .content-main .content-row .content-input #wechat {
+  border: solid 1px #d8d8d8;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 168px;
+  height: 35px;
+  margin-left: 0px;
+  outline: none;
+  padding: 0px 10px 0px 10px;
+}
+.base-content .content-main .content-row .content-input #other-region-btn {
+  width: 61px;
+  height: 28px;
+  border-radius: 14px;
+  -moz-border-radius: 14px;
+  -webkit-border-radius: 14px;
+  background-color: #7ecac8;
+  margin-left: 20px;
+  outline: none;
+  border: 0px;
+  color: #fff;
+}
+.base-content .content-main .content-row .content-input #summary {
+  border: solid 1px #d8d8d8;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  width: 262px;
+  height: 100px;
+  margin-left: 0px;
+  outline: none;
+  padding: 0px 10px 0px 10px;
+}
+.base-content .content-main .content-row .content-input .base-info-upload {
+  top: 0;
+}
+.base-content .content-main .content-row #avatar-wrapper div {
+  width: 70px !important;
+  height: 20px !important;
+}
+.base-content .content-main .content-row .sex {
+  margin-top: 8px;
+}
+.base-content .content-main .content-row #contact-save-btn {
+  margin: 0 auto;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  display: block;
+  font-size: 14px;
+}

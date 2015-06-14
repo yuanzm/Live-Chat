@@ -1,9 +1,65 @@
-<h1>个人中心</h1>
-<h1><%= user.loginname %></h1>
-<ul>
-    <% for (var topic in topicList) { %>
-        <li>
-            <%= topicList[topic].content %>
-        </li>
-    <% } %>
-</ul>
+<link rel="stylesheet" type="text/css" href="/public/dist/css/userinfo.css">
+
+<div id="user-info">
+    <input type="hidden" id="user_id" value="{{{ $id }}}" />
+    <div class="base-info block">
+        <h3><%= user.loginname %>的名片</h3>
+		<div class="avatar">
+			<img src="<%= user.avatar %>" width="252" height="252" />
+		</div>
+		<div class="info">
+			<div class="name info-component">
+				<%= user.loginname %> <br />
+				注册时间： <%= user.create_at %>
+			</div>
+            <div class="gender">
+                <span>性别: </span>
+            	<% if (user.male == 'male') {%>
+            		男
+            	<% } %>
+            	<% if (user.male == 'female') {%>
+            		女
+            	<% } %>
+            	<% if (user.male == '' || user.male == 'secret' ) {%>
+            		保密
+            	<% } %>
+            </div>
+			<div class="region-wrapper info-component">
+                <span>地区: </span>
+                <% if (user.location == '') {%>
+                	<span class="region">未知地区</span>
+            	<% } %>
+            	<% if (user.location) {%>
+	                <span class="region"><%= user.location %></span>
+            	<% } %>
+			</div>
+            <div class="weixin info-component">
+                <img src="/public/images/icons/weixin.gif" width="20" height="20">
+                <% if (user.wechat) {%>
+                    <span><%= user.wechat %></span>
+                <% } %>
+                <% if (!user.wechat) {%>
+                    <span>暂无</span>
+                <% } %>
+            </div>
+            <div class="qq info-component">
+                <img src="/public/images/icons/qq.jpg" width="20" height="20">
+                <% if (user.qq) {%>
+                    <span><%= user.qq %></span>
+                <% } %>
+                <% if (!user.qq) {%>
+                    <span>暂无</span>
+                <% } %>
+            </div>
+            <div class="signature info-component">
+                个性签名:
+                <% if (user.location) {%>
+                    <span><%= user.signature %></span>
+                <% } %>
+                <% if (!user.location) {%>
+                    <span>暂无</span>
+                <% } %>
+            </div>
+		</div>
+	</div>
+</div>

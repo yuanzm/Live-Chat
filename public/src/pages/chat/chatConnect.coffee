@@ -21,6 +21,8 @@ class ChatConnect
 
 chatConnect = null
 
+console.log logStatus
+
 if logStatus is '1'
     chatConnect = new ChatConnect()
 

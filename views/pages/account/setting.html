@@ -1,0 +1,87 @@
+<link rel="stylesheet" type="text/css" href="/public/dist/css/setting.css">
+
+<div class="base-content">
+	<input type="hidden" value="<%= current_user.loginname %>" id="currentUser">
+	<!-- 上传文件配置 -->
+	<input type="hidden" id="domain" value="<%= domain %>">
+    <input type="hidden" id="uptoken_url" value="<%= uptoken_url %>">	
+	<h3>基本信息设置</h3>
+	<hr />		
+	<div class="content-main">	
+		<p class="main-p1">填写真实的资料更方便大家了解你，以下信息将显示在个人主页。</p>
+
+		<div class="content-row">
+			<label class="label" for="avatar">当前头像：</label>
+			<div class="content-input" id="avatar-wrapper">
+				<img class="person-img" src="<%= current_user.avatar %>" width="80" height="80" id="avatarImg" />
+				<input type="hidden" id="avatar" name="avatar" class="hidden" value="<%= current_user.avatar %>" />
+				<a href="javascript:;" class="a-upload base-info-upload">
+	                <input type="file" id="revise-avatar">单击上传
+	            </a>
+			</div>
+			<div class="clear"></div>
+		</div>
+
+		<div class="content-row">
+			<label class="label">真实姓名：</label>
+			<div class="content-input">
+				<input type="text" id="realname" name="realname" value="<%= current_user.name %>" placeholder="请填写真实姓名" />
+				<!-- <span class="name-tip red-tip">请填写真实姓名</span> -->
+			</div>
+		</div>
+
+		<!-- 性别 -->
+		<div class="content-row">
+			<label class="label">性别:</label>
+			<div class="content-input sex">
+				<% if (current_user.male == 'male') { %>
+		            <input name="sex" type="radio" checked="checked" id="male" /> <label for="male" style="padding-right: 35px;">男</label>
+		            <input name="sex" type="radio" id="female" /> <label for="female" style="padding-right: 35px;">女</label> 
+		            <input name="sex" type="radio" id="unknown" /> <label for="unknown">保密</label> 
+	            <% } %>
+	            <% if (current_user.male == 'female'){ %>
+		            <input name="sex" type="radio" id="male" /> <label for="male" style="padding-right: 35px;">男</label>
+		            <input name="sex" type="radio" checked="checked" id="female" /> <label for="female" style="padding-right: 35px;">女</label> 
+		            <input name="sex" type="radio" id="unknown" /> <label for="unknown">保密</label> 
+	            <% } %>
+	           	<% if (current_user.male == '' || current_user.male == 'secret'){ %>
+		            <input name="sex" type="radio" id="male" /> <label for="male" style="padding-right: 35px;">男</label>
+		            <input name="sex" type="radio" id="female" /> <label for="female" style="padding-right: 35px;">女</label> 
+		            <input name="sex" type="radio" checked="checked" id="unknown" /> <label for="unknown">保密</label> 
+		        <% } %>
+			</div>
+		</div>
+
+		<div class="content-row">
+			<label class="label" for="wechat">微信：</label>
+			<div class="content-input">
+				<input type="text" id="wechat" name="wechat" value="<%= current_user.wechat %>" placeholder="微信号" />
+			</div>
+		</div>
+		<div class="content-row">
+			<label class="label" for="QQ">QQ：</label>
+			<div class="content-input">
+				<input type="text" id="QQ" name="QQ" value="<%= current_user.qq %>" placeholder="QQ号" />
+			</div>
+		</div>
+		<div class="content-row">
+			<label class="label" for="location">详细地址：</label>
+			<div class="content-input">
+				<input type="text" id="location" name="location" value="<%= current_user.location %>" placeholder="请填写您的详细地址" />
+			</div>
+		</div>
+		<div class="content-row">
+			<label class="label" for="signature">个性签名：</label>
+			<div class="content-input">
+				<input type="text" id="signature" name="signature" value="<%= current_user.signature %>" placeholder="个性签名" />
+			</div>
+		</div>
+		<div class="content-row">
+	        <a href="javasctipt: void(0);" class="btn" id="base-info-save-btn">保存</a>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="/public/dist/lib/qiniu.min.js"></script>
+<script type="text/javascript" src="/public/dist/lib/plupload.full.min.js"></script>
+<script type="text/javascript" src="/public/dist/js/pages/setting.js"></script>

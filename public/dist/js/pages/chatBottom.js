@@ -13,14 +13,12 @@ ChatBottom = (function() {
   ChatBottom.prototype.clickBottomHandler = function() {
     $(this).hide();
     $chatBox.show();
-    $('.chat-contact').last().click();
-    return window.openState = true;
+    return $('.chat-contact').last().click();
   };
 
   ChatBottom.prototype.closeChatBottom = function() {
     $chatBox.hide();
-    $chatBottomBar.show();
-    return window.openState = false;
+    return $chatBottomBar.show();
   };
 
   ChatBottom.prototype.setChatBottomNumber = function(messageNumber) {

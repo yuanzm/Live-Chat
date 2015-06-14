@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/public/dist/lib/tinyscrollbar.css" />
 <link rel="stylesheet" type="text/css" href="/public/dist/css/chat.css">
 
 <div id="chat">
@@ -9,10 +10,13 @@
 	   		<input type="hidden" name="current_user_id" value="<%= current_user.id %>" id="current-userid">
 	    	<input type="hidden" name="current_user_name" value="<%= current_user.loginname %>" id="current-username">
 	  	</div>
+	  	<input type="hidden" value="<%= current_user.avatar %>" id="current-user-avatar">
 	<% } %>
 	<% if (!current_user) { %>
 		<input type="hidden" value="0" id="logStatus">
 	<% } %>
+	<input type="hidden" value="chat" id="currentPage">
+	<input type="hidden" value="<%= group_chat_id %>" id="group-chat-id">
 
   	
 	<div class="chat-bottpm-bar hidden">
@@ -24,11 +28,18 @@
 	<div id="chat-box">
 		<div class="chat-banner">
 			Live-Chat
-			<a href="javascript: void(0);" class="chat-close-btn">X</a>
-		</div>
+<!-- 			<a href="javascript: void(0);" class="chat-close-btn">X</a>
+ -->		</div>
 		<div class="chat-list">
 			<ul class="all-chatting-user">
-				
+				<!-- 群聊 -->
+				<li class="group-chat chat-contact active">
+					<div class="user-avatar">
+						<img class="chat-avatar" src="/public/images/static/avatar.jpg">
+					</div>
+					<span class="user-name" data-userid="<%= group_chat_id %>">群聊</span>
+					<span class="unread-number hidden">0</span>
+				</li>
 			</ul>
 		</div>
 		<div class="chat-panel">
@@ -54,4 +65,5 @@
 
 </div>
 
+<script type="text/javascript" src="/public/dist/lib/jquery.tinyscrollbar.min.js"></script>
 <script type="text/javascript" src="/public/dist/js/pages/chat.js"></script>

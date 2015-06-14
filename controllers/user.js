@@ -22,21 +22,25 @@ exports.index = function(req, res, next) {
         if (!user) {
             return res.render404('该用户不存在');
         }
-        var query = {'author_id': user._id};
-        var opt = {limit: 5, sort: '-create_at'};
-        Topic.getTopicsByQuery(query, opt, function(err, topicList) {
-            if (err) {
-                return next(err);
-            }
-            if (!topicList) {
-                topicList = [];
-            }
+        res.render('pages/user/index', {
+            user: user
+        });
 
-            res.render('user/index', {
-                user: user,
-                topicList: topicList
-            })
-        })
+        // var query = {'author_id': user._id};
+        // var opt = {limit: 5, sort: '-create_at'};
+        // Topic.getTopicsByQuery(query, opt, function(err, topicList) {
+        //     if (err) {
+        //         return next(err);
+        //     }
+        //     if (!topicList) {
+        //         topicList = [];
+        //     }
+
+        //     res.render('user/index', {
+        //         user: user,
+        //         topicList: topicList
+        //     })
+        // })
     })  
 };
 
@@ -168,7 +172,10 @@ exports.listComments = function(req, res, next) {
 }
 
 exports.showSetting = function(req, res, next) {
-	res.render('index');
+	res.render('pages/account/setting', {
+        domain: config.Domain,
+        uptoken_url: config.Uptoken_Url
+    });
 };
 
 exports.setting = function(req, res, next) {

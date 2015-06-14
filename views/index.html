@@ -1,9 +1,19 @@
-<h1>主页</h1>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io.connect('http://localhost:3000');
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
-</script>
+<link rel="stylesheet" type="text/css" href="/public/dist/css/home.css">
+<script type="text/javascript" src='/public/dist/lib/unslider.js'></script>
+<script type="text/javascript" src='/public/dist/js/pages/home.js'></script>
+
+<div id="home" style="width: 100%;height: 100%;">
+	<div id="slider">
+	    <ul>
+	        <li>
+	            <img src="/public/images/static/slider1.jpg" alt="slider1">
+	        </li>
+	        <li>
+	            <img src="/public/images/static/slider2.jpg" alt="slider2">
+	        </li>
+	        <li>
+	            <img src="/public/images/static/slider3.jpg" alt="slider3">
+	        </li>
+	    </ul>
+	</div>
+</div>

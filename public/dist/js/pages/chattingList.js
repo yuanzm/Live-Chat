@@ -12252,14 +12252,12 @@ ChatBottom = (function() {
   ChatBottom.prototype.clickBottomHandler = function() {
     $(this).hide();
     $chatBox.show();
-    $('.chat-contact').last().click();
-    return window.openState = true;
+    return $('.chat-contact').last().click();
   };
 
   ChatBottom.prototype.closeChatBottom = function() {
     $chatBox.hide();
-    $chatBottomBar.show();
-    return window.openState = false;
+    return $chatBottomBar.show();
   };
 
   ChatBottom.prototype.setChatBottomNumber = function(messageNumber) {
@@ -12332,6 +12330,8 @@ ChatConnect = (function() {
 
 chatConnect = null;
 
+console.log(logStatus);
+
 if (logStatus === '1') {
   chatConnect = new ChatConnect();
 }
@@ -12379,7 +12379,7 @@ module.exports = person;
 
 
 },{}],6:[function(require,module,exports){
-var $allChattingUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, mockData, person, tpl;
+var $allChattingUser, $chatBottomBar, chatBottom, chatConnect, chattingList, currentId, groupChatId, mockData, person, tpl;
 
 mockData = require('./mockData.coffee');
 
@@ -12396,6 +12396,8 @@ currentId = $('#current-userid').val();
 $chatBottomBar = $('.chat-bottpm-bar');
 
 chatBottom = require('./chatBottom.coffee');
+
+groupChatId = $('#group-chat-id').val();
 
 chattingList = {
   getIndexInTheChatList: function(id) {
@@ -12490,10 +12492,13 @@ chattingList = {
     chattingList.markAsReadedForOneUser(liIndex);
     data = {
       who: currentId,
-      dowhat: 'load_clear_unread_chat_msg',
       to: toId
     };
-    chatConnect.socket.send(data);
+    if (toId === groupChatId) {
+      chatConnect.socket.emit('clear_group_msg', data);
+    } else {
+      chatConnect.socket.emit('load_clear_unread_chat_msg', data);
+    }
     return false;
   }
 };

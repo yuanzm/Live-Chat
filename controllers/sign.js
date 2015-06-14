@@ -147,5 +147,9 @@ exports.signIn = function(req, res, next) {
 exports.signOut = function(req, res, next) {
     req.session.destroy();
     res.clearCookie(config.auth_cookie_name, { path: '/' });
-    res.redirect('/');
+    var data = {
+        errCode: 200,
+        message: '登出成功'
+    }
+    res.json(data);
 }

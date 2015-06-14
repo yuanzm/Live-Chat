@@ -10,10 +10,10 @@ $(function() {
   console.log(target);
   if (target === "" || target === "test") {
     index = 0;
-  } else if (target === "signup") {
-    index = 2;
-  } else if (target === "signin") {
+  } else if (target === "chat") {
     index = 1;
+  } else if (target === "setting") {
+    index = 2;
   }
   if (index !== void 0) {
     nav = $("#header").find(".nav").find("li").removeClass("active");
@@ -22,7 +22,14 @@ $(function() {
   return $('#logout').on('click', function() {
     return $.ajax({
       type: 'post',
-      url: '/signout'
+      url: '/signout',
+      success: function(data) {
+        if (data.errCode === 200) {
+          return setTimeout(function() {
+            return window.location.href = '/';
+          }, 1000);
+        }
+      }
     });
   });
 });

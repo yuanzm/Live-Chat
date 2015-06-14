@@ -11,6 +11,11 @@
 			<li>
 				<a href="/chat">聊天</a>
 			</li>
+			<% if (current_user) { %>
+				<li>
+					<a href="/setting">设置</a>
+				</li>
+			<% } %>
 		</ul>
 		<ul class="user-info">
 			<% if (!current_user) { %>
@@ -24,7 +29,7 @@
 			<% if (current_user) { %>
 				<li class="info">
 	                <a href="/user/<%- current_user.loginname %>">
-	                    <img src="public/images/static/avatar.jpg" class="avatar" alt="avatar" width="34" height="34" />
+	                    <img src="<%= current_user.avatar %>" class="avatar" alt="avatar" width="34" height="34" />
 	                    <span><%- current_user.loginname %></span>
 	                </a>
 	            </li>

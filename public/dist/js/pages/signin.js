@@ -78,7 +78,7 @@ loginBtnHandler = function() {
           if (data.intendedUrl) {
             return location.href = data.intendedUrl;
           } else {
-            return location.href = '/test';
+            return location.href = '/';
           }
         }, 1000);
       }

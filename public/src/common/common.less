@@ -19,3 +19,15 @@
     color: #fff;
     border: 0px;
 }
+.border() {
+  border: solid 1px #d8d8d8;
+  .border-radius(10px);
+}
+.input (@width: 31px, @height: 31px, @margin-left: 0px) {
+    .border();
+    width: @width;
+    height: @height;
+    margin-left: @margin-left;
+    outline: none;
+    padding: 0px 10px 0px 10px;
+}

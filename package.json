@@ -42,6 +42,7 @@
     "nodemailer": "0.3.43",
     "passport": "^0.2.2",
     "pedding": "^1.0.0",
+    "qiniu": "^6.1.8",
     "qn": "1.0.1",
     "ready": "^0.1.1",
     "request": "2.54.0",

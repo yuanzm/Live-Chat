@@ -39,7 +39,8 @@ liveList =
 		index = liveList.getIndexInTheChatList(id)
 		if index isnt false
 			$('.live-contact').eq(index).fadeOut().remove();
-
+			
+	# 在线用户列表点击事件
 	liveUserClickHandler: ->
 		$this = $(this)
 		id = $this.find('.user-name').data('userid')
@@ -50,5 +51,6 @@ liveList =
 			if index is false
 				person.setChatId(id)
 				chattingList.addUserToChatList(toUserName, id, toAvatar, 'on', true);
+				$('.chat-contact').eq($('.chat-contact').length - 1).click()
 
 module.exports = liveList

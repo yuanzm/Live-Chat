@@ -83,7 +83,7 @@ signUpBtnHandler = function() {
       if (data.errCode === 200) {
         $signupTips.removeClass('red-tip').addClass('green-tip').text('注册成功');
         return setTimeout(function() {
-          return location.href = '/test';
+          return location.href = '/chat';
         }, 1000);
       }
     });

@@ -14,13 +14,10 @@ class ChatBottom
 
 		$('.chat-contact').last().click()
 
-		window.openState = true
-
 	# 隐藏底部的聊天栏
 	closeChatBottom: ->
 		$chatBox.hide()
 		$chatBottomBar.show()
-		window.openState = false
 
 	# 设置底部未读栏的数字
 	setChatBottomNumber: (messageNumber)->

@@ -11,6 +11,7 @@ $allChattingUser = $('.all-chatting-user')
 currentId = $('#current-userid').val()
 $chatBottomBar = $('.chat-bottpm-bar')
 chatBottom = require './chatBottom.coffee'
+groupChatId = $('#group-chat-id').val()
 
 chattingList =
 	# 判断一个用户是否在列表中
@@ -74,6 +75,8 @@ chattingList =
 	# 将一个用户添加到聊天列表
 	# @param {Boolean} isClick: 一个用于指出是不是点击`谈一谈`按钮来添加对象的布尔值
 	addUserToChatList: (toUsername, toId, toAvatar, status, isClick)->
+
+
 		# 用于判断用户是否已经在聊天列表里面
 	    flag = chattingList.getIndexInTheChatList(toId)
 	    # 用户一开始不在列表里面
@@ -122,12 +125,15 @@ chattingList =
 		chattingList.markAsReadedForOneUser(liIndex)
 
 		# 加载消息到聊天框, 清空数据库未读消息
+
 		data =
 		    who: currentId
-		    dowhat: 'load_clear_unread_chat_msg'
 		    to: toId
 
-		chatConnect.socket.send(data)
+		if toId is groupChatId
+			chatConnect.socket.emit('clear_group_msg', data);
+		else
+			chatConnect.socket.emit('load_clear_unread_chat_msg', data);
 
 		return false
 module.exports = chattingList

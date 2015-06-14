@@ -196,6 +196,7 @@
   border-left: none;
 }
 #chat-box .chat-input #chat-input-box {
+  outline: none;
   display: inline-block;
   margin-left: 10px;
   width: 425px;

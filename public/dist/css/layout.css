@@ -149,6 +149,23 @@ header #header .user-info li.register a:hover {
  * layout.less
  * author: yuanzm
  */
+.btn {
+  width: 98px;
+  height: 35px;
+  line-height: 35px;
+  font-family: "Microsoft YaHei";
+  text-align: center;
+  background-color: #7ecac9;
+  font-size: 18px;
+  display: inline-block;
+  margin: 0 auto;
+  margin-top: 12px;
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  color: #fff;
+  border: 0px;
+}
 /*
  * CSS Reset
  * 重置浏览器默认样式，保证所有浏览器看起来的效果是一样的
@@ -248,4 +265,35 @@ body {
   width: 1024px;
   margin: 0 auto;
   padding-bottom: 100px;
+}
+.a-upload {
+  text-align: center;
+  border-radius: 16px;
+  -moz-border-radius: 16px;
+  -webkit-border-radius: 16px;
+  padding: 3px 5px;
+  width: 68px;
+  height: 20px;
+  line-height: 20px;
+  position: relative;
+  left: 30px;
+  top: 42px;
+  cursor: pointer;
+  color: #fff;
+  background: #7ecac9;
+  border: none;
+  overflow: hidden;
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  margin-top: 10px;
+  font-size: 14px;
+  font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif, "宋体";
+}
+.a-upload input {
+  position: absolute;
+  font-size: 100px;
+  right: 0;
+  top: 0;
+  cursor: pointer;
 }

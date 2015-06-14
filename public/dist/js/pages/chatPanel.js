@@ -12252,14 +12252,12 @@ ChatBottom = (function() {
   ChatBottom.prototype.clickBottomHandler = function() {
     $(this).hide();
     $chatBox.show();
-    $('.chat-contact').last().click();
-    return window.openState = true;
+    return $('.chat-contact').last().click();
   };
 
   ChatBottom.prototype.closeChatBottom = function() {
     $chatBox.hide();
-    $chatBottomBar.show();
-    return window.openState = false;
+    return $chatBottomBar.show();
   };
 
   ChatBottom.prototype.setChatBottomNumber = function(messageNumber) {
@@ -12332,6 +12330,8 @@ ChatConnect = (function() {
 
 chatConnect = null;
 
+console.log(logStatus);
+
 if (logStatus === '1') {
   chatConnect = new ChatConnect();
 }
@@ -12352,7 +12352,7 @@ module.exports = chatHost;
 
 
 },{}],5:[function(require,module,exports){
-var avatar, chatConnect, chatPanel, currentId, currentUsername, logStatus, person, toAvatar, toId, toUsername, tpl;
+var chatConnect, chatPanel, currentId, currentUserAvatar, currentUsername, groupChatId, logStatus, person, toAvatar, toId, toUsername, tpl;
 
 chatConnect = require('./chatConnect.coffee');
 
@@ -12372,7 +12372,9 @@ toAvatar = $('.avatar img').attr('src');
 
 logStatus = $('#logStatus').val();
 
-avatar = $('.avatar').attr('src');
+currentUserAvatar = $('#current-user-avatar').val();
+
+groupChatId = $('#group-chat-id').val();
 
 chatPanel = {
   keyDownSendMessage: function(event) {
@@ -12387,20 +12389,34 @@ chatPanel = {
     return chatBox.scrollTop(scrollTop);
   },
   sendMessage: function(event) {
-    var data, msg;
-    event.preventDefault();
-    msg = $('#chat-input-box').val();
-    if (!msg) {
-      return;
+    var data, msg, type;
+    if (logStatus === '0') {
+      return alert('未登录不能聊天');
+    } else {
+      event.preventDefault();
+      msg = $('#chat-input-box').val();
+      type = '';
+      if (!msg) {
+        return;
+      }
+      console.log(person.getChatId());
+      if (person.getChatId() === groupChatId) {
+        type = 'group-chat';
+      } else {
+        type = 'chat';
+      }
+      data = {
+        type: type,
+        who: currentId,
+        to: person.getChatId(),
+        msg: msg,
+        sender_name: currentUsername,
+        sender_avatar: currentUserAvatar
+      };
+      chatConnect.socket.emit('chat', data);
+      chatPanel.loadMessageToBox("right", msg, currentUsername, currentUserAvatar);
+      return chatPanel.scrollBottom();
     }
-    data = {
-      who: currentId,
-      to: person.getChatId(),
-      msg: msg
-    };
-    chatConnect.socket.emit('chat', data);
-    chatPanel.loadMessageToBox("right", msg, currentUsername, avatar);
-    return chatPanel.scrollBottom();
   },
 
   /*
@@ -12429,10 +12445,10 @@ chatPanel = {
     $('.chat-log').html('');
     for (i = _i = 0, _ref = msgs.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
       msg = msgs[i];
-      if (msg.sender === currentId) {
-        chatPanel.loadMessageToBox('right', msg.content, currentUsername, avatar);
+      if (msg.sender_id === currentId) {
+        chatPanel.loadMessageToBox('right', msg.content, currentUsername, currentUserAvatar);
       } else {
-        chatPanel.loadMessageToBox('left', msg.content, toUsername, avatar);
+        chatPanel.loadMessageToBox('left', msg.content, msg.sender_name, msg.sender_avatar);
       }
     }
     return chatPanel.scrollBottom();

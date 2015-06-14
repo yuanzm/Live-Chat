@@ -1,0 +1,67 @@
+@import './../../common/common.less';
+
+#main {
+	width: 100%;
+	position: absolute;
+	top: 70px;
+	left: 0;
+	right: 0;
+	bottom: 60px;
+}
+#home {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	#slider {
+		width: 100%;
+		height: 100%;
+		margin: 0 auto;
+		position: relative;
+		overflow: auto;
+		ul {
+			width: 100%;
+			height: 100%;
+			padding-top: 0px;
+			overflow: hidden;
+		}
+		ul li {
+			width: 100%;
+			height: 100%;
+			float: left;
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		.dots {
+			position: absolute;
+			left: 50%;
+			margin-left: -40px;
+			right: 0;
+			bottom: 20px;
+			-webkit-filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+			-moz-filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+			-ms-filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+			-o-filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+			filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+			li {
+				display: inline-block;
+				width: 7px;
+				height: 7px;
+				margin: 0 4px;
+				text-indent: -999em;
+				border: 2px solid #fff;
+				border-radius: 6px;
+				cursor: pointer;
+				opacity: .4;
+				-webkit-transition: background .5s, opacity .5s;
+				-moz-transition: background .5s, opacity .5s;
+				transition: background .5s, opacity .5s;
+			}
+			li.active {
+				background: #fff;
+				opacity: 1;
+			}
+		}
+	}
+}

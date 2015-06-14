@@ -69,6 +69,8 @@ router.get('/search', search.index);
 router.get('/about', staticController.about);
 
 // 上传文件
-router.post('/upload', auth.userRequired, upload.upload);	// 上传文件请求
+// router.post('/upload', auth.userRequired, upload.upload);	// 上传文件请求
+router.get('/uptoken', auth.userRequired, upload.uptoken);
+router.post('/downtoken', auth.userRequired, upload.downtoken);
 	
 module.exports = router;

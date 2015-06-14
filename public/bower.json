@@ -12,7 +12,10 @@
   ],
   "dependencies": {
     "jquery": "*",
-    "lodash": "~3.9.3"
+    "lodash": "~3.9.3",
+    "malihu-custom-scrollbar-plugin": "~3.0.9",
+    "qiniu": "~1.0.5-beta",
+    "plupload": "~2.1.4"
   },
   "license": "MIT",
   "ignore": [

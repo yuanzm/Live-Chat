@@ -6,9 +6,6 @@ chatConnect = require './chatConnect.coffee'
 messageRouter = require './messageRouter.coffee'
 liveList = require './liveList.coffee'
 
-# 聊天窗口打开状态
-openState = false
-
 # 脚本加载完成得时候执行事件绑定操作
 $ ->
     $("body").delegate '.live-contact', 'click', liveList.liveUserClickHandler
@@ -17,6 +14,8 @@ $ ->
     $("body").delegate '.chat-close-btn', 'click', chatBottom.closeChatBottom
     $('.chat-bottpm-bar').bind 'click', chatBottom.clickBottomHandler
     $('body').delegate '.chat-contact', 'click', chattingList.toggleChattingUser
+
+    # $('.chat-log').tinyscrollbar();
     
     # 因为模块引用顺序的问题，需要在这里绑定监听事件
     if chatConnect
