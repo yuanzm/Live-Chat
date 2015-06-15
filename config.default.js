@@ -27,16 +27,17 @@ var config = {
     list_comment_count: 20,
     // 一页通知的数量
     list_notification_count: 20,
-
+    
     host: "localhost",
 
     // mongodb配置
-    db: "mongodb://127.0.0.1/live-chat-dev",
+    db: "mongodb://127.0.0.1/Live-Chat-SAD",
     
     // redis 配置，默认是本地
     redis_host: '127.0.0.1',
     redis_port: 6379,
     redis_db: 0,
+    redis_chat_db: 1,
 
     session_secret: 'yuanzm', // 务必修改
     auth_cookie_name: 'livechat',
@@ -47,8 +48,7 @@ var config = {
     create_reply_per_day: 1000, // 每个用户一天可以发的评论数
     visit_per_day: 1000, // 每个 ip 每天能访问的次数
 
-
-      // 7牛的access信息，用于文件上传
+    // 7牛的access信息，用于文件上传
     qn_access: {
         accessKey: 'nx36IiBDak_OnvaUMqyl2X3jxku_vANNL9N_ymGc',
         secretKey: '7iWmhVopCL0THV8jXoGC1XLtQe6KtSM5o2BTGK-K',
@@ -62,6 +62,15 @@ var config = {
         path: path.join(__dirname, 'public/upload/'),
         url: '/public/upload/'
     },
+
+    ACCESS_KEY: 'nx36IiBDak_OnvaUMqyl2X3jxku_vANNL9N_ymGc',
+    SECRET_KEY: '7iWmhVopCL0THV8jXoGC1XLtQe6KtSM5o2BTGK-K',
+    Uptoken_Url: '/uptoken',
+    Bucket_Name: 'live-chat',
+    Domain: 'http://7te9k1.com1.z0.glb.clouddn.com/',
+
+
+    group_chat_id: 'yuan_zi_min'
 }
 
 if (process.env.NODE_ENV === 'test') {
