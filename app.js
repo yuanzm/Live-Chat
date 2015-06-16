@@ -22,7 +22,7 @@ var router              = require("./router")
 var auth                     = require('./middlewares/auth');
 var errorPageMiddleware = require("./middlewares/error_page");
 // var proxyMiddleware          = require('./middlewares/proxy');
-var RedisStore          = require('connect-redis')(session);
+var MongoStore = require('connect-mongo')(session);
 var _                   = require('lodash');
 var csurf               = require('csurf');
 var compress            = require('compression');
@@ -35,6 +35,7 @@ var busboy              = require('connect-busboy');
 // 静态文件目录
 var staticDir = path.join(__dirname, 'public');
 var exphbs  = require('express-handlebars');
+var mongoose = require('mongoose');
 
 // assets
 var assets    = {};
@@ -82,18 +83,16 @@ app.use(require('method-override')());
 var cookieParser = require('cookie-parser')(config.session_secret);
 app.use(cookieParser);
 app.use(compress());
+
 var session = session({
-    secret: config.session_secret,
-    store: new RedisStore({
-        port: config.redis_port,
-        host: config.redis_host,
-    }),
-    resave: true,
-    saveUninitialized: true,
+  secret: config.session_secret,
+  store: new MongoStore({
+    url: config.db
+  }),
+  resave: true,
+  saveUninitialized: true,
 })
 app.use(session);
-
-app.use(passport.initialize());
 
 // custom middleware
 app.use(auth.authUser);
