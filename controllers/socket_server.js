@@ -1,4 +1,3 @@
-var cache = require('../common/cache');
 var UserProxy = require('../proxy/user');
 var MessageProxy = require('../proxy/message');
 var eventproxy = require('eventproxy');

@@ -10,7 +10,3 @@ exports.index = function (req, res) {
 		});
 	}
 };
-
-exports.test = function(req, res) {
-	res.render('index');
-}

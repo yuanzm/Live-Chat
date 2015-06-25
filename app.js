@@ -4,11 +4,6 @@
 
 var config = require('./config')
 
-// 用于生产环境
-if (!config.debug) {
-
-}
-
 require('colors');
 var path                = require("path");
 var Loader              = require("loader");
@@ -16,12 +11,10 @@ var express             = require("express");
 var errorhandler        = require('errorhandler');
 var session             = require('express-session');
 var passport            = require("passport");
-// require('./middlewares/mongoose_log'); // 打印 mongodb 查询日志
 require('./models');
 var router              = require("./router")
 var auth                     = require('./middlewares/auth');
 var errorPageMiddleware = require("./middlewares/error_page");
-// var proxyMiddleware          = require('./middlewares/proxy');
 var MongoStore = require('connect-mongo')(session);
 var _                   = require('lodash');
 var csurf               = require('csurf');
@@ -36,19 +29,6 @@ var busboy              = require('connect-busboy');
 var staticDir = path.join(__dirname, 'public');
 var exphbs  = require('express-handlebars');
 var mongoose = require('mongoose');
-
-// assets
-var assets    = {};
-
-
-if (config.mini_assets) {
-    try {
-        assets = require('./assets.json');
-    } catch (e) {
-        console.log('You must execute `make build` before start app when mini_assets is true.');
-        throw e;
-    }
-}
 
 var urlinfo     = require('url').parse(config.host);
 config.hostname = urlinfo.hostname || config.host;
@@ -111,9 +91,7 @@ if (!config.debug) {
 
 // set static, dynamic helpers
 _.extend(app.locals, {
-    config: config,
-    Loader: Loader,
-    assets: assets
+    config: config
 });
 
 app.use(errorPageMiddleware.errorPage);

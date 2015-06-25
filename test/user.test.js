@@ -30,7 +30,7 @@ describe('test/controllers/user.test.js', function() {
 			request.get('/setting')
 			.expect(200, function(err, res) {
 				should.not.exist(err);
-				res.text.should.containEql('Fuck');
+				res.text.should.containEql('设置');
 				done(err);
 			});
 		});
@@ -73,58 +73,7 @@ describe('test/controllers/user.test.js', function() {
 			.expect(200)
 			.end(function(err, res) {
 				should.not.exist(err);
-				res.text.should.containEql('个人中心');
-				done();
-			})
-		})
-	});
-
-	describe('user collection list', function() {
-		it('should visit 404 page if user not exist', function(done) {
-			request.get('/user/testUser/collections')
-			.expect(404)
-			.end(function(err, res) {
-				should.not.exist(err);
-				res.status.should.equal(404);
-				done();
-			})
-		});
-		it('should visit user collection page', function(done) {
-			request.get('/user/' + support.normalUser.loginname + '/collections')
-			.expect(200)
-			.end(function(err, res) {
-				should.not.exist(err);
-				res.text.should.containEql('收藏');
-				done();
-			})
-		})
-	});
-
-	describe('user comments list', function() {
-		it('should visit 404 page if user not exist', function(done) {
-			request.get('/user/testUser/comments')
-			.expect(404)
-			.end(function(err, res) {
-				should.not.exist(err);
-				res.status.should.equal(404);
-				done();
-			})
-		})
-		it('should visit user comments page with no query', function(done) {
-			request.get('/user/' + support.normalUser.loginname + '/comments')
-			.expect(200)
-			.end(function(err, res) {
-				should.not.exist(err);
-				res.text.should.containEql('评论');
-				done();
-			});
-		});
-		it('should should visit comments page with query string `page` 1', function(done) {
-			request.get('/user/' + support.normalUser.loginname + '/comments')
-			.expect(200)
-			.end(function(err, res) {
-				should.not.exist(err);
-				res.text.should.containEql('评论');
+				res.text.should.containEql('名片');
 				done();
 			})
 		})
