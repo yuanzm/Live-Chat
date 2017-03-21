@@ -4,7 +4,7 @@
 
 var config = require('./config')
 
-require('colors');
+require('colors');  //给控制台输出加上颜色。
 var path                = require("path");
 var Loader              = require("loader");
 var express             = require("express");
@@ -46,20 +46,20 @@ app.enable('trust proxy');
 app.use(requestLog);
 
 if (config.debug) {
-  // 渲染时间
+  // log页面渲染时间
   app.use(renderMiddleware.render);
 }
 
 // 静态资源
-app.use(Loader.less(__dirname));
+app.use(Loader.less(__dirname));  //拦截less请求，把less解析成css
 app.use('/public', express.static(staticDir));
 
 // 每日访问限制
 
-app.use(require('response-time')());
-app.use(bodyParser.json({limit: '1mb'}));
-app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
-app.use(require('method-override')());
+app.use(require('response-time')());  //记录响应时间
+app.use(bodyParser.json({limit: '1mb'})); //限制post请求的req.body大小为1M以下
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' })); //限制get请求的req.body大小为1M以下
+app.use(require('method-override')());  //重写http请求的方法（post、get、put、delete）
 var cookieParser = require('cookie-parser')(config.session_secret);
 app.use(cookieParser);
 app.use(compress());
@@ -75,12 +75,12 @@ var session = session({
 app.use(session);
 
 // custom middleware
-app.use(auth.authUser);
+app.use(auth.authUser); //验证用户是否登录
 // app.use(auth.blockUser());
 
 if (!config.debug) {
   app.use(function (req, res, next) {
-    if (req.path.indexOf('/api') === -1) {
+    if (req.path.indexOf('/api') === -1) {  //如果不是对外提供接口，就进行CSRF防御
       csurf()(req, res, next);
       return;
     }

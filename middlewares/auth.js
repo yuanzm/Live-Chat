@@ -44,7 +44,7 @@ exports.authUser = function(req, res, next) {
     });
     if (req.session.user) {
         ep.emit('get_user', req.session.user);
-    } else {
+    } else {  //根据sid取得user存入session
         var auth_token = req.signedCookies[config.auth_cookie_name];
         if (!auth_token) {
             return next();

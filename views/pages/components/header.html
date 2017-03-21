@@ -1,0 +1,44 @@
+<!-- 头部公共组件 -->
+<header>
+	<div id="header">
+		<a href="/" class="logo">
+			<img src="/public/images/icons/logo.jpg" width="80" height="50">
+		</a>
+		<ul class="nav">
+			<li>
+				<a href="/">首页</a>
+			</li>
+			<li>
+				<a href="/chat">聊天</a>
+			</li>
+			<% if (current_user) { %>
+				<li>
+					<a href="/setting">设置</a>
+				</li>
+			<% } %>
+		</ul>
+		<ul class="user-info">
+			<% if (!current_user) { %>
+				<li>
+					<a href="/signin">登录</a>
+				</li>
+				<li>
+					<a href="/signup">注册</a>
+				</li>
+			<% } %>
+			<% if (current_user) { %>
+				<li class="info">
+	                <a href="/user/<%- current_user.loginname %>">
+	                    <img src="<%= current_user.avatar %>" class="avatar" alt="avatar" width="34" height="34" />
+	                    <span><%- current_user.loginname %></span>
+	                </a>
+	            </li>
+	            <li class="logout">
+	                <a href="javascript:void(0);" id="logout">
+	                    退出
+	                </a>
+	            </li>
+			<% } %>
+		</ul>
+	</div>
+</header>

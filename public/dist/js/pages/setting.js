@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 /*
-调用方法 
+调用方法
 
 behindUploader = new Uploader {
 	domain: "http://7xj0sp.com1.z0.glb.clouddn.com/"	# bucket 域名，下载资源时用到，**必需**
@@ -15,7 +15,7 @@ behindUploader = new Uploader {
 		$("#negative-wrapper").find(".content-img").removeClass("hidden").find("img").attr("src", domain + info.key)
 		$("#negative-wrapper").find(".img-border").addClass("hidden")
 }
-	
+
 构造函数的第一个参数对象包含了用来覆盖默认参数中除了init之外的各项属性的值
 第二个参数对象包含了用来覆盖默认参数中init对象内方法的函数
 未被指定的属性将以默认参数中的值进行传递

@@ -24,7 +24,7 @@ exports.index = function(req, res, next) {
         res.render('pages/user/index', {
             user: user
         });
-    })  
+    })
 };
 
 /*
@@ -53,7 +53,9 @@ exports.setting = function(req, res, next) {
     var location = validator.trim(req.body.location);
     location = validator.trim(location)
     var avatar = validator.trim(req.body.avatar);
-    avatar = validator.escape(avatar);
+    // console.log(1111 + avatar);
+    // avatar = validator.escape(avatar);
+    // console.log(222 + avatar);
     var name = validator.trim(req.body.name);
     name = validator.escape(name);
     var signature = validator.trim(req.body.signature);
