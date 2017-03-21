@@ -8,7 +8,7 @@ all: test
 # 安装package.json中的依赖文件
 install:
 	@npm install $(NPM_REGISTRY)
-	
+
 # 测试之前首先确保有config文件
 pretest:
 	@if ! test -f config.js; then \

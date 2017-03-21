@@ -27,12 +27,12 @@ var config = {
     list_comment_count: 20,
     // 一页通知的数量
     list_notification_count: 20,
-    
+
     host: "localhost",
 
     // mongodb配置
     db: "mongodb://127.0.0.1/Live-Chat-SAD",
-    
+
     // redis 配置，默认是本地
     redis_host: 'redis.duapp.com',
     redis_port: 80,
